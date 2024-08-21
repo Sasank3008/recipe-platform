@@ -1,3 +1,5 @@
+#Project name - Recipe Platform
+
 Recipe Platform BE
 This repository contains the backend code for the Recipe Platform, a robust and scalable application developed using Spring Boot. This platform allows users to create, store, and share cooking recipes.
 
