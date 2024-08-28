@@ -24,8 +24,6 @@ target/
 *.iml
 *.ipr
 *.iws
-*.iml
-*.ipr
 
 .idea_modules/
 target
