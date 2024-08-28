@@ -1,16 +1,18 @@
 package com.recipe.RecipeService.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("recipe")
-public class Controller
+public class RecipeController
 {
-    @GetMapping("test")
-    public String test()
+    @GetMapping("health")
+    public ResponseEntity<String> test()
     {
-        return "recipe controller";
+        return new ResponseEntity<>("Recipe controller is working", HttpStatus.OK);
     }
 }
