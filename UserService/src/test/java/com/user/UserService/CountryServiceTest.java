@@ -4,9 +4,9 @@ package com.user.UserService;
 
 
 import com.user.UserService.dao.CountryRepository;
-import com.user.UserService.dto.CountryDto;
+import com.user.UserService.dto.CountryDTO;
 import com.user.UserService.entity.Country;
-import com.user.UserService.service.CountryService;
+import com.user.UserService.service.CountryServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.modelmapper.ModelMapper;
@@ -14,10 +14,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -33,7 +29,7 @@ public class CountryServiceTest {
     private ModelMapper modelMapper;
 
     @InjectMocks
-    private CountryService countryService;
+    private CountryServiceImpl countryService;
 
 //    @Test
 //    public void testGetAllCountries() {
@@ -58,20 +54,20 @@ public class CountryServiceTest {
 
     @Test
     public void testAddCountry() {
-        CountryDto countryDTO = new CountryDto(null, "USA");
+        CountryDTO countryDTO = new CountryDTO(null, "USA");
         Country country = new Country(null, "USA");
         Country savedCountry = new Country(1L, "USA");
-        CountryDto savedCountryDTO = new CountryDto(1L, "USA");
+        CountryDTO savedCountryDTO = new CountryDTO(1L, "USA");
 
         when(modelMapper.map(countryDTO, Country.class)).thenReturn(country);
         when(countryRepository.save(country)).thenReturn(savedCountry);
-        when(modelMapper.map(savedCountry, CountryDto.class)).thenReturn(savedCountryDTO);
+        when(modelMapper.map(savedCountry, CountryDTO.class)).thenReturn(savedCountryDTO);
 
-        CountryDto result = countryService.addCountry(countryDTO);
+        CountryDTO result = countryService.addCountry(countryDTO);
 
         assertEquals(savedCountryDTO, result);
         verify(countryRepository, times(1)).save(country);
         verify(modelMapper, times(1)).map(countryDTO, Country.class);
-        verify(modelMapper, times(1)).map(savedCountry, CountryDto.class);
+        verify(modelMapper, times(1)).map(savedCountry, CountryDTO.class);
     }
 }

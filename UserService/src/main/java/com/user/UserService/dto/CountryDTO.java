@@ -1,20 +1,17 @@
 package com.user.UserService.dto;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.UniqueConstraint;
 
-import java.util.Objects;
-
-public class CountryDto {
+public class CountryDTO {
     private Long id;
     @Column(name = "name", nullable = false)
     private String name;
 
     // Constructors
-    public CountryDto() {
+    public CountryDTO() {
     }
 
-    public CountryDto(Long id, String name) {
+    public CountryDTO(Long id, String name) {
         this.id = id;
         this.name = name;
     }
