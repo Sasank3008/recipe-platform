@@ -58,7 +58,7 @@ public class UserController {
 
         // Generate the URL for the updated profile image
         String imageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/profile-image/")
+                .path("/user/profile-image/")
                 .path(userId.toString())
                 .toUriString();
 
