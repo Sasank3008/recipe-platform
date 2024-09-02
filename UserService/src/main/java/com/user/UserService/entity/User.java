@@ -1,12 +1,11 @@
 package com.user.UserService.entity;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table
@@ -19,19 +18,33 @@ public class User {
     private String lastName;
     private String email;
     private String password;
+
     private LocalTime timeOfRegistration;
     private Boolean enabled;
 
-    @ManyToOne
+   // @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "country_id")
-
-    @JsonIgnore
+   // @JsonIgnore
     private Country country;
-
-    @ManyToOne
-    @JoinColumn(name = "region_id")
-
-    @JsonIgnore
+    @ManyToOne(cascade = CascadeType.ALL)
+   @JoinColumn(name = "region_id")
+   // @JsonIgnore
     private Region region;
+//   public void setCountry(String c){
+//          country.setName(c);
+//       }
+
+//    @PrePersist
+//    protected void onCreate() {
+//        if (timeOfRegistration == null) {
+//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+//            timeOfRegistration = (LocalDate.now().format(formatter)); // Store the current date in dd-MM-yyyy format
+//        }
+//    }
+//    public void setCountry(Long id,String name){
+//         country.setId(id);
+//         country.setName(name);
+//    }
 }
 

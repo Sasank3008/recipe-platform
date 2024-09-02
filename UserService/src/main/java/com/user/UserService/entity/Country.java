@@ -1,8 +1,4 @@
 package com.user.UserService.entity;
-
-
-
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -33,14 +29,19 @@ public class Country {
     private Long id;
 
     private String name;
-    @OneToMany(mappedBy = "country")
-
     @JsonIgnore
+    @OneToMany(mappedBy = "country")
     private List<User> users;
 
     @JsonIgnore
     @OneToMany(mappedBy = "country")
     private List<Region> regions;
+
+    public Country(long l, String countryName) {
+        this.id=l;
+        this.name=countryName;
+    }
+
 
     @Override
     public String toString() {
@@ -52,10 +53,12 @@ public class Country {
                 '}';
     }
 
-    public Country(Long id, String name){
-        this.id=id;
-        this.name=name;
-    }
+//    public Country(Long id, String name){
+//        this.id=id;
+//        this.name=name;
+//    }
+
+
 }
 
 
