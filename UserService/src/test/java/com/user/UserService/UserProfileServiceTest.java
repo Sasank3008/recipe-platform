@@ -1,7 +1,4 @@
 package com.user.UserService;
-
-
-
 import com.user.UserService.handler.UserIdNotFoundException;
 import com.user.UserService.dto.CountryDTO;
 import com.user.UserService.dto.RegionDTO;
@@ -17,11 +14,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.modelmapper.ModelMapper;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
 import java.util.Optional;
-
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.any;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(SpringExtension.class)
 public class UserProfileServiceTest {
