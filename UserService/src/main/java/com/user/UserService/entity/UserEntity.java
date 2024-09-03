@@ -30,7 +30,6 @@ public class UserEntity {
 
     public String getProfileImageUrl() {
         if (profileImage != null) {
-            // Assuming your server serves images at this endpoint
             return "/user/profile-image/" + id;
         }
         return null;

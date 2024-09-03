@@ -35,9 +35,12 @@ class UserControllerTests {
     @Mock
     private UserRepository userRepository;
 
+    private Long userId;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        userId = 1L;
     }
 
     @Test
@@ -51,7 +54,6 @@ class UserControllerTests {
 
     @Test
     void getUserById_ShouldReturnUserDTO() throws UserNotFoundException {
-        Long userId = 1L;
         UserDTO userDTO = new UserDTO();
         when(userService.getUser(userId)).thenReturn(userDTO);
         ResponseEntity<?> response = userController.getUserById(userId);
@@ -61,14 +63,12 @@ class UserControllerTests {
 
     @Test
     void getUserById_ShouldThrowUserNotFoundException() throws UserNotFoundException {
-        Long userId = 1L;
         when(userService.getUser(userId)).thenThrow(new UserNotFoundException("User not found"));
         assertThrows(UserNotFoundException.class, () -> userController.getUserById(userId));
     }
 
     @Test
     void updateUser_ShouldReturnUpdatedUser() throws UserNotFoundException {
-        Long userId = 1L;
         UserDTO userDTO = new UserDTO();
         when(userService.getUser(userId)).thenReturn(userDTO);
         doNothing().when(userService).updateUser(userDTO, userId);
@@ -77,11 +77,8 @@ class UserControllerTests {
         assertEquals(userDTO, response.getBody());
     }
 
-
-
     @Test
     void getProfileImage_ShouldReturnImage() throws UserNotFoundException {
-        Long userId = 1L;
         UserEntity userEntity = new UserEntity();
         userEntity.setProfileImage(new byte[0]);
         when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
@@ -90,11 +87,8 @@ class UserControllerTests {
         assertArrayEquals(new byte[0], response.getBody());
     }
 
-
-
     @Test
     void updatePassword_ShouldReturnSuccess() throws UserNotFoundException, InvalidPasswordException {
-        Long userId = 1L;
         PasswordDTO passwordDTO = new PasswordDTO();
         doNothing().when(userService).updatePassword(passwordDTO, userId);
         ResponseEntity<?> response = userController.updatePassword(passwordDTO, userId);
