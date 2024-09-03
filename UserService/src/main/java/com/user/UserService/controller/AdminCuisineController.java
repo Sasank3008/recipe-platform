@@ -83,4 +83,14 @@ public class AdminCuisineController {
             return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
         }
     }
+    @GetMapping
+    public ResponseEntity<List<CuisineDTO>> viewAllCuisines() {
+        try {
+            List<CuisineDTO> allCuisines = recipeServiceClient.getAllCuisines();
+            return ResponseEntity.ok(allCuisines);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+        }
+    }
+
 }

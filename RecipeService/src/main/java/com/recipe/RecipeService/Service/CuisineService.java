@@ -58,4 +58,8 @@ public class CuisineService {
                     return cuisineRepository.save(cuisine);
                 }).orElseThrow(() -> new CuisineNotFoundException("Cuisine not found with id: " + id));
     }
+
+    public List<Cuisine>  getAllCuisines() {
+        return cuisineRepository.findAll();
+    }
 }

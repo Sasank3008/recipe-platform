@@ -90,4 +90,12 @@ public class RecipeController {
                     return ResponseEntity.ok(responseDTO);
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
+    @GetMapping("/cuisines")
+    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
+        List<Cuisine> cuisines = cuisineRepository.getAllCuisines();
+        List<CuisineDTO> cuisineDTOs = cuisines.stream()
+                .map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(cuisineDTOs);
+    }
 }

@@ -26,4 +26,6 @@ public interface RecipeServiceClient {
 
     @PutMapping("/cuisines/{id}")
     CuisineDTO updateCuisine(@PathVariable("id") Long id, @RequestBody CuisineDTO cuisineDTO);
+    @GetMapping("/cuisines")
+    List<CuisineDTO> getAllCuisines();
 }
