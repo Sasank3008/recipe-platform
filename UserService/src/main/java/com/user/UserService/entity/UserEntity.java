@@ -1,5 +1,6 @@
 package com.user.UserService.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +28,8 @@ public class UserEntity {
     private byte[] profileImage;
     @Transient
     private String profileImageUrl;
+    @JsonIgnore
+    private String password;
 
     public String getProfileImageUrl() {
         if (profileImage != null) {
@@ -34,7 +37,7 @@ public class UserEntity {
         }
         return null;
     }
-    private String password;
+
 
 
 }

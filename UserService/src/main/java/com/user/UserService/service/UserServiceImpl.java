@@ -4,6 +4,7 @@ import com.user.UserService.Handler.InvalidPasswordException;
 import com.user.UserService.Handler.UserNotFoundException;
 import com.user.UserService.dto.PasswordDTO;
 import com.user.UserService.dto.UserDTO;
+import com.user.UserService.dto.UserRegistrationDTO;
 import com.user.UserService.entity.UserEntity;
 import com.user.UserService.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public void createUser(UserDTO userDTO) {
-        UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
-        userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+    public void createUser(UserRegistrationDTO userRegistrationDTO) {
+        UserEntity userEntity = modelMapper.map(userRegistrationDTO, UserEntity.class);
+        userEntity.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
         userRepository.save(userEntity);
     }
+
 
     @Override
     public UserDTO getUser(Long id) throws UserNotFoundException {
@@ -37,7 +39,6 @@ public class UserServiceImpl implements UserService {
         userDTO.setProfileImageUrl(userEntity.getProfileImageUrl());
         return userDTO;
     }
-
 
     @Override
     public void updateUser(UserDTO userDTO, Long id) throws UserNotFoundException {
@@ -64,33 +65,29 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(userEntity);
     }
-
     @Override
     public void updatePassword(PasswordDTO passwordDTO, Long userId) throws UserNotFoundException, InvalidPasswordException {
         UserEntity userEntity = userRepository.findById(userId)
-                .orElseThrow(()->new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        String oldPassword =  passwordDTO.getOldPassword();
+        String oldPassword = passwordDTO.getOldPassword();
         String encodedPassword = userEntity.getPassword();
-        System.out.println(oldPassword);
-        System.out.println(encodedPassword);
+
+        if (!passwordEncoder.matches(oldPassword, encodedPassword)) {
+            throw new InvalidPasswordException("Invalid Password");
+        }
 
         String newPassword = passwordDTO.getNewPassword();
         String confirmPassword = passwordDTO.getConfirmPassword();
 
-        if(!passwordEncoder.matches(oldPassword,encodedPassword)){
-            throw new InvalidPasswordException("Invalid Password");
-        }
         if (newPassword.equals(confirmPassword)) {
             userEntity.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(userEntity);
+        } else {
+            throw new InvalidPasswordException("New password and Confirm password do not match");
         }
-        else {
-            throw new InvalidPasswordException("New password and Confirm password do not matched");
-        }
-
-
     }
+
 }
 
 

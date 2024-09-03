@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class PasswordDTO {
 
     private String oldPassword;
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", message = "Password must contain at least one uppercase letter, one lowercase letter, and one digit")
+    @Pattern(regexp = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{5,}$/", message = "Password should contain atleast 1 lowercase letter,1 uppercase letter, 1 special character, 1 digit and min-length of 5")
     private String newPassword;
     @NotBlank(message = "Confirm password is mandatory")
     private String confirmPassword;
