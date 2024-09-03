@@ -1,8 +1,6 @@
 package com.user.UserService.controller;
-
 import com.user.UserService.dto.CountryDTO;
 import com.user.UserService.service.CountryService;
-import com.user.UserService.service.CountryServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
