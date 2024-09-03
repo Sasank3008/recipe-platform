@@ -6,7 +6,6 @@ import com.user.UserService.entity.Country;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -17,15 +16,11 @@ public class CountryServiceImpl implements CountryService{
     private CountryRepository countryRepository;
     @Autowired
     private ModelMapper modelMapper;
-
     public List<CountryDTO> getAllCountries() {
         return countryRepository.findAll().stream()
-                .map(country -> new CountryDTO(country.getId(), country.getName()))
+                .map(country -> modelMapper.map(country, CountryDTO.class))
                 .collect(Collectors.toList());
     }
-
-
-
     public CountryDTO addCountry(CountryDTO countryDTO) {
 
         Optional<Country> existingCountry = countryRepository.findByName(countryDTO.getName());
@@ -37,7 +32,4 @@ public class CountryServiceImpl implements CountryService{
         country = countryRepository.save(country);
         return modelMapper.map(country, CountryDTO.class);
     }
-
-
-
 }

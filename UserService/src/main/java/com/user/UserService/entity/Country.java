@@ -9,18 +9,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.util.List;
-
 @Entity
 @Table
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
 
     @OneToMany(mappedBy = "country")
@@ -28,8 +25,6 @@ public class Country {
 
     @OneToMany(mappedBy = "country")
     private List<Region> regions;
-
-
     public Country(Long id,String name){
         this.id=id;
         this.name=name;

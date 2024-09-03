@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-
 import java.util.List;
 
 @RestController
@@ -26,7 +24,7 @@ public class AdminController
         List<CountryDTO> countries = countryService.getAllCountries();
         return ResponseEntity.ok().body(countries);
     }
-    @PostMapping("/countries")
+    @PostMapping("/addCountries")
     public ResponseEntity<CountryDTO> addCountry(@RequestBody CountryDTO countryDTO) {
         CountryDTO savedCountry = countryService.addCountry(countryDTO);
         return ResponseEntity.ok().body(savedCountry);

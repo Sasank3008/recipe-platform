@@ -13,22 +13,16 @@ import java.util.List;
 @RestController
 @RequestMapping("/countries")
 public class CountryController {
-
-
     @Autowired
     private CountryServiceImpl countryService;
-
     @GetMapping
     public ResponseEntity<List<CountryDTO>> getAllCountries() {
         List<CountryDTO> countries = countryService.getAllCountries();
         return ResponseEntity.ok().body(countries);
     }
-
     @PostMapping
     public ResponseEntity<CountryDTO> addCountry(@RequestBody CountryDTO countryDTO) {
         CountryDTO savedCountry = countryService.addCountry(countryDTO);
         return ResponseEntity.ok().body(savedCountry);
     }
-
-
 }
