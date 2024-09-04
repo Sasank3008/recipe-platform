@@ -23,9 +23,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @ExtendWith(MockitoExtension.class)
-class RecipeServiceApplicationTestsgit  {
+class RecipeServiceApplicationTests {
 
 	private MockMvc mockMvc;
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -138,5 +139,37 @@ class RecipeServiceApplicationTestsgit  {
 						.contentType(MediaType.APPLICATION_JSON)
 						.content(objectMapper.writeValueAsString(cuisineDTO)))
 				.andExpect(status().isNotFound());
+	}
+	@Test
+	void testGetAllCuisinesSuccess() throws Exception {
+		// Setup mock data
+		List<Cuisine> mockCuisines = Arrays.asList(
+				new Cuisine(1L, "Italian", true),
+				new Cuisine(2L, "Mexican", true)
+		);
+		List<CuisineDTO> expectedDTOs = mockCuisines.stream()
+				.map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
+				.collect(Collectors.toList());
+
+		// Mocking the repository or service call
+		when(cuisineRepository.getAllCuisines()).thenReturn(mockCuisines);
+
+		// Perform the request and assert results
+		mockMvc.perform(get("/api/recipes/cuisines")
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk())
+				.andExpect(content().json(objectMapper.writeValueAsString(expectedDTOs)));
+	}
+	@Test
+	void testEnableCuisineSuccess() throws Exception {
+		Long id = 1L;
+		Cuisine existingCuisine = new Cuisine(id, "Italian", false);
+
+		when(cuisineRepository.findById(id)).thenReturn(Optional.of(existingCuisine));
+		when(cuisineRepository.save(existingCuisine)).thenReturn(existingCuisine);
+
+		mockMvc.perform(put("/api/recipes/cuisines/enable/{id}", id)
+						.contentType(MediaType.APPLICATION_JSON))
+				.andExpect(status().isOk());
 	}
 }

@@ -112,6 +112,20 @@ class UserServiceApplicationTest{
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$.name").value("Mexican"));
 	}
+	@Test
+	void testUpdateCuisineSuccess() throws Exception {
+		Long id = 1L;
+		CuisineDTO originalCuisine = new CuisineDTO(id, "Italian", true);
+		CuisineDTO updatedCuisine = new CuisineDTO(id, "Italian Updated", true);
+
+		when(recipeServiceClient.updateCuisine(eq(id), any(CuisineDTO.class))).thenReturn(updatedCuisine);
+
+		mockMvc.perform(put("/admin/cuisines/{id}", id)
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(originalCuisine)))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.name").value("Italian Updated"));
+	}
 
 
 

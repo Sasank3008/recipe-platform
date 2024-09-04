@@ -21,6 +21,12 @@ public class RecipeController {
     @Autowired
     private CuisineRepository cuisineRepository;
 
+    private List<CuisineDTO> convertToDtoList(List<Cuisine> cuisines) {
+        return cuisines.stream()
+                .map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
+                .collect(Collectors.toList());
+    }
+
     @PostMapping("/cuisines")
     public ResponseEntity<CuisineDTO> addCuisine(@RequestBody CuisineDTO cuisineDTO) {
         Optional<Cuisine> existingCuisine = cuisineRepository.findByName(cuisineDTO.getName());
@@ -33,7 +39,6 @@ public class RecipeController {
         newCuisine.setEnabled(true);
 
         Cuisine addedCuisine = cuisineRepository.save(newCuisine);
-
         CuisineDTO responseDTO = new CuisineDTO(addedCuisine.getId(), addedCuisine.getName(), addedCuisine.isEnabled());
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
@@ -41,9 +46,7 @@ public class RecipeController {
     @GetMapping("/cuisines/enabled")
     public ResponseEntity<List<CuisineDTO>> getEnabledCuisines() {
         List<Cuisine> cuisines = cuisineRepository.findByIsEnabled(true);
-        List<CuisineDTO> cuisineDTOs = cuisines.stream()
-                .map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
-                .collect(Collectors.toList());
+        List<CuisineDTO> cuisineDTOs = convertToDtoList(cuisines);
         return ResponseEntity.ok(cuisineDTOs);
     }
 
@@ -87,12 +90,11 @@ public class RecipeController {
                     return ResponseEntity.ok(responseDTO);
                 }).orElseGet(() -> ResponseEntity.notFound().build());
     }
+
     @GetMapping("/cuisines")
     public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
         List<Cuisine> cuisines = cuisineRepository.getAllCuisines();
-        List<CuisineDTO> cuisineDTOs = cuisines.stream()
-                .map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
-                .collect(Collectors.toList());
+        List<CuisineDTO> cuisineDTOs = convertToDtoList(cuisines);
         return ResponseEntity.ok(cuisineDTOs);
     }
 }

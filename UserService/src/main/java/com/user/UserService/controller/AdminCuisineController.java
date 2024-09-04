@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/cuisines")
+@RequestMapping("/admins/cuisines")
 public class AdminCuisineController {
 
     @Autowired
@@ -20,8 +20,18 @@ public class AdminCuisineController {
         this.recipeServiceClient = recipeServiceClient;
     }
 
+    @GetMapping("/view")
+    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
+        try {
+            List<CuisineDTO> allCuisines = recipeServiceClient.getAllCuisines();
+            return ResponseEntity.ok(allCuisines);
+        } catch (FeignException e) {
+            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+        }
+    }
+
     @PostMapping("/add")
-    public ResponseEntity<CuisineDTO> addCuisine(@RequestBody CuisineDTO cuisineDTO) {
+    public ResponseEntity<CuisineDTO> saveCuisine(@RequestBody CuisineDTO cuisineDTO) {
         try {
             CuisineDTO addedCuisine = recipeServiceClient.addCuisine(cuisineDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
@@ -33,7 +43,7 @@ public class AdminCuisineController {
     }
 
     @GetMapping("/enabled")
-    public ResponseEntity<List<CuisineDTO>> getEnabledCuisines() {
+    public ResponseEntity<List<CuisineDTO>> fetchEnabledCuisines() {
         List<CuisineDTO> cuisines = recipeServiceClient.getEnabledCuisines();
         return ResponseEntity.ok(cuisines);
     }
@@ -64,7 +74,7 @@ public class AdminCuisineController {
 
     @PutMapping("/enable/{id}")
     public ResponseEntity<Void> enableCuisine(@PathVariable Long id) {
-        System.out.println("iuoih");
+
         try {
             recipeServiceClient.enableCuisine(id);
             return ResponseEntity.ok().build();
@@ -86,14 +96,6 @@ public class AdminCuisineController {
             return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
         }
     }
-    @GetMapping("/view")
-    public ResponseEntity<List<CuisineDTO>> viewAllCuisines() {
-        try {
-            List<CuisineDTO> allCuisines = recipeServiceClient.getAllCuisines();
-            return ResponseEntity.ok(allCuisines);
-        } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
-        }
-    }
+
 
 }
