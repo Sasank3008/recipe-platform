@@ -16,8 +16,11 @@ public class AdminCuisineController {
 
     @Autowired
     private RecipeServiceClient recipeServiceClient;
+    public AdminCuisineController(RecipeServiceClient recipeServiceClient) {
+        this.recipeServiceClient = recipeServiceClient;
+    }
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<CuisineDTO> addCuisine(@RequestBody CuisineDTO cuisineDTO) {
         try {
             CuisineDTO addedCuisine = recipeServiceClient.addCuisine(cuisineDTO);
@@ -83,7 +86,7 @@ public class AdminCuisineController {
             return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
         }
     }
-    @GetMapping
+    @GetMapping("/view")
     public ResponseEntity<List<CuisineDTO>> viewAllCuisines() {
         try {
             List<CuisineDTO> allCuisines = recipeServiceClient.getAllCuisines();

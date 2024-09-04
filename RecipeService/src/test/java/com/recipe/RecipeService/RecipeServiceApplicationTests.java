@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 @ExtendWith(MockitoExtension.class)
-class RecipeServiceApplicationTests {
+class RecipeServiceApplicationTestsgit  {
 
 	private MockMvc mockMvc;
 	private ObjectMapper objectMapper = new ObjectMapper();

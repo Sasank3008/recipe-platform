@@ -5,11 +5,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.*;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import com.user.UserService.Entity.CuisineDTO;
 import com.user.UserService.RecipeSeviceClient.RecipeServiceClient;
 import com.user.UserService.controller.AdminCuisineController;
+import feign.Request;
+import feign.RequestTemplate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import feign.FeignException;
 @ExtendWith(MockitoExtension.class)
-class UserServiceApplicationTest {
+class UserServiceApplicationTest{
 
 	private MockMvc mockMvc;
 	private ObjectMapper objectMapper = new ObjectMapper();
@@ -82,7 +85,7 @@ class UserServiceApplicationTest {
 		List<CuisineDTO> cuisines = Arrays.asList(new CuisineDTO(1L, "Italian", true));
 		when(recipeServiceClient.getAllCuisines()).thenReturn(cuisines);
 
-		mockMvc.perform(get("/admin/cuisines"))
+		mockMvc.perform(get("/admin/cuisines/view"))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$[0].name").value("Italian"));
 	}
@@ -95,4 +98,21 @@ class UserServiceApplicationTest {
 		mockMvc.perform(put("/admin/cuisines/disable/1"))
 				.andExpect(status().isNotFound());
 	}
+
+	@Test
+	void testAddCuisineSuccess() throws Exception {
+		CuisineDTO newCuisine = new CuisineDTO(null, "Mexican", true);
+		CuisineDTO addedCuisine = new CuisineDTO(1L, "Mexican", true);
+
+		when(recipeServiceClient.addCuisine(any(CuisineDTO.class))).thenReturn(addedCuisine);
+
+		mockMvc.perform(post("/admin/cuisines/add")
+						.contentType(MediaType.APPLICATION_JSON)
+						.content(objectMapper.writeValueAsString(newCuisine)))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.name").value("Mexican"));
+	}
+
+
+
 }

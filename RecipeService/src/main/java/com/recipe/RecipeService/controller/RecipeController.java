@@ -2,10 +2,7 @@ package com.recipe.RecipeService.controller;
 
 import com.recipe.RecipeService.Entity.Cuisine;
 import com.recipe.RecipeService.Entity.CuisineDTO;
-import com.recipe.RecipeService.Handlers.CuisineNotFoundException;
-import com.recipe.RecipeService.Handlers.DuplicateCuisineException;
 import com.recipe.RecipeService.Model.CuisineRepository;
-import com.recipe.RecipeService.Service.CuisineService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
