@@ -40,7 +40,7 @@ public class AdminControllerTest {
         CountryDTO country2 = new CountryDTO(2L, "Canada");
         List<CountryDTO> countries = Arrays.asList(country1, country2);
         when(countryService.getAllCountries()).thenReturn(countries);
-        mockMvc.perform(get("/admin/getCountries"))
+        mockMvc.perform(get("/admins/getCountries"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("USA"))
                 .andExpect(jsonPath("$[1].name").value("Canada"));
@@ -52,7 +52,7 @@ public class AdminControllerTest {
         CountryDTO newCountry = new CountryDTO(null, "Mexico");
         CountryDTO savedCountry = new CountryDTO(3L, "Mexico");
         when(countryService.addCountry(any(CountryDTO.class))).thenReturn(savedCountry);
-        mockMvc.perform(post("/admin/addCountries")
+        mockMvc.perform(post("/admins/addCountries")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Mexico\"}"))
                 .andExpect(status().isOk())
