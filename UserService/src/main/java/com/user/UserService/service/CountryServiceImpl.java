@@ -1,7 +1,7 @@
 package com.user.UserService.service;
 
 import com.user.UserService.dto.CountryDTO;
-import com.user.UserService.entity.CountryEntity;
+import com.user.UserService.entity.Country;
 import com.user.UserService.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,16 +19,22 @@ public class CountryServiceImpl implements CountryService{
 
     @Override
     public void createCountry(CountryDTO countryDTO){
-        CountryEntity countryEntity = modelMapper.map(countryDTO, CountryEntity.class);
-        countryRepository.save(countryEntity);
+        Country country = modelMapper.map(countryDTO, Country.class);
+        countryRepository.save(country);
     }
 
     @Override
     public List<CountryDTO> getAllCountries(){
-        List<CountryEntity> countries = countryRepository.findAll();
+        List<Country> countries = countryRepository.findAll();
         return  countries.stream()
                 .map(country -> modelMapper.map(country,CountryDTO.class))
                 .collect(Collectors.toList());
+    }
+    @Override
+    public CountryDTO getCountryById(Long id) {
+        Country country = countryRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Country not found"));
+        return modelMapper.map(country, CountryDTO.class);
     }
 
 }

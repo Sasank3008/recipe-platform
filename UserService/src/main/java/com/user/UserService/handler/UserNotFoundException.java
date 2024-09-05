@@ -1,6 +1,4 @@
-package com.user.UserService.Handler;
-
-import org.modelmapper.internal.bytebuddy.implementation.bind.annotation.Super;
+package com.user.UserService.handler;
 
 public class UserNotFoundException extends Exception{
     public UserNotFoundException(String message) {

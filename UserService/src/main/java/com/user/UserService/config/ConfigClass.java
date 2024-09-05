@@ -18,4 +18,6 @@ public class ConfigClass {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+
 }

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/country")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class CountryController {
 
     private final CountryService countryService;
@@ -24,7 +23,12 @@ public class CountryController {
 
     @GetMapping
     public ResponseEntity<?>getAllCountries(){
-          return new ResponseEntity<>(countryService.getAllCountries(),HttpStatus.OK);
+        return new ResponseEntity<>(countryService.getAllCountries(),HttpStatus.OK);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCountryById(@PathVariable Long id) {
+        CountryDTO countryDTO = countryService.getCountryById(id);
+        return new ResponseEntity<>(countryDTO, HttpStatus.OK);
     }
 
 }

@@ -1,7 +1,11 @@
 package com.user.UserService.repository;
 
-import com.user.UserService.entity.CountryEntity;
+import com.user.UserService.entity.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CountryRepository extends JpaRepository<CountryEntity,Long> {
+import java.util.Optional;
+
+public interface CountryRepository extends JpaRepository<Country,Long> {
+    Optional<Country> findByName(String name);
+
 }
