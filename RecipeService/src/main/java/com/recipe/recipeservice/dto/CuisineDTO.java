@@ -1,4 +1,4 @@
-package com.recipe.recipeservice.entity;
+package com.recipe.recipeservice.dto;
 
 
 

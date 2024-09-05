@@ -5,8 +5,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.recipe.recipeservice.entity.Cuisine;
-import com.recipe.recipeservice.entity.CuisineDTO;
-import com.recipe.recipeservice.model.CuisineRepository;
+import com.recipe.recipeservice.dto.CuisineDTO;
+import com.recipe.recipeservice.repository.CuisineRepository;
 import com.recipe.recipeservice.controller.RecipeController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

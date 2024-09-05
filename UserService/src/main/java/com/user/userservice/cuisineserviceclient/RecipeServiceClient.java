@@ -1,7 +1,8 @@
 package com.user.userservice.cuisineserviceclient;
 
-import com.user.userservice.entity.CuisineDTO;
+import com.user.userservice.dto.CuisineDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,4 +29,8 @@ public interface RecipeServiceClient {
     CuisineDTO updateCuisine(@PathVariable("id") Long id, @RequestBody CuisineDTO cuisineDTO);
     @GetMapping("/cuisines")
     List<CuisineDTO> getAllCuisines();
+    @GetMapping("/cuisines/exist/by-id")
+    public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id);
+    @GetMapping("/cuisines/exist/by-name")
+    public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name);
 }

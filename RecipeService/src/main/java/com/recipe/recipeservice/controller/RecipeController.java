@@ -1,8 +1,8 @@
 package com.recipe.recipeservice.controller;
 
 import com.recipe.recipeservice.entity.Cuisine;
-import com.recipe.recipeservice.entity.CuisineDTO;
-import com.recipe.recipeservice.model.CuisineRepository;
+import com.recipe.recipeservice.dto.CuisineDTO;
+import com.recipe.recipeservice.repository.CuisineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +21,7 @@ public class RecipeController {
 
 
     private CuisineRepository cuisineRepository;
+
     @Autowired
     public RecipeController(CuisineRepository cuisineRepository) {
         this.cuisineRepository = cuisineRepository;
@@ -108,5 +109,16 @@ public class RecipeController {
         List<Cuisine> cuisines = cuisineRepository.getAllCuisines();
         List<CuisineDTO> cuisineDTOs = convertToDtoList(cuisines);
         return ResponseEntity.ok(cuisineDTOs);
+    }
+    @GetMapping("/cuisines/exist/by-name")
+    public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name) {
+        boolean exists = cuisineRepository.doesCuisineExistByName(name);
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/cuisines/exist/by-id")
+    public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id) {
+        boolean exists = cuisineRepository.doesCuisineExistById(id);
+        return ResponseEntity.ok(exists);
     }
 }

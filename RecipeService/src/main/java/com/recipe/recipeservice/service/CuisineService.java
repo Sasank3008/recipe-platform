@@ -2,7 +2,7 @@ package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.handlers.CuisineNotFoundException;
-import com.recipe.recipeservice.model.CuisineRepository;
+import com.recipe.recipeservice.repository.CuisineRepository;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -39,5 +39,13 @@ public class CuisineService {
         cuisine.setEnabled(updatedDetails.isEnabled());
         return cuisineRepository.save(cuisine);
     }
+    public boolean doesCuisineExistByName(String name) {
+        return cuisineRepository.findByName(name).isPresent();
+    }
+
+    public boolean doesCuisineExistById(Long id) {
+        return cuisineRepository.findById(id).isPresent();
+    }
+
 
 }

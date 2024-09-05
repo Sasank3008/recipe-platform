@@ -1,4 +1,4 @@
-package com.user.userservice.entity;
+package com.user.userservice.dto;
 
 public class CuisineDTO {
     private Long id;
