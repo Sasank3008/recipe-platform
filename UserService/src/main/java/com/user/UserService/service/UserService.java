@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public interface UserService {
 
-    void createUser(UserDTO userDTO);
+
     UserDTO getUser(Long id) throws UserNotFoundException;
     void updateUser(UserDTO userDTO,Long id) throws UserNotFoundException;
     String updateUserImage(String path, MultipartFile file, Long userId) throws IOException, UserNotFoundException;

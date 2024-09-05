@@ -36,12 +36,7 @@ public class UserServiceImpl implements UserService {
     private String path;
 
 
-    @Override
-    public void createUser(UserDTO userDTO) {
-        User user = modelMapper.map(userDTO, User.class);
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        userRepository.save(user);
-    }
+
 
     @Override
     public UserDTO getUser(Long id) throws UserNotFoundException {
