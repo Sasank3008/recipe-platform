@@ -1,12 +1,21 @@
 package com.user.UserService.entity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.CascadeType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.time.LocalTime;
-
-
 @Entity
 @Table
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,33 +24,11 @@ public class User {
     private String lastName;
     private String email;
     private String password;
-
     private LocalTime timeOfRegistration;
     private Boolean enabled;
-
-   // @ManyToOne(fetch = FetchType.LAZY)
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "country_id")
-   // @JsonIgnore
     private Country country;
-    @ManyToOne(cascade = CascadeType.ALL)
-   @JoinColumn(name = "region_id")
-   // @JsonIgnore
-    private Region region;
-//   public void setCountry(String c){
-//          country.setName(c);
-//       }
-
-//    @PrePersist
-//    protected void onCreate() {
-//        if (timeOfRegistration == null) {
-//            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-//            timeOfRegistration = (LocalDate.now().format(formatter)); // Store the current date in dd-MM-yyyy format
-//        }
-//    }
-//    public void setCountry(Long id,String name){
-//         country.setId(id);
-//         country.setName(name);
-//    }
+    private String region;
 }
 

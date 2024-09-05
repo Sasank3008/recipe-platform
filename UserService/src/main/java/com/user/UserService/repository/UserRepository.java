@@ -1,4 +1,4 @@
-package com.user.UserService.dao;
+package com.user.UserService.repository;
 
 import com.user.UserService.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

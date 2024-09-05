@@ -1,5 +1,4 @@
 package com.user.UserService.entity;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,40 +16,20 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Country {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     @JsonIgnore
     @OneToMany(mappedBy = "country")
     private List<User> users;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "country")
-    private List<Region> regions;
 
-    public Country(long l, String countryName) {
+    public Country(long l, String name) {
         this.id=l;
-        this.name=countryName;
+        this.name=name;
     }
-
-
-    @Override
-    public String toString() {
-        return "Country{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", users=" + users +
-                ", regions=" + regions +
-                '}';
-    }
-
-
-
-
 }
 
 
