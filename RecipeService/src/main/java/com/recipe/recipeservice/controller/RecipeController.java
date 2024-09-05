@@ -3,6 +3,7 @@ package com.recipe.recipeservice.controller;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.CuisineDTO;
 import com.recipe.recipeservice.model.CuisineRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/recipes")
 public class RecipeController {

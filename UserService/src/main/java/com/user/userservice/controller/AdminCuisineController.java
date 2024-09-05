@@ -3,13 +3,14 @@ package com.user.userservice.controller;
 import com.user.userservice.entity.CuisineDTO;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import feign.FeignException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/admins/cuisines")
 public class AdminCuisineController {
@@ -27,7 +28,12 @@ public class AdminCuisineController {
             List<CuisineDTO> allCuisines = recipeServiceClient.getAllCuisines();
             return ResponseEntity.ok(allCuisines);
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+            HttpStatus status = HttpStatus.resolve(e.status());
+            if (status == null) {
+                // Assuming BAD_GATEWAY as a fallback status, but you can choose a different one
+                status = HttpStatus.BAD_GATEWAY;
+            }
+            return ResponseEntity.status(status).build();
         }
     }
 
@@ -36,10 +42,13 @@ public class AdminCuisineController {
         try {
             CuisineDTO addedCuisine = recipeServiceClient.addCuisine(cuisineDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
-        } catch (FeignException.Conflict e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+            HttpStatus status = HttpStatus.resolve(e.status());
+            if (status == null) {
+                // Assuming BAD_GATEWAY as a fallback status, but you can choose a different one
+                status = HttpStatus.BAD_GATEWAY;
+            }
+            return ResponseEntity.status(status).build();
         }
     }
 
@@ -54,10 +63,13 @@ public class AdminCuisineController {
         try {
             recipeServiceClient.disableCuisine(id);
             return ResponseEntity.ok().build();
-        } catch (FeignException.NotFound e) {
-            return ResponseEntity.notFound().build();
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+            HttpStatus status = HttpStatus.resolve(e.status());
+            if (status == null) {
+                // Assuming BAD_GATEWAY as a fallback status, but you can choose a different one
+                status = HttpStatus.BAD_GATEWAY;
+            }
+            return ResponseEntity.status(status).build();
         }
     }
 
@@ -66,10 +78,13 @@ public class AdminCuisineController {
         try {
             recipeServiceClient.deleteCuisine(id);
             return ResponseEntity.noContent().build();
-        } catch (FeignException.NotFound e) {
-            return ResponseEntity.notFound().build();
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+            HttpStatus status = HttpStatus.resolve(e.status());
+            if (status == null) {
+                // Assuming BAD_GATEWAY as a fallback status, but you can choose a different one
+                status = HttpStatus.BAD_GATEWAY;
+            }
+            return ResponseEntity.status(status).build();
         }
     }
 
@@ -79,10 +94,13 @@ public class AdminCuisineController {
         try {
             recipeServiceClient.enableCuisine(id);
             return ResponseEntity.ok().build();
-        } catch (FeignException.NotFound e) {
-            return ResponseEntity.notFound().build();
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+            HttpStatus status = HttpStatus.resolve(e.status());
+            if (status == null) {
+                // Assuming BAD_GATEWAY as a fallback status, but you can choose a different one
+                status = HttpStatus.BAD_GATEWAY;
+            }
+            return ResponseEntity.status(status).build();
         }
     }
 
@@ -91,10 +109,13 @@ public class AdminCuisineController {
         try {
             CuisineDTO updatedCuisine = recipeServiceClient.updateCuisine(id, cuisineDTO);
             return ResponseEntity.ok(updatedCuisine);
-        } catch (FeignException.NotFound e) {
-            return ResponseEntity.notFound().build();
         } catch (FeignException e) {
-            return ResponseEntity.status(HttpStatus.resolve(e.status())).build();
+            HttpStatus status = HttpStatus.resolve(e.status());
+            if (status == null) {
+                // Assuming BAD_GATEWAY as a fallback status, but you can choose a different one
+                status = HttpStatus.BAD_GATEWAY;
+            }
+            return ResponseEntity.status(status).build();
         }
     }
 
