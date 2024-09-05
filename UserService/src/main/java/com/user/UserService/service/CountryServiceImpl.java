@@ -5,14 +5,17 @@ import com.user.UserService.dto.CountryDTO;
 import com.user.UserService.entity.Country;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 @Service
-@RequiredArgsConstructor
+
 public class CountryServiceImpl implements CountryService{
+    @Autowired
     private CountryRepository countryRepository;
+    @Autowired
     private ModelMapper modelMapper;
     public List<CountryDTO> fetchCountries() {
         return countryRepository.findAll().stream()
