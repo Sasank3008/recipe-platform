@@ -1,10 +1,9 @@
-package com.user.userservice;
+package com.user.userservice.service;
 
 import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.entity.Country;
 import com.user.userservice.repository.CountryRepository;
 
-import com.user.userservice.service.CountryServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

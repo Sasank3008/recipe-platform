@@ -1,5 +1,4 @@
-package com.user.userservice;
-import com.user.userservice.controller.AdminController;
+package com.user.userservice.controller;
 import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.service.CountryService;
 import org.junit.jupiter.api.BeforeEach;
