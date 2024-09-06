@@ -45,7 +45,7 @@ class AdminControllerTest{
         List<CuisineDTO> cuisines = Arrays.asList(new CuisineDTO(1L, "Italian", true));
         when(recipeServiceClient.getAllCuisines()).thenReturn(cuisines);
 
-        mockMvc.perform(get("/admins/cuisines/fetch"))
+        mockMvc.perform(get("/admins/cuisines"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Italian"));
     }
@@ -58,7 +58,7 @@ class AdminControllerTest{
         when(recipeServiceClient.doesCuisineExistByName("Mexican")).thenReturn(ResponseEntity.ok(false));
         when(recipeServiceClient.addCuisine(any(CuisineDTO.class))).thenReturn(addedCuisine);
 
-        mockMvc.perform(post("/admins/cuisines/save")
+        mockMvc.perform(post("/admins/cuisines")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newCuisine)))
                 .andExpect(status().isCreated())

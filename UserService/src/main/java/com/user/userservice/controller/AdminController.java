@@ -24,7 +24,7 @@ public class AdminController {
 
 
 
-    @GetMapping("/cuisines/fetch")
+    @GetMapping("/cuisines")
     public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
         try {
             List<CuisineDTO> allCuisines = recipeServiceClient.getAllCuisines();
@@ -38,7 +38,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/cuisines/save")
+    @PostMapping("/cuisines")
     public ResponseEntity<CuisineDTO> saveCuisine(@RequestBody CuisineDTO cuisineDTO) {
         ResponseEntity<Boolean> responseEntity = recipeServiceClient.doesCuisineExistByName(cuisineDTO.getName());
         Boolean doesExist = responseEntity.getBody();
