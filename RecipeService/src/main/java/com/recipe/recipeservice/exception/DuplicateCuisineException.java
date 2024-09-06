@@ -1,4 +1,4 @@
-package com.recipe.recipeservice.handlers;
+package com.recipe.recipeservice.exception;
 
 public class DuplicateCuisineException extends RuntimeException{
     public DuplicateCuisineException(String message) {

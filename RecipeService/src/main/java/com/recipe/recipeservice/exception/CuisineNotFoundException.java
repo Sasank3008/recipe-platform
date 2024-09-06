@@ -1,4 +1,4 @@
-package com.recipe.recipeservice.handlers;
+package com.recipe.recipeservice.exception;
 
 public class CuisineNotFoundException extends RuntimeException {
     public CuisineNotFoundException(String message) {

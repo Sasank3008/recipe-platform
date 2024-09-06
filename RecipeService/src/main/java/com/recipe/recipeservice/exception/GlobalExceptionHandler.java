@@ -1,4 +1,4 @@
-package com.recipe.recipeservice.handlers;
+package com.recipe.recipeservice.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
