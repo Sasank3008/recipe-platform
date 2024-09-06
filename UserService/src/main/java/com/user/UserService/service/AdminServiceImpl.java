@@ -18,7 +18,7 @@ public class AdminServiceImpl implements AdminService {
     public AdminUserDTO updateUser(Long id, AdminUserDTO userDTO) throws UserIdNotFoundException{
         return userRepository.findById(id).map(existingUser -> {
        /// modelMapper.map(existingUser, User.class);
-            Country country = countryRepository.findByName(userDTO.getCountry().getName()).get();
+            Country country = countryRepository.findById(userDTO.getCountry().getId()).get();
             existingUser.setCountry(country);
         return convertToDTO(userRepository.save(existingUser));
         }).orElseThrow(()->new UserIdNotFoundException("User ID not found with id "+id));
