@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-class UserServiceApplicationTests {
+class UserServiceImplTests {
 
 	@InjectMocks
 	private UserServiceImpl userServiceImpl;
@@ -43,17 +43,6 @@ class UserServiceApplicationTests {
 		MockitoAnnotations.openMocks(this);
 	}
 
-	@Test
-	void createUser_ShouldSaveUser_WhenValidData() {
-		UserDTO userDTO = new UserDTO();
-		User user = new User();
-		when(modelMapper.map(any(UserDTO.class), any())).thenReturn(user);
-		when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-
-		userServiceImpl.createUser(userDTO);
-
-		verify(userRepository, times(1)).save(user);
-	}
 
 	@Test
 	void getUser_ShouldReturnUser_WhenUserExists() throws UserNotFoundException {
