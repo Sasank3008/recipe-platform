@@ -20,10 +20,21 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-class UserServiceImplTests {
+@SpringBootTest
 
-	@InjectMocks
+class UserServiceApplicationTests {
+
+	@Test
+	void contextLoads() {
+	}
+
+
+
+
+@InjectMocks
 	private UserServiceImpl userServiceImpl;
 
 	@Mock
