@@ -1,4 +1,4 @@
-package com.recipe.RecipeService;
+package com.admin.AdminService;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,10 +8,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
-public class RecipeServiceApplication {
+public class AdminServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RecipeServiceApplication.class, args);
+		SpringApplication.run(AdminServiceApplication.class, args);
 	}
 
 }
