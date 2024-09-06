@@ -13,6 +13,4 @@ public class AdminUserDTO {
         private Boolean enabled;
         private CountryDTO Country;
         private String region;
-
-//        private LocalTime timeOfRegistration;
 }

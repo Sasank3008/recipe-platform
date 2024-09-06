@@ -24,67 +24,46 @@ public class AdminServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
-
     @Mock
     private CountryRepository countryRepository;
-
     @Mock
     private ModelMapper modelMapper;
-
     @InjectMocks
     private AdminServiceImpl adminService;
 
     @Test
     void testUpdateUser() throws UserIdNotFoundException {
-        // Arrange
         Long userId = 1L;
         User user = new User();
         user.setId(userId);
         AdminUserDTO userDTO = new AdminUserDTO("John", "Doe", "john@example.com", true, new CountryDTO(1L, "USA"), "Region");
         Country country = new Country(1L, "USA");
-
         when(userRepository.findById(userId)).thenReturn(Optional.of(user));
         when(countryRepository.findByName("USA")).thenReturn(Optional.of(country));
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(modelMapper.map(any(User.class), eq(AdminUserDTO.class))).thenReturn(userDTO);
-
-        // Act
         AdminUserDTO result = adminService.updateUser(userId, userDTO);
-
-        // Assert
         assertNotNull(result);
         assertEquals("John", result.getFirstName());
         verify(userRepository).findById(userId);
         verify(countryRepository).findByName("USA");
         verify(userRepository).save(any(User.class));
     }
-
     @Test
     void testConvertToDTO() {
-        // Arrange
         User user = new User();
         AdminUserDTO userDTO = new AdminUserDTO();
         when(modelMapper.map(user, AdminUserDTO.class)).thenReturn(userDTO);
-
-        // Act
         AdminUserDTO result = adminService.convertToDTO(user);
-
-        // Assert
         assertNotNull(result);
         verify(modelMapper).map(user, AdminUserDTO.class);
     }
-
     @Test
     void testConvertToEntity() {
-        // Arrange
         AdminUserDTO userDTO = new AdminUserDTO();
         User user = new User();
         when(modelMapper.map(userDTO, User.class)).thenReturn(user);
-
-        // Act
         User result = adminService.convertToEntity(userDTO, User.class);
-
-        // Assert
         assertNotNull(result);
         verify(modelMapper).map(userDTO, User.class);
     }

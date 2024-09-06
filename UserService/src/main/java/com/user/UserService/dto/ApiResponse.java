@@ -1,5 +1,4 @@
 package com.user.UserService.dto;
-//package com.user.UserService.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;

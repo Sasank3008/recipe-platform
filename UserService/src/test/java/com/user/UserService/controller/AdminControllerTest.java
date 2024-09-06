@@ -26,17 +26,11 @@ public class AdminControllerTest {
 
     @Test
     void testEditUser_Success() throws UserIdNotFoundException {
-        // Arrange
         Long userId = 1L;
         AdminUserDTO userDTO = new AdminUserDTO();
         AdminUserDTO updatedUserDTO = new AdminUserDTO();
-
         when(adminService.updateUser(userId, userDTO)).thenReturn(updatedUserDTO);
-
-        // Act
         ResponseEntity<AdminUserDTO> response = adminController.editUser(userId, userDTO);
-
-        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(updatedUserDTO, response.getBody());
@@ -45,16 +39,10 @@ public class AdminControllerTest {
 
     @Test
     void testEditUser_NotFound() throws UserIdNotFoundException {
-        // Arrange
         Long userId = 1L;
         AdminUserDTO userDTO = new AdminUserDTO();
-
         when(adminService.updateUser(userId, userDTO)).thenReturn(null);
-
-        // Act
         ResponseEntity<AdminUserDTO> response = adminController.editUser(userId, userDTO);
-
-        // Assert
         assertNotNull(response);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNull(response.getBody());
@@ -63,17 +51,12 @@ public class AdminControllerTest {
 
     @Test
     void testEditUser_ThrowsException() throws UserIdNotFoundException {
-        // Arrange
         Long userId = 1L;
         AdminUserDTO userDTO = new AdminUserDTO();
-
         when(adminService.updateUser(userId, userDTO)).thenThrow(new UserIdNotFoundException("User not found"));
-
-        // Act & Assert
         assertThrows(UserIdNotFoundException.class, () -> {
             adminController.editUser(userId, userDTO);
         });
-
         verify(adminService).updateUser(userId, userDTO);
     }
 }
