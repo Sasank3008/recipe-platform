@@ -33,11 +33,6 @@ public class UserController {
     private String path;
 
 
-    @PostMapping
-    public ResponseEntity<?>saveUser(@RequestBody UserDTO userDTO){
-        userService.createUser(userDTO);
-        return new ResponseEntity<>("User Registered Successfully",HttpStatus.CREATED);
-    }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserById(@PathVariable Long id) throws UserNotFoundException {
