@@ -1,6 +1,5 @@
 package com.user.UserService.RecipeSeviceClient;
 
-import com.user.UserService.Entity.CuisineDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
