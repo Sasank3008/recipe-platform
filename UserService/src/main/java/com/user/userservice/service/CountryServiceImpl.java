@@ -1,8 +1,10 @@
 package com.user.userservice.service;
 
+import com.user.userservice.handler.CountryAlreadyExistsException;
 import com.user.userservice.repository.CountryRepository;
 import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.entity.Country;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -21,10 +23,11 @@ public class CountryServiceImpl implements CountryService{
                 .map(country -> modelMapper.map(country, CountryDTO.class))
                 .collect(Collectors.toList());
     }
-    public CountryDTO saveCountry(CountryDTO countryDTO) {
-        Optional<Country> existingCountry = countryRepository.findByName(countryDTO.getName());
+    public CountryDTO saveCountry(  CountryDTO countryDTO) throws CountryAlreadyExistsException{
+        Optional<Country> existingCountry = countryRepository.findByName(countryDTO.getName().toLowerCase());
         if (existingCountry.isPresent()) {
-            return modelMapper.map(existingCountry.get(), CountryDTO.class);
+            throw  new CountryAlreadyExistsException(existingCountry.get().getName()+" is Already Added");
+           // return modelMapper.map(existingCountry.get(), CountryDTO.class);
         }
         Country country = modelMapper.map(countryDTO, Country.class);
         country = countryRepository.save(country);

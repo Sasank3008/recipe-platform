@@ -1,8 +1,11 @@
 package com.user.userservice.controller;
 import com.user.userservice.dto.CountryDTO;
+import com.user.userservice.handler.CountryAlreadyExistsException;
 import com.user.userservice.service.CountryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +25,7 @@ public class AdminController
         return ResponseEntity.ok().body(countries);
     }
     @PostMapping("/countries")
-    public ResponseEntity<CountryDTO> saveCountry(@RequestBody CountryDTO countryDTO) {
+    public ResponseEntity<CountryDTO> saveCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
         CountryDTO savedCountry = countryService.saveCountry(countryDTO);
         return ResponseEntity.ok().body(savedCountry);
     }

@@ -2,22 +2,27 @@ package com.user.userservice.service;
 
 import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.entity.Country;
+import com.user.userservice.handler.CountryAlreadyExistsException;
 import com.user.userservice.repository.CountryRepository;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.never;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 public class CountryServiceImplTest {
@@ -35,7 +40,7 @@ public class CountryServiceImplTest {
     void testFetchCountries() {
         // Arrange
         Country country = new Country(1L, "USA");
-        List<Country> countryList = Arrays.asList(country);
+        List<Country> countryList = List.of(country);
         when(countryRepository.findAll()).thenReturn(countryList);
         when(modelMapper.map(any(Country.class), eq(CountryDTO.class))).thenReturn(new CountryDTO(1L, "USA"));
 
@@ -49,44 +54,46 @@ public class CountryServiceImplTest {
         verify(countryRepository).findAll();
         verify(modelMapper, times(1)).map(any(Country.class), eq(CountryDTO.class));
     }
-
     @Test
-    void testSaveCountry_NewCountry() {
+    void testSaveNewCountry_Success() throws CountryAlreadyExistsException {
         // Arrange
-        CountryDTO newCountryDTO = new CountryDTO(null, "Canada");
-        Country savedCountry = new Country(2L, "Canada");
-        when(countryRepository.findByName("Canada")).thenReturn(Optional.empty());
-        when(modelMapper.map(any(CountryDTO.class), eq(Country.class))).thenReturn(savedCountry);
-        when(countryRepository.save(any(Country.class))).thenReturn(savedCountry);
-        when(modelMapper.map(any(Country.class), eq(CountryDTO.class))).thenReturn(new CountryDTO(2L, "Canada"));
-
-        // Act
-        CountryDTO result = countryService.saveCountry(newCountryDTO);
-
-        // Assert
+        String countryName = "Canada";
+        CountryDTO countryDTO = new CountryDTO();
+        countryDTO.setName(countryName);
+        Country newCountry = new Country();
+        newCountry.setName(countryName);
+        Country savedCountry = new Country();
+        savedCountry.setName(countryName);
+        when(countryRepository.findByName(countryName.toLowerCase())).thenReturn(Optional.empty());
+        when(modelMapper.map(countryDTO, Country.class)).thenReturn(newCountry);
+        when(countryRepository.save(newCountry)).thenReturn(savedCountry);
+        when(modelMapper.map(savedCountry, CountryDTO.class)).thenReturn(countryDTO);
+        CountryDTO result = countryService.saveCountry(countryDTO);
         assertNotNull(result);
-        assertEquals("Canada", result.getName());
-        verify(countryRepository).findByName("Canada");
-        verify(countryRepository).save(any(Country.class));
-        verify(modelMapper, times(2)).map(any(), any());
+        assertEquals(countryName, result.getName());
+        verify(countryRepository).findByName(countryName.toLowerCase());
+        verify(countryRepository).save(newCountry);
+        verify(modelMapper).map(countryDTO, Country.class);
+        verify(modelMapper).map(savedCountry, CountryDTO.class);
     }
-
     @Test
-    void testSaveCountry_ExistingCountry() {
+    void testSaveCountry_ThrowsCountryAlreadyExistsException() {
         // Arrange
-        CountryDTO existingCountryDTO = new CountryDTO(null, "USA");
-        Country existingCountry = new Country(1L, "USA");
-        when(countryRepository.findByName("USA")).thenReturn(Optional.of(existingCountry));
-        when(modelMapper.map(existingCountry, CountryDTO.class)).thenReturn(new CountryDTO(1L, "USA"));
-
-        // Act
-        CountryDTO result = countryService.saveCountry(existingCountryDTO);
-
-        // Assert
-        assertNotNull(result);
-        assertEquals("USA", result.getName());
-        verify(countryRepository).findByName("USA");
+        String countryName = "Germany";
+        CountryDTO countryDTO = new CountryDTO();
+        countryDTO.setName(countryName);
+        Country existingCountry = new Country();
+        existingCountry.setName(countryName);
+        when(countryRepository.findByName(countryName.toLowerCase())).thenReturn(Optional.of(existingCountry));
+        // Act & Assert
+        CountryAlreadyExistsException exception = assertThrows(
+                CountryAlreadyExistsException.class,
+                () -> countryService.saveCountry(countryDTO),
+                "Expected saveCountry to throw, but it didn't"
+        );
+        assertTrue(exception.getMessage().contains("is Already Added"));
+        verify(countryRepository).findByName(countryName.toLowerCase());
+        verify(modelMapper, never()).map(any(), eq(Country.class));
         verify(countryRepository, never()).save(any(Country.class));
-        verify(modelMapper).map(existingCountry, CountryDTO.class);
     }
 }
