@@ -16,8 +16,6 @@ public class ApiResponse
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp;
 
-    public ApiResponse() {
-        this.timestamp = LocalDateTime.now();
-    }
+
 }
 

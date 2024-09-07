@@ -42,7 +42,7 @@ public class CountryServiceImplTest {
         Country country = new Country(1L, "USA");
         List<Country> countryList = List.of(country);
         when(countryRepository.findAll()).thenReturn(countryList);
-        when(modelMapper.map(any(Country.class), eq(CountryDTO.class))).thenReturn(new CountryDTO(1L, "USA"));
+        when(modelMapper.map(any(Country.class), eq(CountryDTO.class))).thenReturn(new CountryDTO(1L, "Usa"));
 
         // Act
         List<CountryDTO> result = countryService.fetchCountries();
@@ -50,7 +50,7 @@ public class CountryServiceImplTest {
         // Assert
         assertNotNull(result);
         assertFalse(result.isEmpty());
-        assertEquals("USA", result.get(0).getName());
+        assertEquals("Usa", result.get(0).getName());
         verify(countryRepository).findAll();
         verify(modelMapper, times(1)).map(any(Country.class), eq(CountryDTO.class));
     }
