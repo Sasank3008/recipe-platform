@@ -1,6 +1,6 @@
 package com.user.userservice.service;
 
-import com.user.userservice.handler.UserIdNotFoundException;
+import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.dto.AdminUserDTO;
 import com.user.userservice.entity.User;
 

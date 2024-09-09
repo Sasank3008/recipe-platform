@@ -1,4 +1,4 @@
-package com.user.userservice.handler;
+package com.user.userservice.exception;
 
 public class UserIdNotFoundException extends Exception{
     public UserIdNotFoundException(String message){

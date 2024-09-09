@@ -1,4 +1,13 @@
 package com.user.userservice.controller;
+import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
+import com.user.userservice.dto.AdminUserDTO;
+import com.user.userservice.dto.ApiResponse;
+import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.exception.CuisineIdNotFoundException;
+import com.user.userservice.exception.DuplicateCuisineException;
+import com.user.userservice.exception.UserIdNotFoundException;
+import com.user.userservice.service.AdminService;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
@@ -13,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
-@RequiredArgsConstructor
+
 @RestController
 @RequestMapping("/admins")
 @RequiredArgsConstructor
@@ -24,15 +33,15 @@ public class AdminController {
 
     private final AdminService adminService;
     @PutMapping("editUser/{id}")
-    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws  UserIdNotFoundException {
+    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws UserIdNotFoundException, UserIdNotFoundException {
         AdminUserDTO updatedUserDTO = adminService.updateUser(id, userDTO);
         if (updatedUserDTO != null) {
             return ResponseEntity.ok(updatedUserDTO);
         } else {
             return ResponseEntity.notFound().build();
 
-    }
         }
+    }
 
 
     @GetMapping("/cuisines")
@@ -59,8 +68,8 @@ public class AdminController {
         }
 
 
-            CuisineDTO addedCuisine = recipeServiceClient.addCuisine(cuisineDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
+        CuisineDTO addedCuisine = recipeServiceClient.addCuisine(cuisineDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
     }
 
     @GetMapping("/cuisines/enabled")
@@ -77,7 +86,7 @@ public class AdminController {
             throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
         }
         recipeServiceClient.disableCuisine(id);
-        ApiResponse response=ApiResponse.builder()
+        ApiResponse response = ApiResponse.builder()
                 .response("Cuisine disabled Succesfully")
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -93,8 +102,8 @@ public class AdminController {
         if (doesExist == null || !doesExist) {
             throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
         }
-            recipeServiceClient.deleteCuisine(id);
-        ApiResponse response=ApiResponse.builder()
+        recipeServiceClient.deleteCuisine(id);
+        ApiResponse response = ApiResponse.builder()
                 .response("Cuisine deleted Succesfully")
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -110,8 +119,8 @@ public class AdminController {
         if (doesExist == null || !doesExist) {
             throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
         }
-            recipeServiceClient.enableCuisine(id);
-        ApiResponse response=ApiResponse.builder()
+        recipeServiceClient.enableCuisine(id);
+        ApiResponse response = ApiResponse.builder()
                 .response("Cuisine enabled Succesfully")
                 .timestamp(LocalDateTime.now())
                 .build();
@@ -126,7 +135,8 @@ public class AdminController {
 
         if (doesExist == null || !doesExist) {
             throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
-        }CuisineDTO updatedCuisine = recipeServiceClient.updateCuisine(id, cuisineDTO);
+        }
+        CuisineDTO updatedCuisine = recipeServiceClient.updateCuisine(id, cuisineDTO);
         return ResponseEntity.ok(updatedCuisine);
     }
 

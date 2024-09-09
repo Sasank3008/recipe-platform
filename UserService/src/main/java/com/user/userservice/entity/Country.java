@@ -1,11 +1,10 @@
 package com.user.userservice.entity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+
 import java.util.List;
 
 @Entity
@@ -19,8 +18,8 @@ public class Country {
     private Long id;
     private String name;
     @JsonIgnore
-    @OneToMany(mappedBy = "country")
-    private List<User> users;
+   // @OneToMany(mappedBy = "country")
+   // private List<User> users;
 
 
     public Country(long l, String name) {

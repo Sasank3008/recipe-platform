@@ -1,5 +1,12 @@
 package com.user.userservice.entity;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
@@ -9,7 +16,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails{
+public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +28,6 @@ public class User implements UserDetails{
     private Boolean enabled;
     private String region;
     private String role;
-    @ManyToOne
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "country_id")
     private Country country;
@@ -56,6 +62,6 @@ public class User implements UserDetails{
 
         return getEnabled();
     }
-    }
+}
 
 
