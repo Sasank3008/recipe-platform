@@ -2,7 +2,7 @@ package com.user.userservice.service;
 
 import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.entity.Country;
-import com.user.userservice.handler.CountryAlreadyExistsException;
+import com.user.userservice.exception.CountryAlreadyExistsException;
 import com.user.userservice.repository.CountryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

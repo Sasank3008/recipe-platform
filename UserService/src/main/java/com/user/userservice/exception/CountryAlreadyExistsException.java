@@ -1,4 +1,4 @@
-package com.user.userservice.handler;
+package com.user.userservice.exception;
 
 public class CountryAlreadyExistsException extends Exception
 {

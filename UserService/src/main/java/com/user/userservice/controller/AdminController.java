@@ -6,7 +6,7 @@ import com.user.userservice.dto.CuisineDTO;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import com.user.userservice.exception.CuisineIdNotFoundException;
 import com.user.userservice.exception.DuplicateCuisineException;
-import com.user.userservice.handler.CountryAlreadyExistsException;
+import com.user.userservice.exception.CountryAlreadyExistsException;
 import com.user.userservice.service.CountryService;
 import feign.FeignException;
 import jakarta.validation.Valid;
