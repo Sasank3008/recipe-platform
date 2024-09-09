@@ -77,6 +77,12 @@
 			<version>5.7.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.1</version>
+		</dependency>
+
 
 		<!-- JUnit Jupiter Params for parameterized tests -->
 		<dependency>
