@@ -5,7 +5,8 @@ import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import java.time.LocalTime;
+
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -20,10 +21,12 @@ public class User implements UserDetails{
     private String lastName;
     private String email;
     private String password;
-    private LocalTime timeOfRegistration;
+    private LocalDate date;
     private Boolean enabled;
     private String region;
     private String role;
+    private String image;
+
     @ManyToOne
     @JoinColumn(name = "country_id")
     private Country country;
