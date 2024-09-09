@@ -1,8 +1,9 @@
 package com.recipe.recipeservice.controller;
 
 import com.recipe.recipeservice.entity.Cuisine;
-import com.recipe.recipeservice.entity.CuisineDTO;
-import com.recipe.recipeservice.Model.CuisineRepository;
+import com.recipe.recipeservice.dto.CuisineDTO;
+import com.recipe.recipeservice.repository.CuisineRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/recipes")
 public class RecipeController {
@@ -21,10 +22,23 @@ public class RecipeController {
     @Autowired
     private CuisineRepository cuisineRepository;
 
+    @Autowired
+    public RecipeController(CuisineRepository cuisineRepository) {
+        this.cuisineRepository = cuisineRepository;
+    }
+
     private List<CuisineDTO> convertToDtoList(List<Cuisine> cuisines) {
         return cuisines.stream()
                 .map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    private ResponseEntity<Void> responseEntityOk() {
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    private ResponseEntity<Void> responseEntityNotFound() {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
 
     @PostMapping("/cuisines")
@@ -56,8 +70,8 @@ public class RecipeController {
                 .map(cuisine -> {
                     cuisine.setEnabled(false);
                     cuisineRepository.save(cuisine);
-                    return new ResponseEntity<Void>(HttpStatus.OK);
-                }).orElseGet(() -> new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+                    return responseEntityOk();  // Use a helper method
+                }).orElseGet(this::responseEntityNotFound);
     }
 
     @DeleteMapping("/cuisines/{id}")
@@ -65,8 +79,8 @@ public class RecipeController {
         return cuisineRepository.findById(id)
                 .map(cuisine -> {
                     cuisineRepository.deleteById(id);
-                    return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-                }).orElseGet(() -> new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+                    return responseEntityOk();  // Use a helper method
+                }).orElseGet(this::responseEntityNotFound);
     }
 
     @PutMapping("/cuisines/enable/{id}")
@@ -75,8 +89,8 @@ public class RecipeController {
                 .map(cuisine -> {
                     cuisine.setEnabled(true);
                     cuisineRepository.save(cuisine);
-                    return new ResponseEntity<Void>(HttpStatus.OK);
-                }).orElseGet(() -> new ResponseEntity<Void>(HttpStatus.NOT_FOUND));
+                    return responseEntityOk();  // Use a helper method
+                }).orElseGet(this::responseEntityNotFound);
     }
 
     @PutMapping("/cuisines/{id}")
@@ -96,5 +110,17 @@ public class RecipeController {
         List<Cuisine> cuisines = cuisineRepository.getAllCuisines();
         List<CuisineDTO> cuisineDTOs = convertToDtoList(cuisines);
         return ResponseEntity.ok(cuisineDTOs);
+    }
+
+    @GetMapping("/cuisines/exist/by-name")
+    public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name) {
+        boolean exists = cuisineRepository.doesCuisineExistByName(name);
+        return ResponseEntity.ok(exists);
+    }
+
+    @GetMapping("/cuisines/exist/by-id")
+    public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id) {
+        boolean exists = cuisineRepository.doesCuisineExistById(id);
+        return ResponseEntity.ok(exists);
     }
 }

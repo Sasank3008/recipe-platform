@@ -1,7 +1,4 @@
 package com.user.userservice.entity;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import jakarta.persistence.Entity;
@@ -31,5 +28,6 @@ public class Country {
         this.name=name;
     }
 }
+
 
 
