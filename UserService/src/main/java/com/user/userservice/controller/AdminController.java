@@ -1,15 +1,20 @@
 package com.user.userservice.controller;
 
 import com.user.userservice.dto.ApiResponse;
+import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.dto.CuisineDTO;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import com.user.userservice.exception.CuisineIdNotFoundException;
 import com.user.userservice.exception.DuplicateCuisineException;
+import com.user.userservice.handler.CountryAlreadyExistsException;
+import com.user.userservice.service.CountryService;
 import feign.FeignException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -21,7 +26,7 @@ public class AdminController {
 
     private static final String CUISINE_NOT_FOUND_MESSAGE = "Cuisine not found with id: ";
     private final RecipeServiceClient recipeServiceClient;
-
+    private final   CountryService countryService;
 
 
     @GetMapping("/cuisines")
@@ -117,6 +122,18 @@ public class AdminController {
             throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
         }CuisineDTO updatedCuisine = recipeServiceClient.updateCuisine(id, cuisineDTO);
         return ResponseEntity.ok(updatedCuisine);
+    }
+    @PostMapping("/countries")
+    public ResponseEntity<CountryDTO> saveCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
+
+        CountryDTO savedCountry = countryService.saveCountry(countryDTO);
+        return ResponseEntity.ok().body(savedCountry);
+    }
+
+    @GetMapping("/countries")
+    public ResponseEntity<List<CountryDTO>> fetchAllCountries() {
+        List<CountryDTO> countries = countryService.fetchCountries();
+        return ResponseEntity.ok().body(countries);
     }
 
 

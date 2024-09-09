@@ -36,13 +36,13 @@ public class AdminControllerTest {
     }
     @Test
     void testGetCountries() throws Exception {
-        CountryDTO country1 = new CountryDTO(1L, "USA");
+        CountryDTO country1 = new CountryDTO(1L, "Usa");
         CountryDTO country2 = new CountryDTO(2L, "Canada");
         List<CountryDTO> countries = Arrays.asList(country1, country2);
         when(countryService.fetchCountries()).thenReturn(countries);
         mockMvc.perform(get("/admins/countries"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("USA"))
+                .andExpect(jsonPath("$[0].name").value("Usa"))
                 .andExpect(jsonPath("$[1].name").value("Canada"));
         verify(countryService).fetchCountries();
     }
