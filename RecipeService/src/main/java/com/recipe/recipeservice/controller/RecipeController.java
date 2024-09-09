@@ -121,4 +121,10 @@ public class RecipeController {
         boolean exists = cuisineRepository.doesCuisineExistById(id);
         return ResponseEntity.ok(exists);
     }
+    @GetMapping("/cuisines/{id}/is-enabled")
+    public Boolean isCuisineEnabled(@PathVariable Long id) {
+        return cuisineRepository.findById(id)
+                .map(Cuisine::isEnabled)  // Extract the enabled status
+                .orElse(false);
+    }
 }

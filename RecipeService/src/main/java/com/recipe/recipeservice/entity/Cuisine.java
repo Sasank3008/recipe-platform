@@ -1,8 +1,13 @@
 package com.recipe.recipeservice.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Entity
 @Table(name = "cuisines")
 public class Cuisine {
@@ -12,41 +17,7 @@ public class Cuisine {
 
     private String name;
     private boolean isEnabled=true;
-    public Cuisine() {
-        this.isEnabled = true;
-    }
 
-    public Cuisine(Long id, String name, boolean isEnabled) {
-        this.id = id;
-        this.name = name;
-        this.isEnabled = isEnabled;
-    }
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    // Ensure this method is correctly named as 'setEnabled'
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
-
-    // Constructors, Getters, and Setters
 }

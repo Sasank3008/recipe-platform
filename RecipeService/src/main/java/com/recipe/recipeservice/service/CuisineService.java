@@ -4,8 +4,10 @@ import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import org.springframework.stereotype.Service;
 
+
+
 @Service
-public class CuisineService {
+public class CuisineService implements CuisineServiceImpl {
 
     private CuisineRepository cuisineRepository;
     public CuisineService(CuisineRepository cuisineRepository) {
@@ -35,7 +37,7 @@ public class CuisineService {
             cuisine.setName(updatedDetails.getName());
             cuisine.setEnabled(updatedDetails.isEnabled());
             return cuisineRepository.save(cuisine);
-        }).orElse(null); // Return null or handle it in another way if the cuisine is not found
+        }).orElse(null);
     }
 
     public boolean doesCuisineExistByName(String name) {
@@ -45,4 +47,5 @@ public class CuisineService {
     public boolean doesCuisineExistById(Long id) {
         return cuisineRepository.findById(id).isPresent();
     }
-}
+
+    }

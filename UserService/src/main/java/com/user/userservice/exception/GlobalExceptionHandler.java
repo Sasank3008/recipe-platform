@@ -27,5 +27,5 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
-    // Other exception handlers...
+
 }
