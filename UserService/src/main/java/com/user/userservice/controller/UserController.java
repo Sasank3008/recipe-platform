@@ -1,11 +1,11 @@
 package com.user.userservice.controller;
 
-import com.user.UserService.dto.FileResponse;
-import com.user.UserService.dto.PasswordDTO;
-import com.user.UserService.dto.UserUpdateDTO;
-import com.user.UserService.exception.InvalidPasswordException;
-import com.user.UserService.exception.UserNotFoundException;
-import com.user.UserService.service.UserService;
+import com.user.userservice.dto.FileResponse;
+import com.user.userservice.dto.PasswordDTO;
+import com.user.userservice.dto.UserUpdateDTO;
+import com.user.userservice.exception.InvalidPasswordException;
+import com.user.userservice.exception.UserNotFoundException;
+import com.user.userservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;

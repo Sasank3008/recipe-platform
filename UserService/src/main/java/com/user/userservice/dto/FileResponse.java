@@ -1,4 +1,4 @@
-package com.user.UserService.dto;
+package com.user.userservice.dto;
 
 import lombok.Builder;
 import lombok.Data;

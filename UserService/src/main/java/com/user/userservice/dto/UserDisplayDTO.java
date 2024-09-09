@@ -1,6 +1,6 @@
-package com.user.UserService.dto;
+package com.user.userservice.dto;
 
-import com.user.UserService.entity.Country;
+import com.user.userservice.entity.Country;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;

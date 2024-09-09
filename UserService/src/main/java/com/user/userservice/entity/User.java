@@ -1,4 +1,4 @@
-package com.user.UserService.entity;
+package com.user.userservice.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,6 +22,7 @@ public class User {
     private String region;
     @Column(name = "profile_image_url")
     private String profileImageUrl;
+    private String email;
     private String password;
     @ManyToOne
     @JoinColumn(name = "country_id")

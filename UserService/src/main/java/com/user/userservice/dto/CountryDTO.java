@@ -1,4 +1,4 @@
-package com.user.UserService.dto;
+package com.user.userservice.dto;
 
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;

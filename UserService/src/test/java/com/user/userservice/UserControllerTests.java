@@ -1,11 +1,11 @@
-package com.user.UserService;
+package com.user.userservice;
 
-import com.user.UserService.controller.UserController;
-import com.user.UserService.dto.PasswordDTO;
-import com.user.UserService.dto.UserUpdateDTO;
-import com.user.UserService.exception.InvalidPasswordException;
-import com.user.UserService.exception.UserNotFoundException;
-import com.user.UserService.service.UserService;
+import com.user.userservice.controller.UserController;
+import com.user.userservice.dto.PasswordDTO;
+import com.user.userservice.dto.UserUpdateDTO;
+import com.user.userservice.exception.InvalidPasswordException;
+import com.user.userservice.exception.UserNotFoundException;
+import com.user.userservice.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -14,8 +14,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -58,7 +56,7 @@ class UserControllerTests{
     }
 
 
- 
+
 
     @Test
     void testUpdatePassword_Success() throws UserNotFoundException, InvalidPasswordException {

@@ -1,6 +1,6 @@
-package com.user.UserService.repository;
+package com.user.userservice.repository;
 
-import com.user.UserService.entity.Country;
+import com.user.userservice.entity.Country;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

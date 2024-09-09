@@ -1,15 +1,15 @@
-package com.user.UserService.service;
+package com.user.userservice.service;
 
-import com.user.UserService.dto.FileResponse;
-import com.user.UserService.dto.UserDisplayDTO;
-import com.user.UserService.exception.InvalidPasswordException;
-import com.user.UserService.exception.UserNotFoundException;
-import com.user.UserService.dto.PasswordDTO;
-import com.user.UserService.dto.UserUpdateDTO;
-import com.user.UserService.entity.Country;
-import com.user.UserService.entity.User;
-import com.user.UserService.repository.CountryRepository;
-import com.user.UserService.repository.UserRepository;
+import com.user.userservice.dto.FileResponse;
+import com.user.userservice.dto.UserDisplayDTO;
+import com.user.userservice.exception.InvalidPasswordException;
+import com.user.userservice.exception.UserNotFoundException;
+import com.user.userservice.dto.PasswordDTO;
+import com.user.userservice.dto.UserUpdateDTO;
+import com.user.userservice.entity.Country;
+import com.user.userservice.entity.User;
+import com.user.userservice.repository.CountryRepository;
+import com.user.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;

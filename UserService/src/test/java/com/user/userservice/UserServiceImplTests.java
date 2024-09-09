@@ -1,16 +1,14 @@
-package com.user.UserService;
+package com.user.userservice;
 
-import com.user.UserService.dto.FileResponse;
-import com.user.UserService.dto.PasswordDTO;
-import com.user.UserService.dto.UserDisplayDTO;
-import com.user.UserService.dto.UserUpdateDTO;
-import com.user.UserService.entity.Country;
-import com.user.UserService.entity.User;
-import com.user.UserService.exception.InvalidPasswordException;
-import com.user.UserService.exception.UserNotFoundException;
-import com.user.UserService.repository.CountryRepository;
-import com.user.UserService.repository.UserRepository;
-import com.user.UserService.service.UserServiceImpl;
+import com.user.userservice.dto.PasswordDTO;
+import com.user.userservice.dto.UserDisplayDTO;
+import com.user.userservice.dto.UserUpdateDTO;
+import com.user.userservice.entity.User;
+import com.user.userservice.exception.InvalidPasswordException;
+import com.user.userservice.exception.UserNotFoundException;
+import com.user.userservice.repository.CountryRepository;
+import com.user.userservice.repository.UserRepository;
+import com.user.userservice.service.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,10 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -1,11 +1,11 @@
-package com.user.UserService.service;
+package com.user.userservice.service;
 
-import com.user.UserService.dto.FileResponse;
-import com.user.UserService.dto.UserDisplayDTO;
-import com.user.UserService.exception.InvalidPasswordException;
-import com.user.UserService.exception.UserNotFoundException;
-import com.user.UserService.dto.PasswordDTO;
-import com.user.UserService.dto.UserUpdateDTO;
+import com.user.userservice.dto.FileResponse;
+import com.user.userservice.dto.UserDisplayDTO;
+import com.user.userservice.exception.InvalidPasswordException;
+import com.user.userservice.exception.UserNotFoundException;
+import com.user.userservice.dto.PasswordDTO;
+import com.user.userservice.dto.UserUpdateDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
