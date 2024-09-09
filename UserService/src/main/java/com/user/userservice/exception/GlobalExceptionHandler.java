@@ -14,6 +14,22 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(CuisineIdNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleCuisineIdNotFoundException(CuisineIdNotFoundException ex) {
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    @ExceptionHandler(DuplicateCuisineException.class)
+    public ResponseEntity<ApiResponse> handleDuplicateCuisineException(DuplicateCuisineException ex) {
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ApiResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
 
