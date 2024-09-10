@@ -1,7 +1,4 @@
 package com.recipe.recipeservice.dto;
-
-
-
 public class CuisineDTO {
     private Long id;
     private String name;

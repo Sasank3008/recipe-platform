@@ -2,24 +2,22 @@ package com.user.userservice.controller;
 
 import com.user.userservice.dto.AdminUserDTO;
 import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
+import com.user.userservice.exception.CountryAlreadyExistsException;
 import com.user.userservice.exception.CuisineIdNotFoundException;
 import com.user.userservice.exception.DuplicateCuisineException;
-import com.user.userservice.exception.CountryAlreadyExistsException;
 import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
 import feign.FeignException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class AdminController {
 
     private static final String CUISINE_NOT_FOUND_MESSAGE = "Cuisine not found with id: ";
     private final RecipeServiceClient recipeServiceClient;
-    private final   CountryService countryService;
+    private final CountryService countryService;
     private final AdminService adminService;
 
 
@@ -82,8 +80,6 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
 
     }
-
-
     @DeleteMapping("/cuisines/{id}")
     public ResponseEntity<ApiResponse> deleteCuisine(@PathVariable Long id) {
         ResponseEntity<Boolean> responseEntity = recipeServiceClient.doesCuisineExistById(id);
@@ -97,8 +93,6 @@ public class AdminController {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
-
-
     }
 
     @PutMapping("/cuisines/{id}/enable")
@@ -128,7 +122,7 @@ public class AdminController {
         return ResponseEntity.ok(updatedCuisine);
     }
     @PostMapping("/countries")
-    public ResponseEntity<CountryDTO> saveCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
+    public ResponseEntity<CountryDTO> saveCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException, CountryAlreadyExistsException {
 
         CountryDTO savedCountry = countryService.saveCountry(countryDTO);
         return ResponseEntity.ok().body(savedCountry);
@@ -140,7 +134,7 @@ public class AdminController {
         return ResponseEntity.ok().body(countries);
     }
     @PutMapping("editUser/{id}")
-    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws UserIdNotFoundException, UserIdNotFoundException {
+    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws  UserIdNotFoundException {
         AdminUserDTO updatedUserDTO = adminService.updateUser(id, userDTO);
         if (updatedUserDTO != null) {
             return ResponseEntity.ok(updatedUserDTO);

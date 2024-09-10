@@ -57,6 +57,18 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
+
+    @ExceptionHandler(UserIdNotFoundException.class)
+    public ResponseEntity<ApiResponse> userIdNotFoundException(UserIdNotFoundException ex){
+        ApiResponse response=ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
+    }
+
     @ExceptionHandler(CountryAlreadyExistsException.class)
     public ResponseEntity<ApiResponse> handleCountryAlreadyExistsException(CountryAlreadyExistsException exception)
     {
