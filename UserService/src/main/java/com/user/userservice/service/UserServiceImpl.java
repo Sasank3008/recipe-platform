@@ -1,5 +1,5 @@
 package com.user.userservice.service;
-
+import com.user.userservice.constants.ErrorConstants;
 import com.user.userservice.dto.FileResponse;
 import com.user.userservice.dto.UserDisplayDTO;
 import com.user.userservice.exception.InvalidPasswordException;
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDisplayDTO getUser(Long id) throws UserNotFoundException {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
         UserDisplayDTO userDisplayDTO = modelMapper.map(user, UserDisplayDTO.class);
         userDisplayDTO.setProfileImageUrl(user.getProfileImageUrl());
         return userDisplayDTO;
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateUser(UserUpdateDTO userUpdateDTO, Long id) throws UserNotFoundException {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User Not Found"));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
 
         user.setFirstName(userUpdateDTO.getFirstName());
         user.setLastName(userUpdateDTO.getLastName());
@@ -63,21 +63,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public FileResponse updateUserImage(String path, MultipartFile file, Long userId) throws IOException, UserNotFoundException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
 
         if (file.isEmpty()) {
-            throw new IllegalArgumentException("File must not be empty");
+            throw new IllegalArgumentException(ErrorConstants.FILE_MUST_NOT_BE_EMPTY);
         }
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null) {
-            throw new IllegalArgumentException("File name must not be null");
+            throw new IllegalArgumentException(ErrorConstants.FILE_NAME_MUST_NOT_BE_NULL);
         }
 
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
         if (!fileExtension.equals(".png") && !fileExtension.equals(".jpg") &&
                 !fileExtension.equals(".jpeg") && !fileExtension.equals(".svg")) {
-            throw new IllegalArgumentException("Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.");
+            throw new IllegalArgumentException(ErrorConstants.INVALID_FILE_TYPE);
         }
 
         String randomID = UUID.randomUUID().toString();
@@ -100,11 +100,10 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-
     @Override
     public void updatePassword(PasswordDTO passwordDTO, Long userId) throws UserNotFoundException, InvalidPasswordException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
 
         String oldPassword = passwordDTO.getOldPassword();
         String encodedPassword = user.getPassword();
@@ -113,30 +112,30 @@ public class UserServiceImpl implements UserService {
         String confirmPassword = passwordDTO.getConfirmPassword();
 
         if (!passwordEncoder.matches(oldPassword, encodedPassword)) {
-            throw new InvalidPasswordException("Invalid Password");
+            throw new InvalidPasswordException(ErrorConstants.INVALID_PASSWORD);
         }
         if (newPassword.equals(confirmPassword)) {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
         } else {
-            throw new InvalidPasswordException("New password and Confirm password do not match");
+            throw new InvalidPasswordException(ErrorConstants.PASSWORDS_DO_NOT_MATCH);
         }
     }
 
     @Override
     public byte[] getUserProfileImage(Long userId) throws UserNotFoundException, IOException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
 
         String imageUrl = path + File.separator + user.getProfileImageUrl();
 
         if (imageUrl == null || imageUrl.isEmpty()) {
-            throw new FileNotFoundException("Image URL not found for user ID: " + userId);
+            throw new FileNotFoundException(ErrorConstants.IMAGE_URL_NOT_FOUND + userId);
         }
         Path imagePath = Paths.get(imageUrl);
 
         if (!Files.exists(imagePath)) {
-            throw new FileNotFoundException("Image file not found at path: " + imageUrl);
+            throw new FileNotFoundException(ErrorConstants.IMAGE_FILE_NOT_FOUND + imageUrl);
         }
         return Files.readAllBytes(imagePath);
     }
@@ -144,12 +143,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public String getUserProfileImageUrl(Long userId) throws UserNotFoundException, FileNotFoundException {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
 
         String imageUrl = user.getProfileImageUrl();
 
         if (imageUrl == null || imageUrl.isEmpty()) {
-            throw new FileNotFoundException("Image URL not found for user ID: " + userId);
+            throw new FileNotFoundException(ErrorConstants.IMAGE_URL_NOT_FOUND + userId);
         }
 
         return imageUrl;

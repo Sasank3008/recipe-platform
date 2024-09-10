@@ -1,5 +1,6 @@
 package com.user.userservice.controller;
 
+import com.user.userservice.constants.ControllerConstants;
 import com.user.userservice.dto.FileResponse;
 import com.user.userservice.dto.PasswordDTO;
 import com.user.userservice.dto.UserUpdateDTO;
@@ -20,34 +21,35 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
+
     @Value("${project.image}")
     private String path;
 
     private final UserService userService;
 
-    @GetMapping("/{id}")
+    @GetMapping(ControllerConstants.USER_ID_PATH)
     public ResponseEntity<?> getUserById(@PathVariable Long id) throws UserNotFoundException {
         return ResponseEntity.ok().body(userService.getUser(id));
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping(ControllerConstants.UPDATE_PATH + "{id}")
     public ResponseEntity<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO, @PathVariable Long id) throws UserNotFoundException {
         userService.updateUser(userUpdateDTO, id);
         return ResponseEntity.ok().body(userService.getUser(id));
     }
 
-    @PutMapping(value = "/image/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = ControllerConstants.IMAGE_PATH + "{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<FileResponse> updateUserImage(@RequestParam("file") MultipartFile file, @PathVariable Long userId) throws UserNotFoundException, IOException {
         return new ResponseEntity<>(userService.updateUserImage(path, file, userId), HttpStatus.OK);
     }
 
-    @PutMapping("/password/{id}")
+    @PutMapping(ControllerConstants.PASSWORD_PATH + "{id}")
     public ResponseEntity<?> updatePassword(@RequestBody PasswordDTO passwordDTO, @PathVariable Long id) throws UserNotFoundException, InvalidPasswordException {
         userService.updatePassword(passwordDTO, id);
         return ResponseEntity.ok().body("Password Updated Successfully");
     }
 
-    @GetMapping("/profile-image/{userId}")
+    @GetMapping(ControllerConstants.PROFILE_IMAGE_PATH + "{userId}")
     public ResponseEntity<?> getProfileImage(@PathVariable Long userId) throws UserNotFoundException, IOException {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
