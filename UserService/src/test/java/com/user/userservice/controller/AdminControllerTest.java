@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class AdminControllerTest {
 
@@ -58,6 +59,7 @@ class AdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Italian"));
     }
+
     @Test
     void testEditUser_Success() throws UserIdNotFoundException {
         Long userId = 1L;
@@ -70,6 +72,7 @@ class AdminControllerTest {
         assertEquals(updatedUserDTO, response.getBody());
         verify(adminService).updateUser(userId, userDTO);
     }
+
     @Test
     void testEditUser_NotFound() throws UserIdNotFoundException {
         Long userId = 1L;
@@ -81,6 +84,7 @@ class AdminControllerTest {
         assertNull(response.getBody());
         verify(adminService).updateUser(userId, userDTO);
     }
+
     @Test
     void testEditUser_ThrowsException() throws UserIdNotFoundException {
         Long userId = 1L;
@@ -91,6 +95,7 @@ class AdminControllerTest {
         });
         verify(adminService).updateUser(userId, userDTO);
     }
+
     @Test
     void testDisableCuisineSuccess() throws Exception {
         Long id = 1L;
@@ -110,6 +115,7 @@ class AdminControllerTest {
         mockMvc.perform(delete("/admins/cuisines/{id}", id))
                 .andExpect(status().isOk());
     }
+
     @Test
     void testEnableCuisineSuccess() throws Exception {
         Long id = 1L;
@@ -119,6 +125,7 @@ class AdminControllerTest {
         mockMvc.perform(put("/admins/cuisines/{id}/enable", id))
                 .andExpect(status().isOk());
     }
+
     @Test
     void testSaveCuisineSuccess() throws Exception {
         CuisineDTO newCuisine = new CuisineDTO(null, "Mexican", true);
@@ -133,6 +140,7 @@ class AdminControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Mexican"));
     }
+
     @Test
     void testUpdateCuisineSuccess() throws Exception {
         Long id = 1L;
@@ -148,6 +156,7 @@ class AdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("Italian Updated"));
     }
+
     @Test
     void testGetCountries() throws Exception {
         CountryDTO country1 = new CountryDTO(1L, "Usa");
@@ -160,6 +169,7 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$[1].name").value("Canada"));
         verify(countryService).fetchCountries();
     }
+
     @Test
     void testAddCountry() throws Exception {
         // Arrange
