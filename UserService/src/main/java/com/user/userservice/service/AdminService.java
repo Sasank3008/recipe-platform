@@ -1,8 +1,8 @@
 package com.user.userservice.service;
 
-import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.dto.AdminUserDTO;
 import com.user.userservice.entity.User;
+import com.user.userservice.exception.UserIdNotFoundException;
 
 public interface AdminService {
     public AdminUserDTO updateUser(Long id, AdminUserDTO user) throws UserIdNotFoundException;

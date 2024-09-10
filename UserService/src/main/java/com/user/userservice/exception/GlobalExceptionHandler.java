@@ -69,4 +69,17 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    @ExceptionHandler(CountryAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse> handleCountryAlreadyExistsException(CountryAlreadyExistsException exception)
+    {
+        return new ResponseEntity<>
+                (
+                        ApiResponse.builder()
+                                .response(exception.getMessage())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                        ,
+                        HttpStatus.IM_USED
+                );
+    }
 }

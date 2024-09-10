@@ -1,6 +1,8 @@
 package com.user.userservice.controller;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
+import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.service.CountryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,16 +21,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
-
 import java.util.Arrays;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
+
 @ExtendWith(MockitoExtension.class)
 class AdminControllerTest {
 
@@ -41,6 +42,8 @@ class AdminControllerTest {
     private RecipeServiceClient recipeServiceClient;
     @InjectMocks
     private AdminController adminController;
+    @Mock
+    private CountryService countryService;
 
     @BeforeEach
     void setUp() {
@@ -56,6 +59,7 @@ class AdminControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name").value("Italian"));
     }
+
     @Test
     void testEditUser_Success() throws UserIdNotFoundException {
         Long userId = 1L;
@@ -68,6 +72,7 @@ class AdminControllerTest {
         assertEquals(updatedUserDTO, response.getBody());
         verify(adminService).updateUser(userId, userDTO);
     }
+
     @Test
     void testEditUser_NotFound() throws UserIdNotFoundException {
         Long userId = 1L;
@@ -79,6 +84,7 @@ class AdminControllerTest {
         assertNull(response.getBody());
         verify(adminService).updateUser(userId, userDTO);
     }
+
     @Test
     void testEditUser_ThrowsException() throws UserIdNotFoundException {
         Long userId = 1L;
@@ -89,6 +95,7 @@ class AdminControllerTest {
         });
         verify(adminService).updateUser(userId, userDTO);
     }
+
     @Test
     void testDisableCuisineSuccess() throws Exception {
         Long id = 1L;
@@ -108,6 +115,7 @@ class AdminControllerTest {
         mockMvc.perform(delete("/admins/cuisines/{id}", id))
                 .andExpect(status().isOk());
     }
+
     @Test
     void testEnableCuisineSuccess() throws Exception {
         Long id = 1L;
@@ -117,6 +125,7 @@ class AdminControllerTest {
         mockMvc.perform(put("/admins/cuisines/{id}/enable", id))
                 .andExpect(status().isOk());
     }
+
     @Test
     void testSaveCuisineSuccess() throws Exception {
         CuisineDTO newCuisine = new CuisineDTO(null, "Mexican", true);
@@ -131,8 +140,6 @@ class AdminControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Mexican"));
     }
-
-
 
     @Test
     void testUpdateCuisineSuccess() throws Exception {
@@ -150,4 +157,31 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.name").value("Italian Updated"));
     }
 
-}
+    @Test
+    void testGetCountries() throws Exception {
+        CountryDTO country1 = new CountryDTO(1L, "Usa");
+        CountryDTO country2 = new CountryDTO(2L, "Canada");
+        List<CountryDTO> countries = Arrays.asList(country1, country2);
+        when(countryService.fetchCountries()).thenReturn(countries);
+        mockMvc.perform(get("/admins/countries"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].name").value("Usa"))
+                .andExpect(jsonPath("$[1].name").value("Canada"));
+        verify(countryService).fetchCountries();
+    }
+
+    @Test
+    void testAddCountry() throws Exception {
+        // Arrange
+        CountryDTO newCountry = new CountryDTO(null, "Mexico");
+        CountryDTO savedCountry = new CountryDTO(3L, "Mexico");
+        when(countryService.saveCountry(any(CountryDTO.class))).thenReturn(savedCountry);
+        mockMvc.perform(post("/admins/countries")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"name\":\"Mexico\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Mexico"))
+                .andExpect(jsonPath("$.id").value(3));
+        verify(countryService).saveCountry(any(CountryDTO.class));
+    }
+    }
