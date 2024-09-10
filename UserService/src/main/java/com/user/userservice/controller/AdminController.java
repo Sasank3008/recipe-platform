@@ -1,5 +1,6 @@
 package com.user.userservice.controller;
 
+import com.user.userservice.dto.AdminUserDTO;
 import com.user.userservice.dto.ApiResponse;
 import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.dto.CuisineDTO;
@@ -7,6 +8,8 @@ import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import com.user.userservice.exception.CuisineIdNotFoundException;
 import com.user.userservice.exception.DuplicateCuisineException;
 import com.user.userservice.exception.CountryAlreadyExistsException;
+import com.user.userservice.exception.UserIdNotFoundException;
+import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
 import feign.FeignException;
 import jakarta.validation.Valid;
@@ -27,6 +30,7 @@ public class AdminController {
     private static final String CUISINE_NOT_FOUND_MESSAGE = "Cuisine not found with id: ";
     private final RecipeServiceClient recipeServiceClient;
     private final   CountryService countryService;
+    private final AdminService adminService;
 
 
     @GetMapping("/cuisines")
@@ -134,6 +138,16 @@ public class AdminController {
     public ResponseEntity<List<CountryDTO>> fetchAllCountries() {
         List<CountryDTO> countries = countryService.fetchCountries();
         return ResponseEntity.ok().body(countries);
+    }
+    @PutMapping("editUser/{id}")
+    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws UserIdNotFoundException, UserIdNotFoundException {
+        AdminUserDTO updatedUserDTO = adminService.updateUser(id, userDTO);
+        if (updatedUserDTO != null) {
+            return ResponseEntity.ok(updatedUserDTO);
+        } else {
+            return ResponseEntity.notFound().build();
+
+        }
     }
 
 
