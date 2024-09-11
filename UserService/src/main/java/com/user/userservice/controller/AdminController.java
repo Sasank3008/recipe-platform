@@ -1,9 +1,6 @@
 package com.user.userservice.controller;
 
-import com.user.userservice.dto.AdminUserDTO;
-import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.CuisineDTO;
-import com.user.userservice.dto.CountryDTO;
+import com.user.userservice.dto.*;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import com.user.userservice.exception.CountryAlreadyExistsException;
 import com.user.userservice.exception.CuisineIdNotFoundException;
@@ -143,6 +140,21 @@ public class AdminController {
 
         }
     }
+    @GetMapping("/users")
+    public ResponseEntity<UsersResponse> fetchAllUsers() {
+        List<AdminDTO> users = adminService.fetchAllUsers();
+        UsersResponse response = new UsersResponse(users);
+        return ResponseEntity.ok(response);
+    }
 
-
+    @PutMapping("/{id}/toggle-user-status")
+    public ResponseEntity<ApiResponse> toggleUser(@PathVariable Long id) throws UserIdNotFoundException {
+        boolean status=adminService.toggleUserStatus(id);
+        String message=status?"User Enabled successfully":"User disabled successfully";
+        ApiResponse response = ApiResponse.builder()
+                .response(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
 }
