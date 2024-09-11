@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import java.util.Collections;
 import java.util.List;
@@ -28,6 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(UserSecurityConfiguration.class)
+@TestPropertySource(properties = {"spring.jpa.hibernate.ddl-auto=none"})
 class UserSecurityConfigurationTest {
 
     @Autowired
@@ -89,7 +91,7 @@ class UserSecurityConfigurationTest {
     @Test
     @WithMockUser
     void shouldAuthenticateAnySecuredRequest() throws Exception {
-        mockMvc.perform(get("/users/login"))
+        mockMvc.perform(get("/users/update/1"))
                 .andExpect(status().isMethodNotAllowed());
     }
 }
