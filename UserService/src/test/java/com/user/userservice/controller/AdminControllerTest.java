@@ -1,4 +1,14 @@
 package com.user.userservice.controller;
+
+import com.user.userservice.dto.AdminDTO;
+import com.user.userservice.dto.ApiResponse;
+import com.user.userservice.dto.UsersResponse;
+import org.mockito.MockitoAnnotations;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import com.user.userservice.dto.CountryDTO;
 import com.user.userservice.dto.CuisineDTO;
@@ -16,13 +26,10 @@ import com.user.userservice.dto.AdminUserDTO;
 import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.service.AdminService;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import java.util.Arrays;
-import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -48,6 +55,7 @@ class AdminControllerTest {
     @BeforeEach
     void setUp() {
         mockMvc = standaloneSetup(adminController).build();
+
     }
 
     @Test
@@ -184,4 +192,68 @@ class AdminControllerTest {
                 .andExpect(jsonPath("$.id").value(3));
         verify(countryService).saveCountry(any(CountryDTO.class));
     }
+    @Test
+    void testFetchAllUsers() {
+        // Arrange
+        List<AdminDTO> users = new ArrayList<>();
+        users.add(new AdminDTO(1L, "John", "Doe", "john.doe@example.com", LocalDate.now(), true, "USA"));
+        when(adminService.fetchAllUsers()).thenReturn(users);
+
+        // Act
+        ResponseEntity<UsersResponse> responseEntity = adminController.fetchAllUsers();
+
+        // Assert
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals(users, responseEntity.getBody().getUsers());
+        verify(adminService, times(1)).fetchAllUsers();
     }
+
+    // Test for toggleUser (enabling a user)
+    @Test
+    void testToggleUserStatus_EnableUser() throws UserIdNotFoundException {
+        // Arrange
+        Long userId = 1L;
+        when(adminService.toggleUserStatus(userId)).thenReturn(true);  // User enabled
+
+        // Act
+        ResponseEntity<ApiResponse> responseEntity = adminController.toggleUser(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("User Enabled successfully", responseEntity.getBody().getResponse());
+        verify(adminService, times(1)).toggleUserStatus(userId);
+    }
+
+    // Test for toggleUser (disabling a user)
+    @Test
+    void testToggleUserStatus_DisableUser() throws UserIdNotFoundException {
+        // Arrange
+        Long userId = 1L;
+        when(adminService.toggleUserStatus(userId)).thenReturn(false);  // User disabled
+
+        // Act
+        ResponseEntity<ApiResponse> responseEntity = adminController.toggleUser(userId);
+
+        // Assert
+        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+        assertEquals("User disabled successfully", responseEntity.getBody().getResponse());
+        verify(adminService, times(1)).toggleUserStatus(userId);
+    }
+
+    // Test for toggleUser (UserIdNotFoundException)
+    @Test
+    void testToggleUserStatus_UserIdNotFound() throws UserIdNotFoundException {
+        // Arrange
+        Long userId = 1L;
+        when(adminService.toggleUserStatus(userId)).thenThrow(new UserIdNotFoundException("User not found with ID: " + userId));
+
+        // Act & Assert
+        try {
+            adminController.toggleUser(userId);
+        } catch (UserIdNotFoundException e) {
+            assertEquals("User not found with ID: 1", e.getMessage());
+        }
+
+        verify(adminService, times(1)).toggleUserStatus(userId);
+    }
+}

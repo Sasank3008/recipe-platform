@@ -7,8 +7,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 
 @RestControllerAdvice
@@ -81,5 +84,53 @@ public class GlobalExceptionHandler {
                         ,
                         HttpStatus.IM_USED
                 );
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        StringBuilder errorMessage = new StringBuilder();
+
+        // Extract and format validation errors
+        ex.getBindingResult().getAllErrors().forEach(error -> {
+            String message = error.getDefaultMessage();
+            errorMessage.append(" ").append(message).append(". ");
+        });
+        // Build ApiResponse with the formatted error messages
+        ApiResponse response = ApiResponse.builder()
+                .response(errorMessage.toString().trim())
+                .timestamp(LocalDateTime.now())
+                .build();
+        // Return the response with BAD_REQUEST status
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
+
+    @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<ApiResponse> constraintViolationException(SQLIntegrityConstraintViolationException ex) {
+        ApiResponse response=ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(response);
+    }
+    @ExceptionHandler(PasswordMismatchException.class)
+    public ResponseEntity<ApiResponse> passwordMismatchException(PasswordMismatchException ex){
+        ApiResponse response=ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(response);
+    }
+    @ExceptionHandler(EmailNotFoundException.class)
+    public  ResponseEntity<ApiResponse> emailNotFoundException(EmailNotFoundException ex){
+        ApiResponse response=ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(response);
     }
 }
