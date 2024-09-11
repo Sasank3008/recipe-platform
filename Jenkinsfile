@@ -83,25 +83,6 @@ pipeline {
             }
         }
 
-        // Admin module
-        stage('Build Admin Module') {
-            steps {
-                dir('AdminService') {
-                    echo 'Building Admin Module..'
-                    sh 'mvn -v'
-                    sh 'mvn clean install'
-                }
-            }
-        }
-        stage('Test Admin Module') {
-            steps {
-                dir('AdminService') {
-                    echo 'Testing Admin Module..'
-                    sh 'mvn test'
-                }
-            }
-        }
-
         // Sonar Analysis
         stage('SonarQube analysis') {
             environment {
