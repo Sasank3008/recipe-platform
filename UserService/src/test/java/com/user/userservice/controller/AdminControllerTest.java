@@ -1,19 +1,11 @@
 package com.user.userservice.controller;
-
-import com.user.userservice.dto.AdminDTO;
-import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.UsersResponse;
-import org.mockito.MockitoAnnotations;
+import com.user.userservice.dto.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import com.user.userservice.service.CuisineService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
-import com.user.userservice.dto.CountryDTO;
-import com.user.userservice.dto.CuisineDTO;
 import com.user.userservice.service.CountryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,13 +16,16 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
-import com.user.userservice.dto.AdminUserDTO;
+
 import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.service.AdminService;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.Arrays;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -38,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-@WebMvcTest(AdminController.class)
+
 @ExtendWith(MockitoExtension.class)
 class AdminControllerTest {
 
@@ -47,8 +42,7 @@ class AdminControllerTest {
 
     @Mock
     private AdminService adminService;
-    @Mock
-    private RecipeServiceClient recipeServiceClient;
+
     @InjectMocks
     private AdminController adminController;
     @Mock
@@ -58,6 +52,78 @@ class AdminControllerTest {
     void setUp() {
         mockMvc = standaloneSetup(adminController).build();
 
+    }
+    @Mock
+    public CuisineService cuisineService;
+
+
+
+
+    @Test
+    void getAllCuisines_ShouldReturnListOfCuisines() {
+        List<CuisineDTO> mockCuisines = Arrays.asList(
+                new CuisineDTO(1L, "Italian", true, "image1.jpg"),
+                new CuisineDTO(2L, "Mexican", true, "image2.jpg")
+        );
+        when(cuisineService.getAllCuisines()).thenReturn(mockCuisines);
+        ResponseEntity<List<CuisineDTO>> response = adminController.getAllCuisines();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+        verify(cuisineService, times(1)).getAllCuisines();
+    }
+
+    @Test
+    void saveCuisine_ShouldAddCuisineAndReturnCreatedCuisine() {
+        MockMultipartFile file = new MockMultipartFile("file", "image.jpg", "image/jpeg", "image data".getBytes());
+        CuisineDTO mockCuisine = new CuisineDTO(1L, "French", true, "image.jpg");
+
+        when(cuisineService.addCuisine(anyString(), anyBoolean(), any(MultipartFile.class))).thenReturn(mockCuisine);
+        ResponseEntity<CuisineDTO> response = adminController.saveCuisine("French", true, file);
+        assertEquals(HttpStatus.CREATED, response.getStatusCode());
+        assertEquals(mockCuisine, response.getBody());
+        verify(cuisineService, times(1)).addCuisine(anyString(), anyBoolean(), any(MultipartFile.class));
+    }
+
+    @Test
+    void fetchEnabledCuisines_ShouldReturnListOfEnabledCuisines() {
+        List<CuisineDTO> mockEnabledCuisines = Arrays.asList(
+                new CuisineDTO(1L, "Italian", true, "image1.jpg"),
+                new CuisineDTO(2L, "Indian", true, "image2.jpg")
+        );
+        when(cuisineService.getEnabledCuisines()).thenReturn(mockEnabledCuisines);
+        ResponseEntity<List<CuisineDTO>> response = adminController.fetchEnabledCuisines();
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(mockEnabledCuisines, response.getBody());
+        verify(cuisineService, times(1)).getEnabledCuisines();
+    }
+
+    @Test
+    void deleteCuisine_ShouldReturnSuccessMessage() {
+        ResponseEntity<ApiResponse> response = adminController.deleteCuisine(1L);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Cuisine deleted successfully", response.getBody().getResponse());
+        verify(cuisineService, times(1)).deleteCuisine(1L);
+    }
+
+    @Test
+    void updateCuisine_ShouldReturnUpdatedCuisine() {
+        MockMultipartFile file = new MockMultipartFile("file", "image.jpg", "image/jpeg", "image data".getBytes());
+        CuisineDTO updatedCuisine = new CuisineDTO(1L, "Chinese", true, "image.jpg");
+
+        when(cuisineService.updateCuisine(eq(1L), anyString(), anyBoolean(), any(MultipartFile.class))).thenReturn(updatedCuisine);
+        ResponseEntity<CuisineDTO> response = adminController.updateCuisine(1L, "Chinese", true, file);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(updatedCuisine, response.getBody());
+        verify(cuisineService, times(1)).updateCuisine(eq(1L), anyString(), anyBoolean(), any(MultipartFile.class));
+    }
+
+    @Test
+    void toggleCuisineEnabled_ShouldReturnToggleMessage() {
+        when(cuisineService.toggleCuisineEnabled(1L)).thenReturn("Cuisine enabled successfully");
+        ResponseEntity<ApiResponse> response = adminController.toggleCuisineEnabled(1L);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals("Cuisine enabled successfully", response.getBody().getResponse());
+        verify(cuisineService, times(1)).toggleCuisineEnabled(1L);
     }
 
 
@@ -97,6 +163,9 @@ class AdminControllerTest {
         });
         verify(adminService).updateUser(userId, userDTO);
     }
+
+
+
 
 
 
@@ -196,95 +265,4 @@ class AdminControllerTest {
 
         verify(adminService, times(1)).toggleUserStatus(userId);
     }
-    @Test
-    void testGetAllCuisines() throws Exception {
-        List<CuisineDTO> cuisines = Arrays.asList(new CuisineDTO(1L, "Italian", true));
-        when(recipeServiceClient.getAllCuisines()).thenReturn(cuisines);
-
-        mockMvc.perform(get("/admins/cuisines"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Italian"));
-    }
-
-    @Test
-    void testSaveCuisineSuccess() throws Exception {
-        CuisineDTO newCuisine = new CuisineDTO(null, "Mexican", true);
-        CuisineDTO addedCuisine = new CuisineDTO(1L, "Mexican", true);
-
-        when(recipeServiceClient.doesCuisineExistByName("Mexican")).thenReturn(ResponseEntity.ok(false));
-        when(recipeServiceClient.addCuisine(any(CuisineDTO.class))).thenReturn(addedCuisine);
-
-        mockMvc.perform(post("/admins/cuisines")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newCuisine)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Mexican"));
-    }
-    @Test
-    void testDeleteCuisineSuccess() throws Exception {
-        Long id = 1L;
-        doNothing().when(recipeServiceClient).deleteCuisine(id);
-        when(recipeServiceClient.doesCuisineExistById(id)).thenReturn(ResponseEntity.ok(true));
-
-        mockMvc.perform(delete("/admins/cuisines/{id}", id))
-                .andExpect(status().isOk());
-    }
-
-
-
-
-
-
-    @Test
-    void testUpdateCuisineSuccess() throws Exception {
-        Long id = 1L;
-        CuisineDTO originalCuisine = new CuisineDTO(id, "Italian", true);
-        CuisineDTO updatedCuisine = new CuisineDTO(id, "Italian Updated", true);
-
-        when(recipeServiceClient.doesCuisineExistById(id)).thenReturn(ResponseEntity.ok(true));
-        when(recipeServiceClient.updateCuisine(eq(id), any(CuisineDTO.class))).thenReturn(updatedCuisine);
-
-        mockMvc.perform(put("/admins/cuisines/{id}", id)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(originalCuisine)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value("Italian Updated"));
-    }
-    @Test
-    void testToggleCuisineEnabledFromEnabledToDisabled() throws Exception {
-        Long id = 1L;
-        when(recipeServiceClient.isCuisineEnabled(id)).thenReturn(true);
-        doNothing().when(recipeServiceClient).disableCuisine(id);
-        when(recipeServiceClient.doesCuisineExistById(id)).thenReturn(ResponseEntity.ok(true));
-
-        mockMvc.perform(put("/admins/toggle-cuisine/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Cuisine disabled successfully"));
-    }
-
-    @Test
-    void testToggleCuisineEnabledFromDisabledToEnabled() throws Exception {
-        Long id = 1L;
-        when(recipeServiceClient.isCuisineEnabled(id)).thenReturn(false);
-        doNothing().when(recipeServiceClient).enableCuisine(id);
-        when(recipeServiceClient.doesCuisineExistById(id)).thenReturn(ResponseEntity.ok(true));
-
-        mockMvc.perform(put("/admins/toggle-cuisine/{id}", id))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.response").value("Cuisine enabled successfully"));
-    }
-    @Test
-    void testSaveCuisineDuplicateNameException() throws Exception {
-        CuisineDTO newCuisine = new CuisineDTO(null, "Italian", true);
-        when(recipeServiceClient.doesCuisineExistByName("Italian")).thenReturn(ResponseEntity.ok(true));
-
-        mockMvc.perform(post("/admins/cuisines")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(newCuisine)))
-                .andExpect(status().isConflict())
-                .andExpect(jsonPath("$.response").value("A cuisine with the name 'Italian' already exists."));
-    }
-
-
-
 }

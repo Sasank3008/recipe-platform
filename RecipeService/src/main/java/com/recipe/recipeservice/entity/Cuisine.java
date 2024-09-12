@@ -3,11 +3,11 @@ package com.recipe.recipeservice.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@RequiredArgsConstructor
 @Entity
 @Table(name = "cuisines")
 public class Cuisine {
@@ -16,7 +16,8 @@ public class Cuisine {
     private Long id;
 
     private String name;
-    private boolean isEnabled=true;
+    private boolean isEnabled = true;
+    private String imageUrl;
 
 
 

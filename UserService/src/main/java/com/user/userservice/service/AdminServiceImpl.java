@@ -26,8 +26,7 @@ public class AdminServiceImpl implements AdminService {
         return userRepository.findById(id).map(existingUser -> {
            existingUser= modelMapper.map(userDTO, User.class);
            existingUser.setId(id);
-            System.out.println(existingUser);
-            Country country = countryRepository.findById(userDTO.getCountry().getId()).get();
+           Country country = countryRepository.findById(userDTO.getCountry().getId()).get();
             existingUser.setCountry(country);
 
         return convertToDTO(userRepository.save(existingUser));

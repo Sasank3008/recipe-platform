@@ -3,17 +3,16 @@ package com.recipe.recipeservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-
-
+@RequiredArgsConstructor
 public class CuisineDTO {
     private Long id;
     private String name;
     private boolean isEnabled=true;
-
+    private String imageUrl;
 
 }

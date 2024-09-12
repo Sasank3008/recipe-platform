@@ -1,13 +1,16 @@
 package com.user.userservice.exception;
 
 import com.user.userservice.dto.ApiResponse;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.nio.file.AccessDeniedException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 
@@ -52,9 +55,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler(AccessDeniedException.class) // Handle org.springframework.security.access.AccessDeniedException
     public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException e) {
-        ApiResponse response = ApiResponse.builder().response(e.getMessage()).timestamp(LocalDateTime.now()).build();
+        ApiResponse response = ApiResponse.builder()
+                .response(e.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
