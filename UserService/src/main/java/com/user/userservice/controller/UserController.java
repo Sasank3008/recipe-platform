@@ -45,7 +45,7 @@ public class UserController {
         return ResponseEntity.ok(UserResponseDTO.builder().token(response.getLeft()).userId(response.getRight().getId()).role(response.getRight().getRole()).message("User Login Successfully").time(LocalDateTime.now()).build());
     }
 
-    @PostMapping
+    @PostMapping("register")
     public ResponseEntity<ApiResponse> register(@ModelAttribute @Valid UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException {
         return userService.register(userRegistrationDTO);
     }
