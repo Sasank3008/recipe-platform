@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/recipes")
 public class RecipeController {
 
-
+    @Autowired
     private CuisineRepository cuisineRepository;
 
     @Autowired
@@ -32,6 +32,7 @@ public class RecipeController {
                 .map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
                 .toList();
     }
+
     private ResponseEntity<Void> responseEntityOk() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -110,6 +111,7 @@ public class RecipeController {
         List<CuisineDTO> cuisineDTOs = convertToDtoList(cuisines);
         return ResponseEntity.ok(cuisineDTOs);
     }
+
     @GetMapping("/cuisines/exist/by-name")
     public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name) {
         boolean exists = cuisineRepository.doesCuisineExistByName(name);

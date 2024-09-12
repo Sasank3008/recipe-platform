@@ -29,6 +29,7 @@ public interface RecipeServiceClient {
     CuisineDTO updateCuisine(@PathVariable("id") Long id, @RequestBody CuisineDTO cuisineDTO);
     @GetMapping("/cuisines")
     List<CuisineDTO> getAllCuisines();
+
     @GetMapping("/cuisines/exist/by-id")
     public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id);
     @GetMapping("/cuisines/exist/by-name")

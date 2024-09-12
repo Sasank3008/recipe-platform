@@ -15,21 +15,10 @@ target/
 
 ### IntelliJ IDEA ###
 .idea
-.idea/artifacts
-.idea/compiler.xml
-.idea/jarRepositories.xml
-.idea/modules.xml
-.idea/*.iml
-.idea/modules
+*.iws
 *.iml
 *.ipr
-*.iws
 
-.idea_modules/
-target
-mvnw.cmd
-mvnw
-.mvn
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -37,16 +26,14 @@ mvnw
 /nbdist/
 /.nb-gradle/
 build/
-
-
-
-## Maven ignore paths
-mvnw
-.mvn
-mvnw.cmd
-
 !**/src/main/**/build/
 !**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
+
+mvnw.cmd
+mvnw
+.mvn
+
+/uploads/
