@@ -11,6 +11,11 @@ public class ErrorConstants {
     public static final String INVALID_FILE_TYPE = "Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.";
     public static final String INVALID_PASSWORD = "Invalid Password";
     public static final String PASSWORDS_DO_NOT_MATCH = "New password and Confirm password do not match";
+    public static final String EMAIL_EXISTS = "Email already exists";
+    public static final String COUNTRY_NOT_FOUND = "No country found with ID: ";
+    public static final String INVALID_TOKEN="Token is invalid";
+    public static final String EXPIRED_TOKEN="JWT Token is Expired";
+    public static final String ACCESS_DENIED="Access is denied to current resource";
 
     private ErrorConstants() {
         // Prevent instantiation

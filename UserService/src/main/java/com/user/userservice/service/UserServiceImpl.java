@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -58,7 +59,7 @@ public class UserServiceImpl implements UserService {
         Authentication authentication;
         User user = userDetailsService.loadUserByUsername(userLoginDTO.getEmail());
         if (!passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword()))
-            throw new IncorrectPasswordException("Provided password is incorrect");
+            throw new IncorrectPasswordException(ErrorConstants.INVALID_PASSWORD);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                 userLoginDTO.getEmail(),
                 userLoginDTO.getPassword()
@@ -70,7 +71,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<ApiResponse> register(UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException {
         if (userRepository.existsByEmail(userRegistrationDTO.getEmail())) {
-            throw new UserAlreadyExistsException("This Email already exists : " + userRegistrationDTO.getEmail());
+            throw new UserAlreadyExistsException(ErrorConstants.EMAIL_EXISTS + userRegistrationDTO.getEmail());
         }
 
         userRepository.save(mapUserRegistrationDTOtoUser(userRegistrationDTO));
@@ -90,6 +91,8 @@ public class UserServiceImpl implements UserService {
         user.setDate(LocalDate.now());
         user.setEnabled(true);
         user.setImage(uploadImage(path, userRegistrationDTO.getFile()));
+        user.setPassword(passwordEncoder.encode(userRegistrationDTO.getPassword()));
+        user.setRole("USER");
 
         return user;
     }
@@ -105,14 +108,18 @@ public class UserServiceImpl implements UserService {
             throw new InvalidInputException("File must have a valid name.");
         }
 
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        List<String> allowedExtensions = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp");
+        if (!allowedExtensions.contains(fileExtension)) {
+            throw new InvalidInputException(ErrorConstants.INVALID_FILE_TYPE);
+        }
+        String uniqueIdentifier = UUID.randomUUID().toString();
+        String newFileName = uniqueIdentifier + fileExtension;
+
         File directory = new File(path);
         if (!directory.exists()) {
             directory.mkdirs();
         }
-
-        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        String uniqueIdentifier = UUID.randomUUID().toString();
-        String newFileName = uniqueIdentifier + fileExtension;
 
         Files.copy(file.getInputStream(), Paths.get(path, newFileName));
         return newFileName;
@@ -126,13 +133,20 @@ public class UserServiceImpl implements UserService {
         if (optionalCountry.isPresent()) {
             return optionalCountry.get();
         } else {
-            throw new InvalidInputException("No country found with ID: " + country);
+            throw new InvalidInputException(ErrorConstants.COUNTRY_NOT_FOUND + country);
         }
     }
 
     @Override
-    public ResponseEntity<List<Country>> fetchAllCountries() {
-        return ResponseEntity.ok(countryRepository.findAll());
+    public ResponseEntity<CountryListDTO> fetchAllCountries() {
+        List<Country> countryList = countryRepository.findAll();
+        CountryListDTO countryListDTO = CountryListDTO.builder()
+                .countryList(countryList)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.OK.name())
+                .build();
+
+        return ResponseEntity.ok(countryListDTO);
     }
     @Override
     public UserDisplayDTO getUser(Long id) throws UserNotFoundException {
