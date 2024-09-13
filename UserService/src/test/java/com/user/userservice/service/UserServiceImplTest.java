@@ -191,7 +191,7 @@ class UserServiceImplTest {
     void uploadImage_InvalidFileExtension_ThrowsInvalidInputException() {
         MultipartFile fileWithInvalidExt = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());
         Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", fileWithInvalidExt));
-        assertEquals("Invalid file type. Only image files are allowed.", exception.getMessage());
+        assertEquals("Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.", exception.getMessage());
     }
 
     @Test
