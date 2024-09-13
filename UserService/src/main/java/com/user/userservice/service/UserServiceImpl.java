@@ -148,6 +148,7 @@ public class UserServiceImpl implements UserService {
 
         return ResponseEntity.ok(countryListDTO);
     }
+
     @Override
     public UserDisplayDTO getUser(Long id) throws UserNotFoundException {
         User user = userRepository.findById(id)

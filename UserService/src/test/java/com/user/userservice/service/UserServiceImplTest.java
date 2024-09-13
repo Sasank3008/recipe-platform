@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -344,5 +346,25 @@ class UserServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         assertThrows(FileNotFoundException.class, () -> userService.getUserProfileImageUrl(1L));
+    }
+
+    @Test
+    void testFetchCountryById() {
+        Country country1 = new Country(1, "India");
+        Country country2 = new Country(2, "Canada");
+        List<Country> mockCountries = Arrays.asList(country1, country2);
+        when(countryRepository.findAll()).thenReturn(mockCountries);
+
+        ResponseEntity<CountryListDTO> response = userService.fetchAllCountries();
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().getCountryList().size());
+        assertEquals("India", response.getBody().getCountryList().get(0).getName());
+        assertEquals("Canada", response.getBody().getCountryList().get(1).getName());
+        assertEquals(HttpStatus.OK.name(), response.getBody().getStatus());
+
+        verify(countryRepository).findAll();
     }
 }
