@@ -136,13 +136,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
-        ErrorResponse errorResponse = ErrorResponse.builder().error(ex.getMessage()).timestamp(LocalDateTime.now()).statusMessage(HttpStatus.BAD_REQUEST.toString()).build();
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .statusMessage(HttpStatus.BAD_REQUEST.toString())
+                .build();
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        ErrorResponse errorResponse = ErrorResponse.builder().error(ex.getMessage()).timestamp(LocalDateTime.now()).statusMessage(HttpStatus.BAD_REQUEST.toString()).build();
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .statusMessage(HttpStatus.BAD_REQUEST.toString())
+                .build();
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
