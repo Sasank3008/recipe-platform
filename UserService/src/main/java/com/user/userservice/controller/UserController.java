@@ -4,7 +4,6 @@ import com.nimbusds.jose.util.Pair;
 import com.user.userservice.constants.ControllerConstants;
 import com.user.userservice.dto.*;
 import com.user.userservice.dto.UserRegistrationDTO;
-import com.user.userservice.entity.Country;
 import com.user.userservice.entity.User;
 import com.user.userservice.exception.IncorrectPasswordException;
 import com.user.userservice.exception.InvalidInputException;
@@ -26,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("users")
@@ -45,13 +43,13 @@ public class UserController {
         return ResponseEntity.ok(UserResponseDTO.builder().token(response.getLeft()).userId(response.getRight().getId()).role(response.getRight().getRole()).message("User Login Successfully").time(LocalDateTime.now()).build());
     }
 
-    @PostMapping("register")
+    @PostMapping(value = "register", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse> register(@ModelAttribute @Valid UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException {
         return userService.register(userRegistrationDTO);
     }
 
     @GetMapping("/countries")
-    public ResponseEntity<List<Country>> fetchAllCountries() {
+    public ResponseEntity<CountryListDTO> fetchAllCountries() {
         return userService.fetchAllCountries();
     }
 
