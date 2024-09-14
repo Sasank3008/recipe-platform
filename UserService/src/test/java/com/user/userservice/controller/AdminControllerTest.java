@@ -22,7 +22,6 @@ import com.user.userservice.service.AdminService;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,39 +35,31 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class AdminControllerTest {
-
     private MockMvc mockMvc;
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     @Mock
     private AdminService adminService;
-
     @InjectMocks
     private AdminController adminController;
     @Mock
     private CountryService countryService;
-
     @BeforeEach
     void setUp() {
         mockMvc = standaloneSetup(adminController).build();
-
     }
     @Mock
     public CuisineService cuisineService;
-
-
-
-
     @Test
-    void getAllCuisines_ShouldReturnListOfCuisines() {
+    void getAllCuisines_ShouldReturnCuisineResponse() {
         List<CuisineDTO> mockCuisines = Arrays.asList(
                 new CuisineDTO(1L, "Italian", true, "image1.jpg"),
                 new CuisineDTO(2L, "Mexican", true, "image2.jpg")
         );
         when(cuisineService.getAllCuisines()).thenReturn(mockCuisines);
-        ResponseEntity<List<CuisineDTO>> response = adminController.getAllCuisines();
+        ResponseEntity<CuisineResponse> response = adminController.getAllCuisines();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(2, response.getBody().size());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().getCuisines().size());
+        assertEquals("All cuisines fetched successfully", response.getBody().getMessage());
         verify(cuisineService, times(1)).getAllCuisines();
     }
 
@@ -83,17 +74,19 @@ class AdminControllerTest {
         assertEquals(mockCuisine, response.getBody());
         verify(cuisineService, times(1)).addCuisine(anyString(), anyBoolean(), any(MultipartFile.class));
     }
-
     @Test
-    void fetchEnabledCuisines_ShouldReturnListOfEnabledCuisines() {
+    void fetchEnabledCuisines_ShouldReturnCuisineResponse() {
         List<CuisineDTO> mockEnabledCuisines = Arrays.asList(
                 new CuisineDTO(1L, "Italian", true, "image1.jpg"),
                 new CuisineDTO(2L, "Indian", true, "image2.jpg")
         );
         when(cuisineService.getEnabledCuisines()).thenReturn(mockEnabledCuisines);
-        ResponseEntity<List<CuisineDTO>> response = adminController.fetchEnabledCuisines();
+        ResponseEntity<CuisineResponse> response = adminController.fetchEnabledCuisines();
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertEquals(mockEnabledCuisines, response.getBody());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().getCuisines().size());
+        assertEquals(mockEnabledCuisines, response.getBody().getCuisines());
+        assertEquals("Enabled cuisines fetched successfully", response.getBody().getMessage());
         verify(cuisineService, times(1)).getEnabledCuisines();
     }
 

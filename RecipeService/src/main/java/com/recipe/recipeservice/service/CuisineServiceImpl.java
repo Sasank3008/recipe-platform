@@ -21,7 +21,7 @@ public class CuisineServiceImpl implements CuisineService {
     public CuisineDTO addCuisine(CuisineDTO cuisineDTO) {
         Cuisine newCuisine = new Cuisine();
         newCuisine.setName(cuisineDTO.getName());
-        newCuisine.setEnabled(true);
+        newCuisine.setEnabled(cuisineDTO.isEnabled());
         newCuisine.setImageUrl(cuisineDTO.getImageUrl());
 
         Cuisine savedCuisine = cuisineRepository.save(newCuisine);

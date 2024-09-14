@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 public class CuisineDTO {
     private Long id;
     private String name;
-    private boolean isEnabled=true;
+    private boolean isEnabled;
     private String imageUrl;
 
 }

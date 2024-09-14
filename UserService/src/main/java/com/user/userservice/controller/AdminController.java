@@ -65,11 +65,7 @@ public class AdminController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-    @GetMapping("/cuisines")
-    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
-        List<CuisineDTO> cuisines = cuisineService.getAllCuisines();
-        return ResponseEntity.ok(cuisines);
-    }
+
 
     @PostMapping("/cuisines")
     public ResponseEntity<CuisineDTO> saveCuisine(@RequestParam("name") String name,
@@ -79,11 +75,7 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
     }
 
-    @GetMapping("/cuisines/enabled")
-    public ResponseEntity<List<CuisineDTO>> fetchEnabledCuisines() {
-        List<CuisineDTO> enabledCuisines = cuisineService.getEnabledCuisines();
-        return ResponseEntity.ok(enabledCuisines);
-    }
+
 
     @DeleteMapping("/cuisines/{id}")
     public ResponseEntity<ApiResponse> deleteCuisine(@PathVariable Long id) {
@@ -113,4 +105,25 @@ public class AdminController {
                 .build();
         return ResponseEntity.status(status).body(response);
     }
+    @GetMapping("/cuisines")
+    public ResponseEntity<CuisineResponse> getAllCuisines() {
+        List<CuisineDTO> cuisines = cuisineService.getAllCuisines();
+        return buildCuisineResponse(cuisines, "All cuisines fetched successfully");
+    }
+
+    @GetMapping("/cuisines/enabled")
+    public ResponseEntity<CuisineResponse> fetchEnabledCuisines() {
+        List<CuisineDTO> enabledCuisines = cuisineService.getEnabledCuisines();
+        return buildCuisineResponse(enabledCuisines, "Enabled cuisines fetched successfully");
+    }
+
+    private ResponseEntity<CuisineResponse> buildCuisineResponse(List<CuisineDTO> cuisines, String message) {
+        CuisineResponse response = CuisineResponse.builder()
+                .cuisines(cuisines)
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
 }
