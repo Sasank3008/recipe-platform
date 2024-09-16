@@ -8,6 +8,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.user.userservice.exception.ApiAccessDeniedHandler;
 import com.user.userservice.exception.JwtAuthenticationEntryPoint;
 import com.user.userservice.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +38,7 @@ public class UserSecurityConfiguration {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers->headers.cacheControl(cache->cache.disable()))
                 .exceptionHandling(exceptions->{
                     exceptions.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
                     exceptions.accessDeniedHandler(new ApiAccessDeniedHandler());
@@ -50,6 +52,14 @@ public class UserSecurityConfiguration {
                 })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwtDecoder()))
+                .logout(logout -> logout
+                        .logoutUrl("/users/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().write("{\"message\":\"Logged out successfully \"}");
+                        })
+                        .permitAll()
+                )
                 .build();
     }
 
