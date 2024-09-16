@@ -69,9 +69,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse> register(UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException {
+    public ResponseEntity<ApiResponse> register(UserRegistrationDTO userRegistrationDTO) throws IOException, InvalidInputException {
         if (userRepository.existsByEmail(userRegistrationDTO.getEmail())) {
-            throw new UserAlreadyExistsException(ErrorConstants.EMAIL_EXISTS + userRegistrationDTO.getEmail());
+            throw new InvalidInputException(ErrorConstants.EMAIL_EXISTS + userRegistrationDTO.getEmail());
         }
 
         userRepository.save(mapUserRegistrationDTOtoUser(userRegistrationDTO));
@@ -113,6 +113,7 @@ public class UserServiceImpl implements UserService {
         if (!allowedExtensions.contains(fileExtension)) {
             throw new InvalidInputException(ErrorConstants.INVALID_FILE_TYPE);
         }
+
         String uniqueIdentifier = UUID.randomUUID().toString();
         String newFileName = uniqueIdentifier + fileExtension;
 

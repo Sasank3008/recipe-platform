@@ -238,7 +238,7 @@ class UserServiceImplTest {
         dto.setEmail("existing@example.com");
 
         when(userRepository.existsByEmail(dto.getEmail())).thenReturn(true);
-        assertThrows(UserAlreadyExistsException.class, () -> userService.register(dto), "This Email already exists : " + dto.getEmail());
+        assertThrows(InvalidInputException.class, () -> userService.register(dto), "This Email already exists : " + dto.getEmail());
         verify(userRepository).existsByEmail(dto.getEmail());
     }
 
