@@ -24,20 +24,40 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class UserSecurityConfiguration {
+public class UserSecurityConfiguration{
 
     private final RsaConfigurationProperties rsaConfigurationProperties;
     private final CustomUserDetailsService customUserDetailsService;
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(Arrays.asList("http://localhost:8084"));
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowCredentials(true);
+        config.setAllowedHeaders(Arrays.asList("Content-Type","Authorization","X-Requested-With","accept","Origin","Access-Control-Request-Method","Access-Control-Request-Headers"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptions->{
+                    exceptions.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
+                    exceptions.accessDeniedHandler(new ApiAccessDeniedHandler());
+                })
                 .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-ui.html", "/favicon.ico", "/swagger-resources/**", "/webjars/**").permitAll();
                     auth.requestMatchers("users/register", "users/login", "users/validate-email", "users/reset-password", "admins/countries", "users/countries").permitAll();
                     auth.requestMatchers("/admins/**").hasRole("ADMIN");
                     auth.requestMatchers("/users/**").hasAnyRole("ADMIN","USER");
