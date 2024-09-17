@@ -2,11 +2,16 @@ package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.RecipeDTO;
-import com.recipe.recipeservice.entity.*;
+import com.recipe.recipeservice.entity.Recipe;
+import com.recipe.recipeservice.entity.Tag;
+import com.recipe.recipeservice.entity.Category;
+import com.recipe.recipeservice.entity.DifficultyLevel;
+import com.recipe.recipeservice.entity.Cuisine;
+import com.recipe.recipeservice.entity.Status;
 import com.recipe.recipeservice.exception.InvalidInputException;
+import com.recipe.recipeservice.repository.RecipeRepository;
 import com.recipe.recipeservice.repository.CategoryRepository;
 import com.recipe.recipeservice.repository.CuisineRepository;
-import com.recipe.recipeservice.repository.RecipeRepository;
 import com.recipe.recipeservice.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -14,12 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -95,21 +97,21 @@ public class RecipeService {
     }
 
 
-    public byte[] getUserProfileImage(Long userId) throws  IOException {
-        Recipe user = recipeRepository.findById(userId).get();
-               // .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
-
-        String imageUrl = path + File.separator + user.getImageUrl();
-
-        if (imageUrl == null || imageUrl.isEmpty()) {
-            throw new FileNotFoundException("doesn't exist");
-        }
-        Path imagePath = Paths.get(imageUrl);
-
-
-        if (!Files.exists(imagePath)) {
-            throw new FileNotFoundException("hey no there");
-        }
-        return Files.readAllBytes(imagePath);
-    }
+//    public byte[] getUserProfileImage(Long userId) throws  IOException {
+//        Recipe user = recipeRepository.findById(userId).get();
+//               // .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
+//
+//        String imageUrl = path + File.separator + user.getImageUrl();
+//
+//        if (imageUrl == null || imageUrl.isEmpty()) {
+//            throw new FileNotFoundException("doesn't exist");
+//        }
+//        Path imagePath = Paths.get(imageUrl);
+//
+//
+//        if (!Files.exists(imagePath)) {
+//            throw new FileNotFoundException("hey no there");
+//        }
+//        return Files.readAllBytes(imagePath);
+//    }
 }

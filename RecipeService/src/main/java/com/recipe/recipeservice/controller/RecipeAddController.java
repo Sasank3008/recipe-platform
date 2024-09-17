@@ -3,9 +3,9 @@ package com.recipe.recipeservice.controller;
 import com.recipe.recipeservice.dto.ApiResponse;
 import com.recipe.recipeservice.dto.CuisineDTO;
 import com.recipe.recipeservice.dto.RecipeDTO;
+import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.Cuisine;
-import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import com.recipe.recipeservice.service.RecipeService;
@@ -14,11 +14,15 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -69,11 +73,11 @@ public class RecipeAddController {
     public ResponseEntity<Cuisine> createCuisine(@RequestBody Cuisine cuisine) {
         return ResponseEntity.ok(recipeService.createCuisine(cuisine));
     }
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getProfileImage(@PathVariable Long userId) throws  IOException {
-        return ResponseEntity.ok()
-                .contentType(MediaType.IMAGE_JPEG)
-                .body(recipeService.getUserProfileImage(userId));
-    }
+//    @GetMapping("/{userId}")
+//    public ResponseEntity<?> getProfileImage(@PathVariable Long userId) throws  IOException {
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.IMAGE_JPEG)
+//                .body(recipeService.getUserProfileImage(userId));
+//    }
 
 }
