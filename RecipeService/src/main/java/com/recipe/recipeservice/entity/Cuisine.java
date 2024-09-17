@@ -1,11 +1,16 @@
 package com.recipe.recipeservice.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
 import java.util.List;
+
 @Entity
 @Table(name = "cuisine")
 @Data
@@ -24,10 +29,6 @@ public class Cuisine {
     @OneToMany(mappedBy = "cuisine")
     @JsonIgnore
     private List<Recipe> recipes;
-
-
-
-
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
     }

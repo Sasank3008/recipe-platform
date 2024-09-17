@@ -1,8 +1,8 @@
 package com.recipe.recipeservice.controller;
 
 import com.recipe.recipeservice.dto.ApiResponse;
+import com.recipe.recipeservice.dto.AddRecipeDTO;
 import com.recipe.recipeservice.dto.CuisineDTO;
-import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.Cuisine;
@@ -28,7 +28,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("recipe")
+@RequestMapping("recipes")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class RecipeAddController {
@@ -38,8 +38,8 @@ public class RecipeAddController {
     @Value("${project.image}")
     String path;
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> addRecipe(@ModelAttribute @Valid RecipeDTO recipeDto) throws InvalidInputException, IOException, MethodArgumentNotValidException {
-        recipeService.createRecipe(recipeDto);
+    public ResponseEntity<ApiResponse> addRecipe(@ModelAttribute @Valid AddRecipeDTO addRecipeDto) throws InvalidInputException, IOException, MethodArgumentNotValidException {
+        recipeService.createRecipe(addRecipeDto);
         ApiResponse response = ApiResponse.builder()
                 .response("Successfully Added the Recipe")
                 .timestamp(LocalDateTime.now())
@@ -73,11 +73,4 @@ public class RecipeAddController {
     public ResponseEntity<Cuisine> createCuisine(@RequestBody Cuisine cuisine) {
         return ResponseEntity.ok(recipeService.createCuisine(cuisine));
     }
-//    @GetMapping("/{userId}")
-//    public ResponseEntity<?> getProfileImage(@PathVariable Long userId) throws  IOException {
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.IMAGE_JPEG)
-//                .body(recipeService.getUserProfileImage(userId));
-//    }
-
 }

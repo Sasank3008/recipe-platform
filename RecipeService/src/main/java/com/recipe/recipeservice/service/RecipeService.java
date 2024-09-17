@@ -1,7 +1,7 @@
 package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
-import com.recipe.recipeservice.dto.RecipeDTO;
+import com.recipe.recipeservice.dto.AddRecipeDTO;
 import com.recipe.recipeservice.entity.Recipe;
 import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
@@ -38,10 +38,6 @@ public class RecipeService {
     private final CuisineRepository cuisineRepository;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
-    public Recipe addRecipe(RecipeDTO recipeDTO) throws InvalidInputException, IOException {
-        recipeRepository.save(mapRecipeDTOtoRecipe(recipeDTO));
-        return  recipeRepository.save(mapRecipeDTOtoRecipe(recipeDTO));
-    }
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }
@@ -57,19 +53,19 @@ public class RecipeService {
     public Cuisine createCuisine(Cuisine cuisine) {
         return cuisineRepository.save(cuisine);
     }
-    public Recipe createRecipe(RecipeDTO recipeDTO) throws InvalidInputException, IOException , MethodArgumentNotValidException {
-           modelMapper.map(recipeDTO, Recipe.class);
-          return recipeRepository.save(mapRecipeDTOtoRecipe(recipeDTO));
+    public Recipe createRecipe(AddRecipeDTO addRecipeDTO) throws InvalidInputException, IOException , MethodArgumentNotValidException {
+           modelMapper.map(addRecipeDTO, Recipe.class);
+          return recipeRepository.save(mapRecipeDTOtoRecipe(addRecipeDTO));
     }
-    public Recipe mapRecipeDTOtoRecipe(RecipeDTO recipeDTO) throws IOException, InvalidInputException {
-        Recipe recipe = modelMapper.map(recipeDTO, Recipe.class);
+    public Recipe mapRecipeDTOtoRecipe(AddRecipeDTO addRecipeDTO) throws IOException, InvalidInputException {
+        Recipe recipe = modelMapper.map(addRecipeDTO, Recipe.class);
         recipe.setStatus(Status.PENDING);
-        recipe.setCategory(categoryRepository.findById(Long.parseLong(recipeDTO.getCategoryId())).orElse(null));
-        recipe.setCuisine(cuisineRepository.findById(Long.parseLong(recipeDTO.getCuisineId())).orElse(null));
-        recipe.setDifficultyLevel(DifficultyLevel.valueOf(Integer.parseInt(recipeDTO.getDifficultyLevel())));
-        List<Tag> tags = tagRepository.findAllById(recipeDTO.getTagIds().stream().map(Long::parseLong).collect(Collectors.toList()));
+        recipe.setCategory(categoryRepository.findById(Long.parseLong(addRecipeDTO.getCategoryId())).orElse(null));
+        recipe.setCuisine(cuisineRepository.findById(Long.parseLong(addRecipeDTO.getCuisineId())).orElse(null));
+        recipe.setDifficultyLevel(DifficultyLevel.valueOf(Integer.parseInt(addRecipeDTO.getDifficultyLevel())));
+        List<Tag> tags = tagRepository.findAllById(addRecipeDTO.getTagIds().stream().map(Long::parseLong).collect(Collectors.toList()));
         recipe.setTags(tags);
-        recipe.setImageUrl(uploadImage(path, recipeDTO.getFile()));
+        recipe.setImageUrl(uploadImage(path, addRecipeDTO.getFile()));
         return recipe;
     }
     public String uploadImage(String path, MultipartFile file) throws IOException, NullPointerException, InvalidInputException {
@@ -78,7 +74,7 @@ public class RecipeService {
         }
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isEmpty()) {
-            throw new InvalidInputException("File must have a valid name.");
+            throw new InvalidInputException(ErrorConstants.INVALID_FILE_NAME);
         }
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         List<String> allowedExtensions = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp");
@@ -95,23 +91,4 @@ public class RecipeService {
         Files.copy(file.getInputStream(), Paths.get(filePath));
         return newFileName;
     }
-
-
-//    public byte[] getUserProfileImage(Long userId) throws  IOException {
-//        Recipe user = recipeRepository.findById(userId).get();
-//               // .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
-//
-//        String imageUrl = path + File.separator + user.getImageUrl();
-//
-//        if (imageUrl == null || imageUrl.isEmpty()) {
-//            throw new FileNotFoundException("doesn't exist");
-//        }
-//        Path imagePath = Paths.get(imageUrl);
-//
-//
-//        if (!Files.exists(imagePath)) {
-//            throw new FileNotFoundException("hey no there");
-//        }
-//        return Files.readAllBytes(imagePath);
-//    }
 }

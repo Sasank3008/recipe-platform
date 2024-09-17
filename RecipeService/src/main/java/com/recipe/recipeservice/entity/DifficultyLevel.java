@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum DifficultyLevel {
     EASY(1),
     MEDIUM(2),
-    HARD(3);
+    HARD(3),
+    UNKNOWN(0);
     private final int id;
 
     DifficultyLevel(int id) {
@@ -19,7 +20,6 @@ public enum DifficultyLevel {
                 return level;
             }
         }
-
-        throw new IllegalArgumentException("Invalid DifficultyLevel id: " + id);
+        return UNKNOWN;
     }
 }

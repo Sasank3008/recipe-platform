@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecipeDTO {
+public class AddRecipeDTO {
     private String id;
     @NotBlank(message = "Please Enter Valid name of the recipe")
     private String name;
