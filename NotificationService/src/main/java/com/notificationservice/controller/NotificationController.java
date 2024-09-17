@@ -8,14 +8,14 @@ import com.notificationservice.dto.SimpleResponseDTO;
 import com.notificationservice.entity.Notifications;
 import com.notificationservice.serviceImpl.NotificationServiceImpl;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RequestMapping("notify")
 public class NotificationController {
 
