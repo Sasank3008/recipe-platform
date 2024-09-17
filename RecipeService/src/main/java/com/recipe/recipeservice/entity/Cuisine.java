@@ -1,49 +1,33 @@
 package com.recipe.recipeservice.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
+import java.util.List;
 @Entity
-@Table(name = "cuisines")
+@Table(name = "cuisine")
+@Data
+@NoArgsConstructor
 public class Cuisine {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     private boolean isEnabled=true;
-    public Cuisine() {
-        this.isEnabled = true;
-    }
-
     public Cuisine(Long id, String name, boolean isEnabled) {
         this.id = id;
         this.name = name;
         this.isEnabled = isEnabled;
     }
+    @OneToMany(mappedBy = "cuisine")
+    @JsonIgnore
+    private List<Recipe> recipes;
 
-    // Getters and setters
-    public Long getId() {
-        return id;
-    }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
-    public String getName() {
-        return name;
-    }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    // Ensure this method is correctly named as 'setEnabled'
     public void setEnabled(boolean enabled) {
         isEnabled = enabled;
     }
