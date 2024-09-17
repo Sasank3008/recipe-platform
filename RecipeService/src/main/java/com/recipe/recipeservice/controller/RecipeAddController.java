@@ -9,6 +9,7 @@ import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import com.recipe.recipeservice.service.RecipeService;
+import com.recipe.recipeservice.service.RecipeServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
