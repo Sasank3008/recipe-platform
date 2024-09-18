@@ -60,7 +60,7 @@ class GlobalExceptionHandlerTest {
         AccessDeniedException exception = new AccessDeniedException("Access denied");
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleAccessDeniedException(exception);
         assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
-        assertNotNull(response.getBody());
+        assertNotNull(response.getBody().getError());
         assertEquals("Access denied", response.getBody().getError());
     }
 }

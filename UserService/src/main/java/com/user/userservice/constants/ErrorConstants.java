@@ -17,7 +17,4 @@ public class ErrorConstants {
     public static final String EXPIRED_TOKEN="JWT Token is Expired";
     public static final String ACCESS_DENIED="Access is denied to current resource";
 
-    private ErrorConstants() {
-        // Prevent instantiation
-    }
 }

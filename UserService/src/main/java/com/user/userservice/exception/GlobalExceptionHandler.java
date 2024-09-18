@@ -35,7 +35,6 @@ public class GlobalExceptionHandler {
     }
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-
         ErrorResponse response = ErrorResponse.builder().error(ex.getMessage()).timestamp(LocalDateTime.now()).statusMessage(HttpStatus.NOT_FOUND.toString()).build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }

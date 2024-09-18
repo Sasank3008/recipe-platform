@@ -9,7 +9,6 @@ import com.user.userservice.entity.User;
 import com.user.userservice.exception.IncorrectPasswordException;
 import com.user.userservice.exception.InvalidInputException;
 import com.user.userservice.exception.InvalidPasswordException;
-import com.user.userservice.exception.UserAlreadyExistsException;
 import com.user.userservice.exception.UserNotFoundException;
 import com.user.userservice.repository.CountryRepository;
 import com.user.userservice.repository.UserRepository;
