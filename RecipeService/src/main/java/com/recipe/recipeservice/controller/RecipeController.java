@@ -1,7 +1,7 @@
 package com.recipe.recipeservice.controller;
 
-import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.dto.CuisineDTO;
+import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
