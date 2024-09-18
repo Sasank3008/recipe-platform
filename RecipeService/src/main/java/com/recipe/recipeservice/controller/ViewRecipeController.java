@@ -24,11 +24,11 @@ public class ViewRecipeController {
             ViewRecipeDTO recipe= recipeService.getRecipe(id);
             return ResponseEntity.ok(recipe);
         }
-    @GetMapping("/{userId}")
-    public ResponseEntity<?> getProfileImage(@PathVariable Long userId) throws IOException {
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getProfileImage(@PathVariable Long id) throws IOException {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(recipeService.getUserProfileImage(userId));
+                .body(recipeService.getUserProfileImage(id));
     }
     }
 
