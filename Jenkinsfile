@@ -84,23 +84,23 @@ pipeline {
         }
 
         // Notification module
-        // stage('Build Notification Module') {
-        //     steps {
-        //         dir('NotificationService') {
-        //             echo 'Building Notification Module..'
-        //             sh 'mvn -v'
-        //             sh 'mvn clean install'
-        //         }
-        //     }
-        // }
-        // stage('Test Notification Module') {
-        //     steps {
-        //         dir('NotificationService') {
-        //             echo 'Testing Notification Module..'
-        //             sh 'mvn test'
-        //         }
-        //     }
-        // }
+        stage('Build Notification Module') {
+            steps {
+                dir('NotificationService') {
+                    echo 'Building Notification Module..'
+                    sh 'mvn -v'
+                    sh 'mvn clean install'
+                }
+            }
+        }
+        stage('Test Notification Module') {
+            steps {
+                dir('NotificationService') {
+                    echo 'Testing Notification Module..'
+                    sh 'mvn test'
+                }
+            }
+        }
 
         // Sonar Analysis
         stage('SonarQube analysis') {
