@@ -1,10 +1,7 @@
 package com.notificationservice.controller;
 
 import com.notificationservice.constants.NotificationConstants;
-import com.notificationservice.dto.NotifyUserDTO;
-import com.notificationservice.dto.NotifyDTO;
-import com.notificationservice.dto.ResponseDTO;
-import com.notificationservice.dto.SimpleResponseDTO;
+import com.notificationservice.dto.*;
 import com.notificationservice.entity.Notifications;
 import com.notificationservice.serviceImpl.NotificationServiceImpl;
 import jakarta.validation.Valid;
@@ -22,54 +19,59 @@ public class NotificationController {
     private final NotificationServiceImpl notificationService;
 
     @PostMapping("notifications/notifyAll")
-    public ResponseEntity<?> notifyEveryone(@Valid @RequestBody NotifyDTO notifydto) {
+    public ResponseEntity<Void> notifyEveryone(@Valid @RequestBody NotifyDTO notifydto) {
         notificationService.notifyAll(notifydto.getMessage());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("notifications/notifyAdmin")
-    public ResponseEntity<?> notifyAdmin(@Valid @RequestBody NotifyUserDTO notifyUserdto) {
+    public ResponseEntity<Void> notifyAdmin(@Valid @RequestBody NotifyUserDTO notifyUserdto) {
         return buildOkResponse(() -> notificationService.notifyAdmin(notifyUserdto.getUserId(), notifyUserdto.getMessage()));
     }
 
-    @PostMapping("notifications/notifyUser")
-    public ResponseEntity<?> notifyUser(@Valid @RequestBody NotifyUserDTO notifyUserdto) {
-        return buildOkResponse(() -> notificationService.notifyUser(notifyUserdto.getUserId(), notifyUserdto.getMessage()));
+    @PostMapping("notifications/notifyUsers")
+    public ResponseEntity<String> notifyMultipleUsers(@RequestBody NotificationRequestDTO notificationRequestDTO) {
+        List<String> userIds = notificationRequestDTO.getUserIds();
+        String message = notificationRequestDTO.getMessage();
+
+        notificationService.notifyUsers(userIds, message);
+
+        return ResponseEntity.ok("Notifications sent successfully to all users");
     }
 
     @GetMapping("notifications")
-    public ResponseEntity<?> getAllNotifications() {
+    public ResponseEntity<ResponseDTO> getAllNotifications() {
         return buildDataResponse(NotificationConstants.FETCHING_ALL_NOTIFICATIONS_SUCCESS, notificationService.getAllNotifications());
     }
 
     @PutMapping("notifications")
-    public ResponseEntity<?> updateViewStatus(@RequestParam int id) {
+    public ResponseEntity<SimpleResponseDTO> updateViewStatus(@RequestParam int id) {
         notificationService.updateViewStatus(id);
         return buildSimpleResponse(NotificationConstants.UPDATE_SUCCESS);
     }
 
     @GetMapping("notifications/user")
-    public ResponseEntity<?> getUserNotifications(@RequestParam String userId) {
+    public ResponseEntity<ResponseDTO> getUserNotifications(@RequestParam String userId) {
         return buildDataResponse(NotificationConstants.FETCHING_USER_NOTIFICATIONS_SUCCESS, notificationService.getUserNotifications(userId));
     }
 
     @GetMapping("notifications/user/all")
-    public ResponseEntity<?> getAllNotificationsForUser(@RequestParam String userId) {
+    public ResponseEntity<ResponseDTO> getAllNotificationsForUser(@RequestParam String userId) {
         return buildDataResponse(NotificationConstants.FETCHING_ALL_NOTIFICATIONS_SUCCESS, notificationService.getAllNotificationsForUserByUserId(userId));
     }
 
     @GetMapping("notifications/admin/all")
-    public ResponseEntity<?> getAllAdminNotifications() {
+    public ResponseEntity<ResponseDTO> getAllAdminNotifications() {
         return buildDataResponse(NotificationConstants.FETCHING_ALL_ADMIN_NOTIFICATIONS_SUCCESS, notificationService.getAllAdminNotifications());
     }
 
     @GetMapping("notifications/admin/unviewed")
-    public ResponseEntity<?> getUnViewedAdminNotifications() {
+    public ResponseEntity<ResponseDTO> getUnViewedAdminNotifications() {
         return buildDataResponse(NotificationConstants.FETCHING_UNVIEWED_ADMIN_NOTIFICATIONS_SUCCESS, notificationService.getUnViewedAdminNotifications());
     }
 
     // Helper methods for building responses
-    private ResponseEntity<?> buildDataResponse(String message, List<Notifications> data) {
+    private ResponseEntity<ResponseDTO> buildDataResponse(String message, List<Notifications> data) {
         ResponseDTO response = ResponseDTO.builder()
                 .status(NotificationConstants.STATUS_OK)
                 .message(message)
@@ -78,7 +80,7 @@ public class NotificationController {
         return ResponseEntity.ok().body(response);
     }
 
-    private ResponseEntity<?> buildSimpleResponse(String message) {
+    private ResponseEntity<SimpleResponseDTO> buildSimpleResponse(String message) {
         SimpleResponseDTO simpleResponseDTO = SimpleResponseDTO.builder()
                 .status(NotificationConstants.STATUS_OK)
                 .message(message)
@@ -86,7 +88,7 @@ public class NotificationController {
         return ResponseEntity.ok().body(simpleResponseDTO);
     }
 
-    private ResponseEntity<?> buildOkResponse(Runnable runnable) {
+    private ResponseEntity<Void> buildOkResponse(Runnable runnable) {
         runnable.run();
         return ResponseEntity.ok().build();
     }

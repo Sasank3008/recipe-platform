@@ -49,15 +49,17 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void notifyUser(String userId, String sentMessage) {
-        String userEmail = getUserEmailById(userId);
-        simpMessagingTemplate.convertAndSend(destinationConstants.getUserDestination() + userId, sentMessage);
-        Notifications notifications = Notifications.builder()
-                .recipient(userEmail)
-                .sender("Admin")
-                .message(sentMessage)
-                .build();
-        notificationDao.save(notifications);
+    public void notifyUsers(List<String> userIds, String sentMessage) {
+        for (String userId : userIds) {
+            String userEmail = getUserEmailById(userId);
+            simpMessagingTemplate.convertAndSend(destinationConstants.getUserDestination() + userId, sentMessage);
+            Notifications notifications = Notifications.builder()
+                    .recipient(userEmail)
+                    .sender("Admin")
+                    .message(sentMessage)
+                    .build();
+            notificationDao.save(notifications);
+        }
     }
 
     @Override

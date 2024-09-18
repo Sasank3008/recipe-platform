@@ -8,7 +8,7 @@ public interface NotificationService {
 
     void notifyAll(String message);
     void notifyAdmin(String userId, String message);
-    void notifyUser(String userId, String message);
+    void notifyUsers(List<String> userIds, String sentMessage);
     Notifications updateViewStatus(int id);
     List<Notifications> getAllNotifications();
     List<Notifications> getUserNotifications(String userId);

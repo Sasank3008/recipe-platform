@@ -1,26 +1,27 @@
 package com.notificationservice.service;
-
-import com.notificationservice.constants.DestinationConstants;
-import com.notificationservice.entity.Notifications;
 import com.notificationservice.exception.NotFoundException;
-import com.notificationservice.repository.NotificationDao;
-import com.notificationservice.service.NotificationService;
-import com.notificationservice.serviceImpl.NotificationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 
+import static org.mockito.ArgumentMatchers.any;
+
+import com.notificationservice.entity.Notifications;
+import com.notificationservice.serviceImpl.NotificationServiceImpl;
+import com.notificationservice.constants.DestinationConstants;
+import com.notificationservice.repository.NotificationDao;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
+
 
 public class NotificationServiceImplTest {
 
@@ -71,23 +72,23 @@ public class NotificationServiceImplTest {
 	}
 
 	@Test
-	void testNotifyUser() {
-		String userId = "user123";
+	void testNotifyMultipleUsers() {
+		List<String> userIds = Arrays.asList("user123", "user456", "user789");
 		String message = "User Message";
-		String userEmail = "user_email_for_user123@example.com";
-
 		when(destinationConstants.getUserDestination()).thenReturn("/user/notifications/");
 		when(notificationDao.save(any(Notifications.class))).thenReturn(new Notifications());
-
-		notificationServiceImpl.notifyUser(userId, message);
-
-		verify(simpMessagingTemplate, times(1)).convertAndSend(destinationConstants.getUserDestination() + userId, message);
-		verify(notificationDao, times(1)).save(Notifications.builder()
-				.recipient(userEmail)
-				.sender("Admin")
-				.message(message)
-				.build());
+		notificationServiceImpl.notifyUsers(userIds, message);
+		for (String userId : userIds) {
+			String userEmail = "user_email_for_" + userId + "@example.com";
+			verify(simpMessagingTemplate, times(1)).convertAndSend(destinationConstants.getUserDestination() + userId, message);
+			verify(notificationDao, times(1)).save(Notifications.builder()
+					.recipient(userEmail)
+					.sender("Admin")
+					.message(message)
+					.build());
+		}
 	}
+
 
 	@Test
 	void testGetAllNotifications() {

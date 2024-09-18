@@ -1,5 +1,4 @@
 package com.notificationservice.controller;
-
 import com.notificationservice.constants.NotificationConstants;
 import com.notificationservice.dto.NotifyUserDTO;
 import com.notificationservice.dto.NotifyDTO;
@@ -53,17 +52,7 @@ public class NotificationControllerTest {
         verify(notificationService, times(1)).notifyAdmin("admin", "Admin Notification");
     }
 
-    @Test
-    void notifyUser_Success() {
-        NotifyUserDTO notifyUserDTO = new NotifyUserDTO();
-        notifyUserDTO.setUserId("user1");
-        notifyUserDTO.setMessage("User Notification");
 
-        ResponseEntity<?> response = notificationController.notifyUser(notifyUserDTO);
-
-        assertEquals(200, response.getStatusCodeValue());
-        verify(notificationService, times(1)).notifyUser("user1", "User Notification");
-    }
 
     @Test
     void getAllNotifications_Success() {
@@ -142,8 +131,6 @@ public class NotificationControllerTest {
         assertEquals(NotificationConstants.FETCHING_UNVIEWED_ADMIN_NOTIFICATIONS_SUCCESS, responseDTO.getMessage());
         assertEquals(notifications, responseDTO.getData());
     }
-
-    // Edge Case Tests
     @Test
     void notifyEveryone_EmptyMessage() {
         NotifyDTO notifyDTO = new NotifyDTO();
