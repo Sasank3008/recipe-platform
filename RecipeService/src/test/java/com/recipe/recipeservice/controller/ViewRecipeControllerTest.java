@@ -37,7 +37,6 @@ class ViewRecipeControllerTest {
                 "Spaghetti, Eggs, Pancetta",
                 "Classic Italian pasta dish",
                 30,
-                "http://example.com/carbonara.jpg",
                 "Italian",
                 "Non-Veg",
                 List.of("Dinner", "Easy"),

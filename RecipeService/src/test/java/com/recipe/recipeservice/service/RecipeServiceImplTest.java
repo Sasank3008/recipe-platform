@@ -59,7 +59,6 @@ class RecipeServiceImplTest {
             assertEquals("Spaghetti, Eggs, Pancetta", result.getIngredients());
             assertEquals("Classic Italian pasta dish", result.getDescription());
             assertEquals(30, result.getCookingTime());
-            assertEquals("http://example.com/carbonara.jpg", result.getImageUrl());
             assertEquals("Italian", result.getCuisine());
             assertEquals("Non-Veg", result.getCategory());
             assertEquals(List.of("Dinner", "Easy"), result.getTags());
