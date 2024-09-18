@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import com.user.userservice.dto.FileResponse;
 import com.user.userservice.dto.UserDisplayDTO;
 import com.user.userservice.dto.PasswordDTO;
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final CustomUserDetailsService userDetailsService;
     @Value("${project.image}")
     String path;
+
     @Override
     public Pair<String, User> login(UserLoginDTO userLoginDTO) throws IncorrectPasswordException {
         Authentication authentication;
@@ -69,13 +72,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<ApiResponse> register(UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException {
+    public ResponseEntity<ApiResponse> register(UserRegistrationDTO userRegistrationDTO) throws IOException, InvalidInputException {
         if (userRepository.existsByEmail(userRegistrationDTO.getEmail())) {
-            throw new UserAlreadyExistsException(ErrorConstants.EMAIL_EXISTS + userRegistrationDTO.getEmail());
+            throw new InvalidInputException(ErrorConstants.EMAIL_EXISTS + userRegistrationDTO.getEmail());
         }
 
         userRepository.save(mapUserRegistrationDTOtoUser(userRegistrationDTO));
-
         ApiResponse response = ApiResponse.builder()
                 .response("Registration Successful")
                 .timestamp(LocalDateTime.now())
@@ -113,6 +115,7 @@ public class UserServiceImpl implements UserService {
         if (!allowedExtensions.contains(fileExtension)) {
             throw new InvalidInputException(ErrorConstants.INVALID_FILE_TYPE);
         }
+
         String uniqueIdentifier = UUID.randomUUID().toString();
         String newFileName = uniqueIdentifier + fileExtension;
 
@@ -148,6 +151,7 @@ public class UserServiceImpl implements UserService {
 
         return ResponseEntity.ok(countryListDTO);
     }
+
     @Override
     public UserDisplayDTO getUser(Long id) throws UserNotFoundException {
         User user = userRepository.findById(id)

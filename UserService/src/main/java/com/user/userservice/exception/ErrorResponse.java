@@ -3,12 +3,11 @@ package com.user.userservice.exception;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-
 import java.time.LocalDateTime;
 
-@AllArgsConstructor
-@Builder
 @Data
+@Builder
+@AllArgsConstructor
 public class ErrorResponse {
     private LocalDateTime timestamp;
     private String statusMessage;

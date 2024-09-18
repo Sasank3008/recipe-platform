@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -191,7 +193,7 @@ class UserServiceImplTest {
     void uploadImage_InvalidFileExtension_ThrowsInvalidInputException() {
         MultipartFile fileWithInvalidExt = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());
         Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", fileWithInvalidExt));
-        assertEquals("Invalid file type. Only image files are allowed.", exception.getMessage());
+        assertEquals("Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.", exception.getMessage());
     }
 
     @Test
@@ -236,7 +238,7 @@ class UserServiceImplTest {
         dto.setEmail("existing@example.com");
 
         when(userRepository.existsByEmail(dto.getEmail())).thenReturn(true);
-        assertThrows(UserAlreadyExistsException.class, () -> userService.register(dto), "This Email already exists : " + dto.getEmail());
+        assertThrows(InvalidInputException.class, () -> userService.register(dto), "This Email already exists : " + dto.getEmail());
         verify(userRepository).existsByEmail(dto.getEmail());
     }
 
@@ -344,5 +346,25 @@ class UserServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         assertThrows(FileNotFoundException.class, () -> userService.getUserProfileImageUrl(1L));
+    }
+
+    @Test
+    void testFetchCountryById() {
+        Country country1 = new Country(1, "India");
+        Country country2 = new Country(2, "Canada");
+        List<Country> mockCountries = Arrays.asList(country1, country2);
+        when(countryRepository.findAll()).thenReturn(mockCountries);
+
+        ResponseEntity<CountryListDTO> response = userService.fetchAllCountries();
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().getCountryList().size());
+        assertEquals("India", response.getBody().getCountryList().get(0).getName());
+        assertEquals("Canada", response.getBody().getCountryList().get(1).getName());
+        assertEquals(HttpStatus.OK.name(), response.getBody().getStatus());
+
+        verify(countryRepository).findAll();
     }
 }
