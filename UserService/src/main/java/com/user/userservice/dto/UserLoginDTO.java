@@ -7,6 +7,6 @@ import lombok.Data;
 public class UserLoginDTO {
     @NotBlank(message = "Email is mandatory")
     private String email;
-    @NotBlank(message = "Email is mandatory")
+    @NotBlank(message = "Password is mandatory")
     private String password;
 }
