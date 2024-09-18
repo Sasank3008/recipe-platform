@@ -133,4 +133,16 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(response);
     }
+
+    @ExceptionHandler(InvalidInputException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .error(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .statusMessage(HttpStatus.BAD_REQUEST.toString())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
 }

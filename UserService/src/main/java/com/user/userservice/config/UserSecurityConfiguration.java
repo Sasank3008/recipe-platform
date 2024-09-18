@@ -44,7 +44,7 @@ public class UserSecurityConfiguration {
                     exceptions.accessDeniedHandler(new ApiAccessDeniedHandler());
                 })
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("users/register","users/login","users/validate-email","users/reset-password","admins/countries").permitAll();
+                    auth.requestMatchers("users/register", "users/login", "users/validate-email", "users/reset-password", "admins/countries", "users/countries").permitAll();
                     auth.requestMatchers("/admins/**").hasRole("ADMIN");
                     auth.requestMatchers("/users/**").hasAnyRole("ADMIN","USER");
                     auth.anyRequest().authenticated();
