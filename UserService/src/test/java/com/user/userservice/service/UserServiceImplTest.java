@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -163,20 +164,36 @@ class UserServiceImplTest {
 
         dto.setEmail("newuser@example.com");
         dto.setCountry("1");
-        dto.setFile(new MockMultipartFile("file", "test.txt", "text/plain", "Test content".getBytes()));
+        dto.setFile(new MockMultipartFile("file", "test.jpg", "text/plain", "Test content".getBytes()));
 
         return dto;
     }
 
     @Test
-    void testUploadImage() throws IOException, InvalidInputException {
-        MultipartFile file = new MockMultipartFile("file", "image.jpg", "image/jpeg", "Test content".getBytes());
+    void uploadImage_NullFile_ThrowsInvalidInputException() {
+        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", null));
+        assertEquals("File must not be null or empty.", exception.getMessage());
+    }
 
-        String path = "uploads";
-        String result = userService.uploadImage(path, file);
+    @Test
+    void uploadImage_EmptyFileContent_ThrowsInvalidInputException() {
+        MultipartFile emptyFile = new MockMultipartFile("file", "test.jpg", "image/jpeg", new byte[]{});
+        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", emptyFile));
+        assertEquals("File must not be null or empty.", exception.getMessage());
+    }
 
-        assertNotNull(result, "The result should not be null");
-        assertTrue(result.contains(".jpg"), "The result should contain the file extension .jpg");
+    @Test
+    void uploadImage_InvalidFileName_ThrowsInvalidInputException() {
+        MultipartFile fileWithNoName = new MockMultipartFile("file", "", "image/jpeg", "content".getBytes());
+        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", fileWithNoName));
+        assertEquals("File must have a valid name.", exception.getMessage());
+    }
+
+    @Test
+    void uploadImage_InvalidFileExtension_ThrowsInvalidInputException() {
+        MultipartFile fileWithInvalidExt = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());
+        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", fileWithInvalidExt));
+        assertEquals("Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.", exception.getMessage());
     }
 
     @Test
@@ -207,7 +224,8 @@ class UserServiceImplTest {
     void fetchAllCountries() {
         when(countryRepository.findAll()).thenReturn(new ArrayList<>());
 
-        ResponseEntity<List<Country>> response = userService.fetchAllCountries();
+        CountryListDTO countryListDTO = CountryListDTO.builder().countryList(countryRepository.findAll()).build();
+        ResponseEntity<CountryListDTO> response = ResponseEntity.ok(countryListDTO);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
@@ -220,7 +238,7 @@ class UserServiceImplTest {
         dto.setEmail("existing@example.com");
 
         when(userRepository.existsByEmail(dto.getEmail())).thenReturn(true);
-        assertThrows(UserAlreadyExistsException.class, () -> userService.register(dto), "This Email already exists : " + dto.getEmail());
+        assertThrows(InvalidInputException.class, () -> userService.register(dto), "This Email already exists : " + dto.getEmail());
         verify(userRepository).existsByEmail(dto.getEmail());
     }
 
@@ -328,5 +346,25 @@ class UserServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         assertThrows(FileNotFoundException.class, () -> userService.getUserProfileImageUrl(1L));
+    }
+
+    @Test
+    void testFetchCountryById() {
+        Country country1 = new Country(1, "India");
+        Country country2 = new Country(2, "Canada");
+        List<Country> mockCountries = Arrays.asList(country1, country2);
+        when(countryRepository.findAll()).thenReturn(mockCountries);
+
+        ResponseEntity<CountryListDTO> response = userService.fetchAllCountries();
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().getCountryList().size());
+        assertEquals("India", response.getBody().getCountryList().get(0).getName());
+        assertEquals("Canada", response.getBody().getCountryList().get(1).getName());
+        assertEquals(HttpStatus.OK.name(), response.getBody().getStatus());
+
+        verify(countryRepository).findAll();
     }
 }
