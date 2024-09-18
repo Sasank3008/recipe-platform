@@ -48,6 +48,13 @@ public class GlobalExceptionHandler {
               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public  ResponseEntity<ApiResponse> resourceNotFoundException(ResourceNotFoundException ex){
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
 }
 

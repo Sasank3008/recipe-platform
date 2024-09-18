@@ -2,8 +2,10 @@ package com.recipe.recipeservice.service;
 
 
 import com.recipe.recipeservice.dto.AddRecipeDTO;
+import com.recipe.recipeservice.dto.ViewRecipeDTO;
 import com.recipe.recipeservice.entity.*;
 import com.recipe.recipeservice.exception.InvalidInputException;
+import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
@@ -19,5 +21,7 @@ public interface RecipeService {
     public Recipe createRecipe(AddRecipeDTO addRecipeDTO) throws InvalidInputException, IOException, MethodArgumentNotValidException;
     public Recipe mapRecipeDTOtoRecipe(AddRecipeDTO addRecipeDTO) throws IOException, InvalidInputException;
     public String uploadImage(String path, MultipartFile file) throws IOException, NullPointerException, InvalidInputException;
+    ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException;
+    public byte[] getUserProfileImage(Long userId) throws  IOException;
 
 }
