@@ -24,7 +24,7 @@ public class ViewRecipeController {
             ViewRecipeDTO recipe= recipeService.getRecipe(id);
             return ResponseEntity.ok(recipe);
         }
-    @GetMapping("/{id}")
+    @GetMapping("image/{id}")
     public ResponseEntity<?> getProfileImage(@PathVariable Long id) throws IOException, ResourceNotFoundException {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
