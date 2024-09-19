@@ -1,27 +1,28 @@
 package com.notificationservice.service;
+
+import com.notificationservice.entity.Notifications;
 import com.notificationservice.exception.NotFoundException;
+import com.notificationservice.constants.DestinationConstants;
+import com.notificationservice.repository.NotificationDao;
+import com.notificationservice.serviceImpl.NotificationServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static org.mockito.ArgumentMatchers.any;
-
-import com.notificationservice.entity.Notifications;
-import com.notificationservice.serviceImpl.NotificationServiceImpl;
-import com.notificationservice.constants.DestinationConstants;
-import com.notificationservice.repository.NotificationDao;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class NotificationServiceImplTest {
 
@@ -88,7 +89,6 @@ public class NotificationServiceImplTest {
 					.build());
 		}
 	}
-
 
 	@Test
 	void testGetAllNotifications() {

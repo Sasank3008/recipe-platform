@@ -8,9 +8,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.validation.BindingResult;
+
 import java.util.Collections;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class GlobalExceptionHandlerTest {
 
@@ -20,7 +23,6 @@ public class GlobalExceptionHandlerTest {
     void setUp() {
         globalExceptionHandler = new GlobalExceptionHandler();
     }
-
 
     @Test
     void testHandleMethodArgumentNotValidExceptionWithNoErrors() {

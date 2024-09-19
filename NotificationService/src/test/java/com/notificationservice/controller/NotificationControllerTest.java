@@ -1,7 +1,8 @@
 package com.notificationservice.controller;
+
 import com.notificationservice.constants.NotificationConstants;
-import com.notificationservice.dto.NotifyUserDTO;
 import com.notificationservice.dto.NotifyDTO;
+import com.notificationservice.dto.NotifyUserDTO;
 import com.notificationservice.dto.ResponseDTO;
 import com.notificationservice.entity.Notifications;
 import com.notificationservice.serviceImpl.NotificationServiceImpl;
@@ -11,10 +12,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class NotificationControllerTest {
 
@@ -51,8 +56,6 @@ public class NotificationControllerTest {
         assertEquals(200, response.getStatusCodeValue());
         verify(notificationService, times(1)).notifyAdmin("admin", "Admin Notification");
     }
-
-
 
     @Test
     void getAllNotifications_Success() {
@@ -131,6 +134,7 @@ public class NotificationControllerTest {
         assertEquals(NotificationConstants.FETCHING_UNVIEWED_ADMIN_NOTIFICATIONS_SUCCESS, responseDTO.getMessage());
         assertEquals(notifications, responseDTO.getData());
     }
+
     @Test
     void notifyEveryone_EmptyMessage() {
         NotifyDTO notifyDTO = new NotifyDTO();

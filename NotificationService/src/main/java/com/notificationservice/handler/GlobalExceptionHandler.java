@@ -1,6 +1,5 @@
 package com.notificationservice.handler;
 
-
 import com.notificationservice.dto.ResponseFormatDTO;
 import com.notificationservice.exception.NotFoundException;
 import org.springframework.http.ResponseEntity;
