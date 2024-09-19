@@ -22,6 +22,6 @@ public interface RecipeService {
     public Recipe mapRecipeDTOtoRecipe(AddRecipeDTO addRecipeDTO) throws IOException, InvalidInputException;
     public String uploadImage(String path, MultipartFile file) throws IOException, NullPointerException, InvalidInputException;
     ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException;
-    public byte[] getUserProfileImage(Long userId) throws  IOException;
+    public byte[] getRecipeProfileImage(Long userId) throws IOException, ResourceNotFoundException;
 
 }

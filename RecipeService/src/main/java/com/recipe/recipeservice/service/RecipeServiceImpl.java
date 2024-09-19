@@ -95,20 +95,15 @@ public class RecipeServiceImpl implements RecipeService {
         Files.copy(file.getInputStream(), Paths.get(filePath));
         return newFileName;
     }
-    public byte[] getUserProfileImage(Long userId) throws  IOException {
-        Recipe user = recipeRepository.findById(userId).get();
-        // .orElseThrow(() -> new UserNotFoundException(ErrorConstants.USER_NOT_FOUND));
-
+    public byte[] getRecipeProfileImage(Long id) throws IOException, ResourceNotFoundException {
+        Recipe user = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.RECIPE_ID_NOT_FOUND));
         String imageUrl = path + File.separator + user.getImageUrl();
-
         if (imageUrl == null || imageUrl.isEmpty()) {
-            throw new FileNotFoundException("doesn't exist");
+            throw new FileNotFoundException("Image url doesn't exist");
         }
         Path imagePath = Paths.get(imageUrl);
-        // System.out.println(imagePath);
-
         if (!Files.exists(imagePath)) {
-            throw new FileNotFoundException("hey no there");
+            throw new FileNotFoundException("File not found");
         }
         return Files.readAllBytes(imagePath);
     }
@@ -121,7 +116,6 @@ public class RecipeServiceImpl implements RecipeService {
                 recipe.getIngredients(),
                 recipe.getDescription(),
                 recipe.getCookingTime(),
-//                recipe.getImageUrl(),
                 recipe.getCuisine().getName(),
                 recipe.getCategory().getName(),
                 recipe.getTags().stream()

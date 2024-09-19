@@ -25,10 +25,10 @@ public class ViewRecipeController {
             return ResponseEntity.ok(recipe);
         }
     @GetMapping("/{id}")
-    public ResponseEntity<?> getProfileImage(@PathVariable Long id) throws IOException {
+    public ResponseEntity<?> getProfileImage(@PathVariable Long id) throws IOException, ResourceNotFoundException {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
-                .body(recipeService.getUserProfileImage(id));
+                .body(recipeService.getRecipeProfileImage(id));
     }
     }
 
