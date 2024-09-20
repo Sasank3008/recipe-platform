@@ -2,14 +2,7 @@ package com.user.userservice.controller;
 
 import com.nimbusds.jose.util.Pair;
 import com.user.userservice.constants.ControllerConstants;
-import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.UserLoginDTO;
-import com.user.userservice.dto.UserRegistrationDTO;
-import com.user.userservice.dto.UserResponseDTO;
-import com.user.userservice.dto.CountryListDTO;
-import com.user.userservice.dto.PasswordDTO;
-import com.user.userservice.dto.FileResponse;
-import com.user.userservice.dto.UserUpdateDTO;
+import com.user.userservice.dto.*;
 import com.user.userservice.entity.User;
 import com.user.userservice.exception.IncorrectPasswordException;
 import com.user.userservice.exception.InvalidInputException;
@@ -38,6 +31,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("users")
@@ -101,6 +95,17 @@ public class UserController {
         return ResponseEntity.ok()
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(userService.getUserProfileImage(userId));
+    }
+    @GetMapping("/emails")
+    public ResponseEntity<?> getAllEmails() {
+        try {
+            List<UserEmailDTO> emails = userService.getAllUserEmails();
+            return ResponseEntity.ok(emails);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to fetch user emails");
+        }
     }
 
 }
