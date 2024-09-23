@@ -51,10 +51,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void notifyUsers(List<String> userIds, String sentMessage) {
         for (String userId : userIds) {
-            String userEmail = getUserEmailById(userId);
             simpMessagingTemplate.convertAndSend(destinationConstants.getUserDestination() + userId, sentMessage);
             Notifications notifications = Notifications.builder()
-                    .recipient(userEmail)
+                    .recipient(userId)
                     .sender("Admin")
                     .message(sentMessage)
                     .build();
@@ -78,13 +77,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public List<Notifications> getUserNotifications(String userId) {
         String userEmail = getUserEmailById(userId);
-        return notificationDao.findByRecipientInOrderByViewedAscCreateAtDesc(Arrays.asList(userId, "Everyone"));
+        return notificationDao.findByRecipientInOrderByViewedAscCreateAtDesc(Arrays.asList(userId));
     }
 
     @Override
     public List<Notifications> getAllNotificationsForUserByUserId(String userId) {
         String userEmail = getUserEmailById(userId);
-        return notificationDao.findByRecipientInOrderByCreateAtDesc(Arrays.asList(userId, "Everyone"));
+        return notificationDao.findByRecipientInOrderByCreateAtDesc(Arrays.asList(userId));
     }
 
     @Override
@@ -98,5 +97,9 @@ public class NotificationServiceImpl implements NotificationService {
                 .stream()
                 .filter(notification -> !notification.isViewed())
                 .collect(Collectors.toList());
+    }
+    @Override
+    public long getUnreadNotificationCount(String userId) {
+        return notificationDao.countUnreadNotificationsByUserId(userId);
     }
 }

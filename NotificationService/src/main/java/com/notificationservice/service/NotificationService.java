@@ -15,4 +15,5 @@ public interface NotificationService {
     List<Notifications> getAllNotificationsForUserByUserId(String userId);
     List<Notifications> getAllAdminNotifications();
     List<Notifications> getUnViewedAdminNotifications();
+    long getUnreadNotificationCount(String userId);
 }
