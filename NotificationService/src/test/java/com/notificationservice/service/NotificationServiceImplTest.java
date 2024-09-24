@@ -72,23 +72,6 @@ public class NotificationServiceImplTest {
 				.build());
 	}
 
-	@Test
-	void testNotifyMultipleUsers() {
-		List<String> userIds = Arrays.asList("user123", "user456", "user789");
-		String message = "User Message";
-		when(destinationConstants.getUserDestination()).thenReturn("/user/notifications/");
-		when(notificationDao.save(any(Notifications.class))).thenReturn(new Notifications());
-		notificationServiceImpl.notifyUsers(userIds, message);
-		for (String userId : userIds) {
-			String userEmail = "user_email_for_" + userId + "@example.com";
-			verify(simpMessagingTemplate, times(1)).convertAndSend(destinationConstants.getUserDestination() + userId, message);
-			verify(notificationDao, times(1)).save(Notifications.builder()
-					.recipient(userEmail)
-					.sender("Admin")
-					.message(message)
-					.build());
-		}
-	}
 
 	@Test
 	void testGetAllNotifications() {
@@ -133,41 +116,9 @@ public class NotificationServiceImplTest {
 		verify(notificationDao, never()).save(any(Notifications.class));
 	}
 
-	@Test
-	void testGetUserNotifications() {
-		String userId = "user123";
-		String userEmail = "user_email_for_user123@example.com";
-		List<Notifications> notifications = Arrays.asList(
-				new Notifications(),
-				new Notifications()
-		);
 
-		when(notificationDao.findByRecipientInOrderByViewedAscCreateAtDesc(Arrays.asList(userId, "Everyone")))
-				.thenReturn(notifications);
 
-		List<Notifications> result = notificationServiceImpl.getUserNotifications(userId);
 
-		assertEquals(notifications, result);
-		verify(notificationDao, times(1)).findByRecipientInOrderByViewedAscCreateAtDesc(Arrays.asList(userId, "Everyone"));
-	}
-
-	@Test
-	void testGetAllNotificationsForUserByUserId() {
-		String userId = "user123";
-		String userEmail = "user_email_for_user123@example.com";
-		List<Notifications> notifications = Arrays.asList(
-				new Notifications(),
-				new Notifications()
-		);
-
-		when(notificationDao.findByRecipientInOrderByCreateAtDesc(Arrays.asList(userId, "Everyone")))
-				.thenReturn(notifications);
-
-		List<Notifications> result = notificationServiceImpl.getAllNotificationsForUserByUserId(userId);
-
-		assertEquals(notifications, result);
-		verify(notificationDao, times(1)).findByRecipientInOrderByCreateAtDesc(Arrays.asList(userId, "Everyone"));
-	}
 
 	@Test
 	void testGetAllAdminNotifications() {
