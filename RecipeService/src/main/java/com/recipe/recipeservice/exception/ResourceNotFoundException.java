@@ -3,4 +3,5 @@ package com.recipe.recipeservice.exception;
 
        public ResourceNotFoundException(String message){
            super(message);
-       }}
+       }
+   }
