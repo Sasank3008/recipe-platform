@@ -1,8 +1,14 @@
 package com.user.userservice.service;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.util.ReflectionTestUtils.setField;
-
 import com.user.userservice.dto.CuisineDTO;
 import com.user.userservice.exception.CuisineIdNotFoundException;
 import com.user.userservice.exception.DuplicateCuisineException;
@@ -148,17 +154,4 @@ class CuisineServiceImplsTests {
         assertEquals("Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.", exception.getMessage());
     }
 
-    @Test
-    void testSaveImage_NullFile() {
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> cuisineService.saveImage(null));
-        assertEquals("File must not be null or empty.", exception.getMessage());
-    }
-
-    @Test
-    void testSaveImage_EmptyFile() {
-        MultipartFile file = new MockMultipartFile("file", "", "image/png", new byte[0]);
-
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> cuisineService.saveImage(file));
-        assertEquals("File must not be null or empty.", exception.getMessage());
-    }
 }

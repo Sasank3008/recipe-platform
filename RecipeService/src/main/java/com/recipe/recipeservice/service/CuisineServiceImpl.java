@@ -5,6 +5,7 @@ import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,17 +16,14 @@ import java.util.List;
 public class CuisineServiceImpl implements CuisineService {
 
     private final CuisineRepository cuisineRepository;
+    private final ModelMapper modelMapper;
 
     @Transactional
     @Override
     public CuisineDTO addCuisine(CuisineDTO cuisineDTO) {
-        Cuisine newCuisine = new Cuisine();
-        newCuisine.setName(cuisineDTO.getName());
-        newCuisine.setEnabled(cuisineDTO.isEnabled());
-        newCuisine.setImageUrl(cuisineDTO.getImageUrl());
-
-        Cuisine savedCuisine = cuisineRepository.save(newCuisine);
-        return new CuisineDTO(savedCuisine.getId(), savedCuisine.getName(), savedCuisine.isEnabled(), savedCuisine.getImageUrl());
+        Cuisine cuisine=modelMapper.map(cuisineDTO,Cuisine.class);
+        Cuisine savedCuisine = cuisineRepository.save(cuisine);
+       return  modelMapper.map(savedCuisine, CuisineDTO.class);
     }
 
     @Transactional
@@ -66,7 +64,7 @@ public class CuisineServiceImpl implements CuisineService {
             cuisine.setEnabled(cuisineDTO.isEnabled());
             cuisine.setImageUrl(cuisineDTO.getImageUrl());
             Cuisine updatedCuisine = cuisineRepository.save(cuisine);
-            return new CuisineDTO(updatedCuisine.getId(), updatedCuisine.getName(), updatedCuisine.isEnabled(), updatedCuisine.getImageUrl());
+            return  cuisineDTO;
         }).orElse(null);
     }
 

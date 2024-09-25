@@ -27,12 +27,6 @@ public class RecipeCuisineController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCuisine);
     }
 
-    @GetMapping("/cuisines/enabled")
-    public ResponseEntity<List<CuisineDTO>> getEnabledCuisines() {
-        List<CuisineDTO> cuisineDTOs = cuisineService.getEnabledCuisines();
-        return ResponseEntity.ok(cuisineDTOs);
-    }
-
     @PutMapping("/cuisines/disable/{id}")
     public ResponseEntity<Void> disableCuisine(@PathVariable Long id) {
         if (cuisineService.disableCuisineById(id)) {

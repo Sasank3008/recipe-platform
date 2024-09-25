@@ -111,12 +111,6 @@ public class AdminController {
         return buildCuisineResponse(cuisines, "All cuisines fetched successfully");
     }
 
-    @GetMapping("/cuisines/enabled")
-    public ResponseEntity<CuisineResponse> fetchEnabledCuisines() {
-        List<CuisineDTO> enabledCuisines = cuisineService.getEnabledCuisines();
-        return buildCuisineResponse(enabledCuisines, "Enabled cuisines fetched successfully");
-    }
-
     private ResponseEntity<CuisineResponse> buildCuisineResponse(List<CuisineDTO> cuisines, String message) {
         CuisineResponse response = CuisineResponse.builder()
                 .cuisines(cuisines)

@@ -12,8 +12,6 @@ public interface RecipeServiceClient {
 
     @PostMapping("/cuisines")
     CuisineDTO addCuisine(@RequestBody CuisineDTO cuisineDTO);
-    @GetMapping("/cuisines/enabled")
-    List<CuisineDTO> getEnabledCuisines();
 
     @PutMapping("/cuisines/disable/{id}")
     void disableCuisine(@PathVariable("id") Long id);

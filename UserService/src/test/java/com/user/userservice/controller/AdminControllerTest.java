@@ -75,22 +75,6 @@ class AdminControllerTest {
         verify(cuisineService, times(1)).addCuisine(anyString(), anyBoolean(), any(MultipartFile.class));
     }
     @Test
-    void fetchEnabledCuisines_ShouldReturnCuisineResponse() {
-        List<CuisineDTO> mockEnabledCuisines = Arrays.asList(
-                new CuisineDTO(1L, "Italian", true, "image1.jpg"),
-                new CuisineDTO(2L, "Indian", true, "image2.jpg")
-        );
-        when(cuisineService.getEnabledCuisines()).thenReturn(mockEnabledCuisines);
-        ResponseEntity<CuisineResponse> response = adminController.fetchEnabledCuisines();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().getCuisines().size());
-        assertEquals(mockEnabledCuisines, response.getBody().getCuisines());
-        assertEquals("Enabled cuisines fetched successfully", response.getBody().getMessage());
-        verify(cuisineService, times(1)).getEnabledCuisines();
-    }
-
-    @Test
     void deleteCuisine_ShouldReturnSuccessMessage() {
         ResponseEntity<ApiResponse> response = adminController.deleteCuisine(1L);
         assertEquals(HttpStatus.OK, response.getStatusCode());

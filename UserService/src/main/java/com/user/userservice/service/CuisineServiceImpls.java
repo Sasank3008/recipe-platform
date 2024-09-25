@@ -1,5 +1,6 @@
 package com.user.userservice.service;
 
+import com.user.userservice.constants.ErrorConstants;
 import com.user.userservice.feignclient.RecipeServiceClient;
 import com.user.userservice.dto.CuisineDTO;
 import com.user.userservice.exception.CuisineIdNotFoundException;
@@ -18,16 +19,11 @@ import java.util.List;
 import java.util.UUID;
 @Service
 @RequiredArgsConstructor
-
 public class CuisineServiceImpls implements CuisineService {
 
     private final RecipeServiceClient recipeServiceClient;
     @Value("${project.image}")
     public String path;
-
-    private static final String CUISINE_NOT_FOUND = "Cuisine not found with id: ";
-    private static final String INVALID_FILE_TYPE = "Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.";
-    private static final String FILE_MUST_NOT_BE_NULL = "File must not be null or empty.";
 
     @Override
     public List<CuisineDTO> getAllCuisines() {
@@ -37,7 +33,7 @@ public class CuisineServiceImpls implements CuisineService {
     @Override
     public CuisineDTO addCuisine(String name, boolean isEnabled, MultipartFile file) {
         if (checkCuisineNameExists(name)) {
-            throw new DuplicateCuisineException("A cuisine with the name '" + name + "' already exists.");
+            throw new DuplicateCuisineException(String.format(ErrorConstants.DUPLICATE_CUISINE, name));
         }
         String imageUrl = saveImage(file);
         CuisineDTO cuisine = new CuisineDTO(null, name, isEnabled, imageUrl);
@@ -45,14 +41,9 @@ public class CuisineServiceImpls implements CuisineService {
     }
 
     @Override
-    public List<CuisineDTO> getEnabledCuisines() {
-        return recipeServiceClient.getEnabledCuisines();
-    }
-
-    @Override
     public void deleteCuisine(Long id) {
         if (!checkCuisineExistsById(id)) {
-            throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND + id);
+            throw new CuisineIdNotFoundException(ErrorConstants.CUISINE_NOT_FOUND + id);
         }
         recipeServiceClient.deleteCuisine(id);
     }
@@ -60,7 +51,7 @@ public class CuisineServiceImpls implements CuisineService {
     @Override
     public CuisineDTO updateCuisine(Long id, String name, boolean isEnabled, MultipartFile file) {
         if (!checkCuisineExistsById(id)) {
-            throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND + id);
+            throw new CuisineIdNotFoundException(ErrorConstants.CUISINE_NOT_FOUND + id);
         }
         String imageUrl = saveImage(file);
         CuisineDTO cuisine = new CuisineDTO(id, name, isEnabled, imageUrl);
@@ -70,11 +61,11 @@ public class CuisineServiceImpls implements CuisineService {
     @Override
     public String toggleCuisineEnabled(Long id) {
         if (!checkCuisineExistsById(id)) {
-            throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND + id);
+            throw new CuisineIdNotFoundException(ErrorConstants.CUISINE_NOT_FOUND + id);
         }
         Boolean isEnabled = recipeServiceClient.isCuisineEnabled(id);
         if (isEnabled == null) {
-            throw new IllegalStateException("Cuisine enabled status is undefined for id: " + id);
+            throw new IllegalStateException(ErrorConstants.CUISINE_STATUS_UNDEFINED + id);
         }
         if (isEnabled) {
             recipeServiceClient.disableCuisine(id);
@@ -101,17 +92,17 @@ public class CuisineServiceImpls implements CuisineService {
 
     public String saveImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException(FILE_MUST_NOT_BE_NULL);
+            throw new IllegalArgumentException(ErrorConstants.FILE_MUST_NOT_BE_EMPTY);
         }
 
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isEmpty()) {
-            throw new IllegalArgumentException("File must have a valid name.");
+            throw new IllegalArgumentException(ErrorConstants.FILE_NAME_MUST_NOT_BE_NULL);
         }
 
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
         if (!Arrays.asList(".png", ".jpg", ".jpeg", ".svg").contains(fileExtension)) {
-            throw new IllegalArgumentException(INVALID_FILE_TYPE);
+            throw new IllegalArgumentException(ErrorConstants.INVALID_FILE_TYPE);
         }
 
         File directory = new File(path);

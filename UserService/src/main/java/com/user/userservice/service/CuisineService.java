@@ -8,7 +8,6 @@ import java.util.List;
 public interface CuisineService {
     List<CuisineDTO> getAllCuisines();
     CuisineDTO addCuisine(String name, boolean isEnabled, MultipartFile file);
-    List<CuisineDTO> getEnabledCuisines();
     void deleteCuisine(Long id);
     CuisineDTO updateCuisine(Long id, String name, boolean isEnabled, MultipartFile file);
     String toggleCuisineEnabled(Long id);

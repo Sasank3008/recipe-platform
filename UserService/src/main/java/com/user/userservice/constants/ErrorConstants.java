@@ -11,6 +11,9 @@ public class ErrorConstants {
     public static final String INVALID_FILE_TYPE = "Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.";
     public static final String INVALID_PASSWORD = "Invalid Password";
     public static final String PASSWORDS_DO_NOT_MATCH = "New password and Confirm password do not match";
+    public static final String CUISINE_NOT_FOUND = "Cuisine not found with id: ";
+    public static final String DUPLICATE_CUISINE = "A cuisine with the name '%s' already exists.";
+    public static final String CUISINE_STATUS_UNDEFINED = "Cuisine enabled status is undefined for id: ";
 
     private ErrorConstants() {
         // Prevent instantiation

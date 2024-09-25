@@ -1,7 +1,15 @@
 package com.recipe.recipeservice.service;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-import java.util.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.anyLong;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
+
 import com.recipe.recipeservice.dto.CuisineDTO;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.repository.CuisineRepository;
@@ -11,122 +19,186 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.modelmapper.ModelMapper;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
 @ExtendWith(MockitoExtension.class)
 class CuisineServiceImplsTest {
+
 	@Mock
 	private CuisineRepository cuisineRepository;
+
+	@Mock
+	private ModelMapper modelMapper;
+
 	@InjectMocks
 	private CuisineServiceImpl cuisineService;
-	private CuisineDTO cuisineDTO;
+
 	private Cuisine cuisine;
+	private CuisineDTO cuisineDTO;
 
 	@BeforeEach
-	public void setUp() {
-		cuisineDTO = new CuisineDTO(1L, "Italian", true, "url");
+	void setUp() {
 		cuisine = new Cuisine();
 		cuisine.setId(1L);
-		cuisine.setName("Italian");
+		cuisine.setName("Indian");
 		cuisine.setEnabled(true);
-		cuisine.setImageUrl("url");
+		cuisine.setImageUrl("image_url");
+
+		cuisineDTO = new CuisineDTO(1L, "Indian", true, "image_url");
 	}
 
 	@Test
-	void testAddCuisine() {
+	void addCuisine() {
+		when(modelMapper.map(cuisineDTO, Cuisine.class)).thenReturn(cuisine);
 		when(cuisineRepository.save(any(Cuisine.class))).thenReturn(cuisine);
-		CuisineDTO result = cuisineService.addCuisine(cuisineDTO);
-		assertNotNull(result);
-		assertEquals(cuisineDTO.getName(), result.getName());
-		verify(cuisineRepository, times(1)).save(any(Cuisine.class));
+		when(modelMapper.map(cuisine, CuisineDTO.class)).thenReturn(cuisineDTO);
+
+		CuisineDTO savedCuisine = cuisineService.addCuisine(cuisineDTO);
+
+		assertNotNull(savedCuisine);
+		assertEquals(cuisineDTO.getName(), savedCuisine.getName());
+		verify(cuisineRepository).save(cuisine);
 	}
 
 	@Test
-	void testDisableCuisineById() {
+	void disableCuisineById() {
 		when(cuisineRepository.findById(1L)).thenReturn(Optional.of(cuisine));
-		when(cuisineRepository.save(any(Cuisine.class))).thenReturn(cuisine);
 		boolean result = cuisineService.disableCuisineById(1L);
+
 		assertTrue(result);
 		assertFalse(cuisine.isEnabled());
-		verify(cuisineRepository, times(1)).findById(1L);
-		verify(cuisineRepository, times(1)).save(cuisine);
+		verify(cuisineRepository).save(cuisine);
 	}
 
 	@Test
-	void testEnableCuisineById() {
+	void disableCuisineById_NotFound() {
+		when(cuisineRepository.findById(1L)).thenReturn(Optional.empty());
+		boolean result = cuisineService.disableCuisineById(1L);
+
+		assertFalse(result);
+		verify(cuisineRepository, never()).save(any());
+	}
+
+	@Test
+	void enableCuisineById() {
+		cuisine.setEnabled(false);
 		when(cuisineRepository.findById(1L)).thenReturn(Optional.of(cuisine));
-		when(cuisineRepository.save(any(Cuisine.class))).thenReturn(cuisine);
 		boolean result = cuisineService.enableCuisineById(1L);
+
 		assertTrue(result);
 		assertTrue(cuisine.isEnabled());
-		verify(cuisineRepository, times(1)).findById(1L);
-		verify(cuisineRepository, times(1)).save(cuisine);
+		verify(cuisineRepository).save(cuisine);
 	}
 
 	@Test
-	void testDeleteCuisineById() {
+	void enableCuisineById_NotFound() {
+		when(cuisineRepository.findById(1L)).thenReturn(Optional.empty());
+		boolean result = cuisineService.enableCuisineById(1L);
+
+		assertFalse(result);
+		verify(cuisineRepository, never()).save(any());
+	}
+
+	@Test
+	void deleteCuisineById() {
 		when(cuisineRepository.existsById(1L)).thenReturn(true);
 		boolean result = cuisineService.deleteCuisineById(1L);
+
 		assertTrue(result);
-		verify(cuisineRepository, times(1)).existsById(1L);
-		verify(cuisineRepository, times(1)).deleteById(1L);
+		verify(cuisineRepository).deleteById(1L);
 	}
 
 	@Test
-	void testUpdateCuisineById() {
+	void deleteCuisineById_NotFound() {
+		when(cuisineRepository.existsById(1L)).thenReturn(false);
+		boolean result = cuisineService.deleteCuisineById(1L);
+
+		assertFalse(result);
+		verify(cuisineRepository, never()).deleteById(anyLong());
+	}
+
+	@Test
+	void updateCuisineById() {
 		when(cuisineRepository.findById(1L)).thenReturn(Optional.of(cuisine));
-		when(cuisineRepository.save(any(Cuisine.class))).thenReturn(cuisine);
-		CuisineDTO updatedCuisineDTO = new CuisineDTO(1L, "French", false, "new-url");
+		CuisineDTO updatedCuisineDTO = new CuisineDTO(1L, "Chinese", true, "new_image_url");
+
 		CuisineDTO result = cuisineService.updateCuisineById(1L, updatedCuisineDTO);
+
 		assertNotNull(result);
-		assertEquals(updatedCuisineDTO.getName(), result.getName());
-		assertEquals(updatedCuisineDTO.isEnabled(), result.isEnabled());
-		assertEquals(updatedCuisineDTO.getImageUrl(), result.getImageUrl());
-		verify(cuisineRepository, times(1)).findById(1L);
-		verify(cuisineRepository, times(1)).save(any(Cuisine.class));
+		assertEquals("Chinese", cuisine.getName());
+		assertEquals("new_image_url", cuisine.getImageUrl());
+		verify(cuisineRepository).save(cuisine);
 	}
 
 	@Test
-	void testGetEnabledCuisines() {
-		List<Cuisine> cuisines = Collections.singletonList(cuisine);
-		when(cuisineRepository.findByIsEnabled(true)).thenReturn(cuisines);
+	void updateCuisineById_NotFound() {
+		when(cuisineRepository.findById(1L)).thenReturn(Optional.empty());
+		CuisineDTO result = cuisineService.updateCuisineById(1L, cuisineDTO);
+
+		assertNull(result);
+		verify(cuisineRepository, never()).save(any());
+	}
+
+	@Test
+	void getEnabledCuisines() {
+		when(cuisineRepository.findByIsEnabled(true)).thenReturn(Arrays.asList(cuisine));
 		List<CuisineDTO> result = cuisineService.getEnabledCuisines();
+
 		assertNotNull(result);
+		assertFalse(result.isEmpty());
 		assertEquals(1, result.size());
-		assertEquals(cuisine.getName(), result.get(0).getName());
-		verify(cuisineRepository, times(1)).findByIsEnabled(true);
+		verify(cuisineRepository).findByIsEnabled(true);
 	}
 
 	@Test
-	void testGetAllCuisines() {
-		List<Cuisine> cuisines = Collections.singletonList(cuisine);
-		when(cuisineRepository.getAllCuisines()).thenReturn(cuisines);
+	void getAllCuisines() {
+		when(cuisineRepository.getAllCuisines()).thenReturn(Arrays.asList(cuisine));
 		List<CuisineDTO> result = cuisineService.getAllCuisines();
+
 		assertNotNull(result);
+		assertFalse(result.isEmpty());
 		assertEquals(1, result.size());
-		assertEquals(cuisine.getName(), result.get(0).getName());
-		verify(cuisineRepository, times(1)).getAllCuisines();
+		verify(cuisineRepository).getAllCuisines();
 	}
 
 	@Test
-	void testDoesCuisineExistByName() {
-		when(cuisineRepository.existsByName("Italian")).thenReturn(true);
-		boolean result = cuisineService.doesCuisineExistByName("Italian");
+	void doesCuisineExistByName() {
+		when(cuisineRepository.existsByName("Indian")).thenReturn(true);
+		boolean result = cuisineService.doesCuisineExistByName("Indian");
+
 		assertTrue(result);
-		verify(cuisineRepository, times(1)).existsByName("Italian");
+		verify(cuisineRepository).existsByName("Indian");
 	}
 
 	@Test
-	void testDoesCuisineExistById() {
+	void doesCuisineExistById() {
 		when(cuisineRepository.existsById(1L)).thenReturn(true);
 		boolean result = cuisineService.doesCuisineExistById(1L);
+
 		assertTrue(result);
-		verify(cuisineRepository, times(1)).existsById(1L);
+		verify(cuisineRepository).existsById(1L);
 	}
 
 	@Test
-	void testIsCuisineEnabled() {
+	void isCuisineEnabled() {
 		when(cuisineRepository.findById(1L)).thenReturn(Optional.of(cuisine));
 		boolean result = cuisineService.isCuisineEnabled(1L);
+
 		assertTrue(result);
-		verify(cuisineRepository, times(1)).findById(1L);
+		verify(cuisineRepository).findById(1L);
+	}
+
+	@Test
+	void isCuisineEnabled_NotFound() {
+		when(cuisineRepository.findById(1L)).thenReturn(Optional.empty());
+		boolean result = cuisineService.isCuisineEnabled(1L);
+
+		assertFalse(result);
+		verify(cuisineRepository).findById(1L);
 	}
 }

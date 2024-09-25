@@ -1,7 +1,15 @@
 package com.recipe.recipeservice.controller;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 import com.recipe.recipeservice.dto.CuisineDTO;
 import com.recipe.recipeservice.service.CuisineService;
 import org.junit.jupiter.api.BeforeEach;
@@ -46,16 +54,7 @@ class RecipeCuisineControllerTest {
         assertNull(response.getBody());
     }
 
-    @Test
-    void testGetEnabledCuisines_ReturnsList() {
-        List<CuisineDTO> cuisineDTOs = List.of(cuisineDTO);
-        when(cuisineService.getEnabledCuisines()).thenReturn(cuisineDTOs);
-        ResponseEntity<List<CuisineDTO>> response = recipeCuisineController.getEnabledCuisines();
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
-        assertEquals(cuisineDTO.getName(), response.getBody().get(0).getName());
-    }
+
 
     @Test
     void testDisableCuisine_DisablesCuisine() {
