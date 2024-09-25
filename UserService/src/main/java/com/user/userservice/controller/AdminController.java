@@ -2,10 +2,7 @@ package com.user.userservice.controller;
 
 import com.user.userservice.dto.*;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
-import com.user.userservice.exception.CountryAlreadyExistsException;
-import com.user.userservice.exception.CuisineIdNotFoundException;
-import com.user.userservice.exception.DuplicateCuisineException;
-import com.user.userservice.exception.UserIdNotFoundException;
+import com.user.userservice.exception.*;
 import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
 import feign.FeignException;
@@ -151,6 +148,22 @@ public class AdminController {
     public ResponseEntity<ApiResponse> toggleUser(@PathVariable Long id) throws UserIdNotFoundException {
         boolean status=adminService.toggleUserStatus(id);
         String message=status?"User Enabled successfully":"User disabled successfully";
+        ApiResponse response = ApiResponse.builder()
+                .response(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    @PostMapping("countries/edit")
+    public ResponseEntity<CountryDTO> editCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
+
+        CountryDTO savedCountry = countryService.editCountry(countryDTO);
+        return ResponseEntity.ok().body(savedCountry);
+    }
+    @PostMapping("countries/toggle-status")
+    public ResponseEntity<ApiResponse> toggleCountry(@RequestBody  CountryDTO countryDTO) throws CountryIdNotFoundException {
+        boolean status=countryService.toggleCountryStatus(countryDTO.getId());
+        String message=status?"Country Enabled successfully":"Country disabled successfully";
         ApiResponse response = ApiResponse.builder()
                 .response(message)
                 .timestamp(LocalDateTime.now())

@@ -181,7 +181,7 @@ class AdminControllerTest {
     @Test
     void testAddCountry() throws Exception {
         // Arrange
-        CountryDTO newCountry = new CountryDTO(null, "Mexico");
+        CountryDTO newCountry = new CountryDTO(1L, "Mexico");
         CountryDTO savedCountry = new CountryDTO(3L, "Mexico");
         when(countryService.saveCountry(any(CountryDTO.class))).thenReturn(savedCountry);
         mockMvc.perform(post("/admins/countries")
