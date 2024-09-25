@@ -11,6 +11,7 @@ import com.user.userservice.exception.InvalidInputException;
 import com.user.userservice.exception.InvalidPasswordException;
 import com.user.userservice.exception.UserNotFoundException;
 import com.user.userservice.repository.CountryRepository;
+import com.user.userservice.repository.UserEmailRepository;
 import com.user.userservice.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -51,6 +52,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final CustomUserDetailsService userDetailsService;
+    private final UserEmailRepository userEmailRepository;
     @Value("${project.image}")
     String path;
     @Override
@@ -264,5 +266,14 @@ public class UserServiceImpl implements UserService {
         }
 
         return imageUrl;
+    }
+    @Override
+    public List<UserEmailDTO> getAllUserEmails() {
+        try {
+            return userEmailRepository.findAllEmails();
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to fetch user emails", e);
+        }
     }
 }
