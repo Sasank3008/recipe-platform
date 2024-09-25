@@ -2,23 +2,27 @@ package com.user.userservice.controller;
 
 import com.nimbusds.jose.util.Pair;
 import com.user.userservice.constants.ControllerConstants;
+import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.CountryListDTO;
-import com.user.userservice.dto.FileResponse;
-import com.user.userservice.dto.PasswordDTO;
-import com.user.userservice.dto.UserEmailDTO;
 import com.user.userservice.dto.UserLoginDTO;
 import com.user.userservice.dto.UserRegistrationDTO;
 import com.user.userservice.dto.UserResponseDTO;
+import com.user.userservice.dto.CountryListDTO;
+import com.user.userservice.dto.FileResponse;
+import com.user.userservice.dto.PasswordDTO;
 import com.user.userservice.dto.UserUpdateDTO;
+import com.user.userservice.dto.UpdateRecipeDTO;
+import com.user.userservice.dto.UserEmailDTO;
 import com.user.userservice.entity.User;
 import com.user.userservice.exception.IncorrectPasswordException;
 import com.user.userservice.exception.InvalidInputException;
-import com.user.userservice.exception.InvalidPasswordException;
 import com.user.userservice.exception.UserAlreadyExistsException;
 import com.user.userservice.exception.UserNotFoundException;
+import com.user.userservice.exception.IdNotFoundException;
+import com.user.userservice.exception.InvalidPasswordException;
 import com.user.userservice.service.TokenService;
 import com.user.userservice.service.UserService;
+import feign.FeignException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +54,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final RecipeServiceClient recipeServiceClient;
     @Value("${project.image}")
     private String path;
 
@@ -116,5 +121,33 @@ public class UserController {
                     .body("Failed to fetch user emails");
         }
     }
+    @PutMapping(value="/recipe/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException {
+        System.out.println(recipeDTO);
+        try {
+            recipeServiceClient.updateRecipe(recipeDTO);
+            return ResponseEntity.ok(
+                    ApiResponse.builder()
+                            .response("Recipe updated successfully")
+                            .timestamp(LocalDateTime.now())
+                            .build()
+            );
+        } catch (FeignException.FeignClientException e) {
+            String errorMessage = "An error occurred";
+            try {
+                String errorResponse = e.contentUTF8();
+                errorMessage = errorResponse;
+            } catch (Exception ex) {
+                errorMessage = e.getMessage();
+            }
 
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ApiResponse.builder()
+                            .response(errorMessage)
+                            .timestamp(LocalDateTime.now())
+                            .build()
+            );
+        }
+
+    }
 }

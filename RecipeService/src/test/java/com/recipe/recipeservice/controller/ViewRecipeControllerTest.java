@@ -41,7 +41,8 @@ class ViewRecipeControllerTest {
                 "Non-Veg",
                 List.of("Dinner", "Easy"),
                 "EASY",
-                "None"
+                "None",
+                "1"
         );
 
         when(recipeService.getRecipe(recipeId)).thenReturn(mockRecipe);

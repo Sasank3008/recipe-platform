@@ -1,10 +1,14 @@
 package com.user.userservice.cuisineserviceclient;
 
 import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.dto.UpdateRecipeDTO;
+import com.user.userservice.exception.IdNotFoundException;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @FeignClient(name = "recipe-service", path = "/api/recipes")
@@ -34,4 +38,6 @@ public interface RecipeServiceClient {
     public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id);
     @GetMapping("/cuisines/exist/by-name")
     public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name);
+    @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException;
 }

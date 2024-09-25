@@ -144,5 +144,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
-
+    @ExceptionHandler(IdNotFoundException.class)
+    public ResponseEntity<ApiResponse> idNotFoundException(IdNotFoundException ex){
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse> illegalArgumentException(IllegalArgumentException ex){
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
 }
