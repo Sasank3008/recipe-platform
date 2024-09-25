@@ -2,6 +2,7 @@ package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.AddRecipeDTO;
+import com.recipe.recipeservice.dto.ViewRecipeDTO;
 import com.recipe.recipeservice.entity.Recipe;
 import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
@@ -9,6 +10,7 @@ import com.recipe.recipeservice.entity.DifficultyLevel;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.Status;
 import com.recipe.recipeservice.exception.InvalidInputException;
+import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import com.recipe.recipeservice.repository.RecipeRepository;
 import com.recipe.recipeservice.repository.CategoryRepository;
 import com.recipe.recipeservice.repository.CuisineRepository;
@@ -20,8 +22,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
@@ -90,5 +94,35 @@ public class RecipeServiceImpl implements RecipeService {
         }
         Files.copy(file.getInputStream(), Paths.get(filePath));
         return newFileName;
+    }
+    public byte[] getRecipeProfileImage(Long id) throws IOException, ResourceNotFoundException {
+        Recipe user = recipeRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.RECIPE_ID_NOT_FOUND));
+        String imageUrl = path + File.separator + user.getImageUrl();
+        if (imageUrl == null || imageUrl.isEmpty()) {
+            throw new FileNotFoundException("Image url doesn't exist");
+        }
+        Path imagePath = Paths.get(imageUrl);
+        if (!Files.exists(imagePath)) {
+            throw new FileNotFoundException("File not found");
+        }
+        return Files.readAllBytes(imagePath);
+    }
+    @Override
+    public ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.RECIPE_ID_NOT_FOUND+" "+id));
+        return new ViewRecipeDTO(
+                recipe.getName(),
+                recipe.getIngredients(),
+                recipe.getDescription(),
+                recipe.getCookingTime(),
+                recipe.getCuisine().getName(),
+                recipe.getCategory().getName(),
+                recipe.getTags().stream()
+                        .map(Tag::getName)
+                        .collect(Collectors.toList()),
+                recipe.getDifficultyLevel().name(),
+                recipe.getDietaryRestrictions()
+        );
     }
 }
