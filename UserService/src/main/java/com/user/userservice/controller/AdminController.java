@@ -2,7 +2,11 @@ package com.user.userservice.controller;
 
 import com.user.userservice.dto.*;
 import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
-import com.user.userservice.exception.*;
+import com.user.userservice.exception.CountryAlreadyExistsException;
+import com.user.userservice.exception.CuisineIdNotFoundException;
+import com.user.userservice.exception.DuplicateCuisineException;
+import com.user.userservice.exception.UserIdNotFoundException;
+import com.user.userservice.exception.CountryIdNotFoundException;
 import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
 import feign.FeignException;
