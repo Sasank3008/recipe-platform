@@ -86,7 +86,7 @@ public class CuisineServiceImpl implements CuisineService {
 
     @Override
     public boolean doesCuisineExistByName(String name) {
-        return cuisineRepository.existsByName(name);
+        return cuisineRepository.doesCuisineExistByName(name);
     }
 
     @Override

@@ -168,11 +168,11 @@ class CuisineServiceImplsTest {
 
 	@Test
 	void doesCuisineExistByName() {
-		when(cuisineRepository.existsByName("Indian")).thenReturn(true);
+		when(cuisineRepository.doesCuisineExistByName("Indian")).thenReturn(true);
 		boolean result = cuisineService.doesCuisineExistByName("Indian");
 
 		assertTrue(result);
-		verify(cuisineRepository).existsByName("Indian");
+		verify(cuisineRepository).doesCuisineExistByName("Indian");
 	}
 
 	@Test
