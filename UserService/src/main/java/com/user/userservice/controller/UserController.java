@@ -138,7 +138,6 @@ public class UserController {
                             .timestamp(LocalDateTime.now())
                             .build()
             );
-
         }
     }
 }
