@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
                         HttpStatus.IM_USED
                 );
     }
-    @ExceptionHandler(CountryAlreadyExistsException.class)
+    @ExceptionHandler(CountryIdNotFoundException.class)
     public ResponseEntity<ApiResponse> handleCountryIdNotExistsException(CountryIdNotFoundException exception)
     {
         return new ResponseEntity<>

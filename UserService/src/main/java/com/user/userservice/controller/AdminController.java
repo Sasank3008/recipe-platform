@@ -158,9 +158,6 @@ public class AdminController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
-
-
     @PostMapping("countries/edit")
     public ResponseEntity<CountryDTO> editCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
 
@@ -177,28 +174,4 @@ public class AdminController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
