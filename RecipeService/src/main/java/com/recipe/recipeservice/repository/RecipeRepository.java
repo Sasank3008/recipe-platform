@@ -14,6 +14,7 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
             "LEFT JOIN r.category c " +
             "LEFT JOIN r.cuisine cu " +
             "LEFT JOIN r.tags t " +
+            "WHERE r.status = 'PUBLISHED' AND (" +
             "WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.ingredients) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.description) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
@@ -22,6 +23,6 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
             "OR LOWER(t.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(cu.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.difficultyLevel) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(r.dietaryRestrictions) LIKE LOWER(CONCAT('%', :keyword, '%'))")
+            "OR LOWER(r.dietaryRestrictions) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     List<Recipe> findByKeyword(@Param("keyword") String keyword);
 }
