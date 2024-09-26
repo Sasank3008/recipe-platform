@@ -16,8 +16,5 @@ public class CountryDTO {
     private String name;
     @JsonProperty("isEnabled")
     private boolean isEnabled;
-    public CountryDTO(long l, String name) {
-        this.id=l;
-        this.name=name;
-    }
+
 }

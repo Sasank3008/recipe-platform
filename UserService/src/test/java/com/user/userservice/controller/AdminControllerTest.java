@@ -167,8 +167,12 @@ class AdminControllerTest {
 
     @Test
     void testGetCountries() throws Exception {
-        CountryDTO country1 = new CountryDTO(1L, "Usa");
-        CountryDTO country2 = new CountryDTO(2L, "Canada");
+        CountryDTO country1 = new CountryDTO();
+        country1.setId(1L);
+        country1.setName("Usa");
+        CountryDTO country2 = new CountryDTO();
+        country2.setId(2L);
+        country2.setName("Canada");
         List<CountryDTO> countries = Arrays.asList(country1, country2);
         when(countryService.fetchCountries()).thenReturn(countries);
         mockMvc.perform(get("/admins/countries"))
@@ -181,8 +185,13 @@ class AdminControllerTest {
     @Test
     void testAddCountry() throws Exception {
         // Arrange
-        CountryDTO newCountry = new CountryDTO(1L, "Mexico");
-        CountryDTO savedCountry = new CountryDTO(3L, "Mexico");
+        CountryDTO newCountry = new CountryDTO();
+        newCountry.setId(1L);
+        newCountry.setName("Mexico");
+
+        CountryDTO savedCountry = new CountryDTO();
+        savedCountry.setId(3L);
+        savedCountry.setName("Mexico");
         when(countryService.saveCountry(any(CountryDTO.class))).thenReturn(savedCountry);
         mockMvc.perform(post("/admins/countries")
                         .contentType(MediaType.APPLICATION_JSON)
