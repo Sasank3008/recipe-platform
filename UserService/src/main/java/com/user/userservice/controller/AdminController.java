@@ -1,124 +1,32 @@
 package com.user.userservice.controller;
-
 import com.user.userservice.dto.*;
-import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
 import com.user.userservice.exception.CountryAlreadyExistsException;
-import com.user.userservice.exception.CuisineIdNotFoundException;
-import com.user.userservice.exception.DuplicateCuisineException;
-import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.exception.CountryIdNotFoundException;
+import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
-import feign.FeignException;
+import com.user.userservice.service.CuisineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/admins")
 public class AdminController {
 
+    public final CuisineService cuisineService;
     private static final String CUISINE_NOT_FOUND_MESSAGE = "Cuisine not found with id: ";
-    private final RecipeServiceClient recipeServiceClient;
     private final CountryService countryService;
     private final AdminService adminService;
 
 
-    @GetMapping("/cuisines")
-    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
-        try {
-            List<CuisineDTO> allCuisines = recipeServiceClient.getAllCuisines();
-            return ResponseEntity.ok(allCuisines);
-        } catch (FeignException e) {
-            HttpStatus status = HttpStatus.resolve(e.status());
-            if (status == null) {
-                status = HttpStatus.BAD_GATEWAY;
-            }
-            return ResponseEntity.status(status).build();
-        }
-    }
-
-    @PostMapping("/cuisines")
-    public ResponseEntity<CuisineDTO> saveCuisine(@RequestBody CuisineDTO cuisineDTO) {
-        ResponseEntity<Boolean> responseEntity = recipeServiceClient.doesCuisineExistByName(cuisineDTO.getName());
-        Boolean doesExist = responseEntity.getBody();
-
-        if (Boolean.TRUE.equals(doesExist)) {
-            throw new DuplicateCuisineException("A cuisine with the name '" + cuisineDTO.getName() + "' already exists.");
-        }
-
-
-            CuisineDTO addedCuisine = recipeServiceClient.addCuisine(cuisineDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
-    }
-
-    @GetMapping("/cuisines/enabled")
-    public ResponseEntity<List<CuisineDTO>> fetchEnabledCuisines() {
-        List<CuisineDTO> cuisines = recipeServiceClient.getEnabledCuisines();
-        return ResponseEntity.ok(cuisines);
-    }
-
-    @PutMapping("/cuisines/{id}/disable")
-    public ResponseEntity<ApiResponse> disableCuisine(@PathVariable Long id) {
-        ResponseEntity<Boolean> responseEntity = recipeServiceClient.doesCuisineExistById(id);
-        Boolean doesExist = responseEntity.getBody();
-        if (doesExist == null || !doesExist) {
-            throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
-        }
-        recipeServiceClient.disableCuisine(id);
-        ApiResponse response=ApiResponse.builder()
-                .response("Cuisine disabled Succesfully")
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-
-    }
-    @DeleteMapping("/cuisines/{id}")
-    public ResponseEntity<ApiResponse> deleteCuisine(@PathVariable Long id) {
-        ResponseEntity<Boolean> responseEntity = recipeServiceClient.doesCuisineExistById(id);
-        Boolean doesExist = responseEntity.getBody();
-        if (doesExist == null || !doesExist) {
-            throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
-        }
-            recipeServiceClient.deleteCuisine(id);
-        ApiResponse response=ApiResponse.builder()
-                .response("Cuisine deleted Succesfully")
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-    @PutMapping("/cuisines/{id}/enable")
-    public ResponseEntity<ApiResponse> enableCuisine(@PathVariable Long id) {
-        ResponseEntity<Boolean> responseEntity = recipeServiceClient.doesCuisineExistById(id);
-        Boolean doesExist = responseEntity.getBody();
-        if (doesExist == null || !doesExist) {
-            throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
-        }
-            recipeServiceClient.enableCuisine(id);
-        ApiResponse response=ApiResponse.builder()
-                .response("Cuisine enabled Succesfully")
-                .timestamp(LocalDateTime.now())
-                .build();
-        return ResponseEntity.status(HttpStatus.OK).body(response);
-    }
-
-
-    @PutMapping("/cuisines/{id}")
-    public ResponseEntity<CuisineDTO> updateCuisine(@PathVariable Long id, @RequestBody CuisineDTO cuisineDTO) {
-        ResponseEntity<Boolean> responseEntity = recipeServiceClient.doesCuisineExistById(id);
-        Boolean doesExist = responseEntity.getBody();
-
-        if (doesExist == null || !doesExist) {
-            throw new CuisineIdNotFoundException(CUISINE_NOT_FOUND_MESSAGE + id);
-        }CuisineDTO updatedCuisine = recipeServiceClient.updateCuisine(id, cuisineDTO);
-        return ResponseEntity.ok(updatedCuisine);
-    }
     @PostMapping("/countries")
     public ResponseEntity<CountryDTO> saveCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException, CountryAlreadyExistsException {
 
@@ -131,8 +39,9 @@ public class AdminController {
         List<CountryDTO> countries = countryService.fetchCountries();
         return ResponseEntity.ok().body(countries);
     }
+
     @PutMapping("editUser/{id}")
-    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws  UserIdNotFoundException {
+    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws UserIdNotFoundException {
         AdminUserDTO updatedUserDTO = adminService.updateUser(id, userDTO);
         if (updatedUserDTO != null) {
             return ResponseEntity.ok(updatedUserDTO);
@@ -141,6 +50,7 @@ public class AdminController {
 
         }
     }
+
     @GetMapping("/users")
     public ResponseEntity<UsersResponse> fetchAllUsers() {
         List<AdminDTO> users = adminService.fetchAllUsers();
@@ -150,13 +60,67 @@ public class AdminController {
 
     @PutMapping("/{id}/toggle-user-status")
     public ResponseEntity<ApiResponse> toggleUser(@PathVariable Long id) throws UserIdNotFoundException {
-        boolean status=adminService.toggleUserStatus(id);
-        String message=status?"User Enabled successfully":"User disabled successfully";
+        boolean status = adminService.toggleUserStatus(id);
+        String message = status ? "User Enabled successfully" : "User disabled successfully";
         ApiResponse response = ApiResponse.builder()
                 .response(message)
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+    @PostMapping("/cuisines")
+    public ResponseEntity<CuisineDTO> saveCuisine(@RequestParam("name") String name,
+                                                  @RequestParam("enabled") boolean isEnabled,
+                                                  @RequestPart("file") MultipartFile file) {
+        CuisineDTO addedCuisine = cuisineService.addCuisine(name, isEnabled, file);
+        return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
+    }
+
+
+    @DeleteMapping("/cuisines/{id}")
+    public ResponseEntity<ApiResponse> deleteCuisine(@PathVariable Long id) {
+        cuisineService.deleteCuisine(id);
+        return buildApiResponse("Cuisine deleted successfully", HttpStatus.OK);
+    }
+
+    @PutMapping("/cuisines/{id}")
+    public ResponseEntity<CuisineDTO> updateCuisine(@PathVariable Long id,
+                                                    @RequestParam("name") String name,
+                                                    @RequestParam("enabled") boolean isEnabled,
+                                                    @RequestPart("file") MultipartFile file) {
+        CuisineDTO updatedCuisine = cuisineService.updateCuisine(id, name, isEnabled, file);
+        return ResponseEntity.ok(updatedCuisine);
+    }
+
+    @PutMapping("/toggle-cuisine/{id}")
+    public ResponseEntity<ApiResponse> toggleCuisineEnabled(@PathVariable Long id) {
+        String message = cuisineService.toggleCuisineEnabled(id);
+        return buildApiResponse(message, HttpStatus.OK);
+    }
+
+    private ResponseEntity<ApiResponse> buildApiResponse(String message, HttpStatus status) {
+        ApiResponse response = ApiResponse.builder()
+                .response(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(status).body(response);
+    }
+
+    @GetMapping("/cuisines")
+    public ResponseEntity<CuisineResponse> getAllCuisines() {
+        List<CuisineDTO> cuisines = cuisineService.getAllCuisines();
+        return buildCuisineResponse(cuisines, "All cuisines fetched successfully");
+    }
+
+    private ResponseEntity<CuisineResponse> buildCuisineResponse(List<CuisineDTO> cuisines, String message) {
+        CuisineResponse response = CuisineResponse.builder()
+                .cuisines(cuisines)
+                .message(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(response);
     }
     @PostMapping("countries/edit")
     public ResponseEntity<CountryDTO> editCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
@@ -165,13 +129,14 @@ public class AdminController {
         return ResponseEntity.ok().body(savedCountry);
     }
     @PostMapping("countries/toggle-status")
-    public ResponseEntity<ApiResponse> toggleCountry(@RequestBody  CountryDTO countryDTO) throws CountryIdNotFoundException {
-        boolean status=countryService.toggleCountryStatus(countryDTO.getId());
-        String message=status?"Country Enabled successfully":"Country disabled successfully";
+    public ResponseEntity<ApiResponse> toggleCountry(@RequestBody CountryDTO countryDTO) throws CountryIdNotFoundException {
+        boolean status = countryService.toggleCountryStatus(countryDTO.getId());
+        String message = status ? "Country Enabled successfully" : "Country disabled successfully";
         ApiResponse response = ApiResponse.builder()
                 .response(message)
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
-}
+    }
+
