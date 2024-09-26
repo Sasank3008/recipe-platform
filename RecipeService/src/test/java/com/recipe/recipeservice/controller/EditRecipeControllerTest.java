@@ -19,7 +19,7 @@ import static org.mockito.Mockito.doThrow;
 class EditRecipeControllerTest {
 
     @InjectMocks
-    private EditRecipeController editRecipeController;
+    private UpdateRecipeController editRecipeController;
 
     @Mock
     private RecipeService recipeService;

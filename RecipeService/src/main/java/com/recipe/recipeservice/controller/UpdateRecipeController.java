@@ -15,7 +15,7 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/recipes")
 @RequiredArgsConstructor
-public class EditRecipeController {
+public class UpdateRecipeController {
     private final RecipeService recipeService;
     private final ModelMapper modelMapper;
     @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
