@@ -2,7 +2,7 @@ package com.user.userservice.controller;
 
 import com.nimbusds.jose.util.Pair;
 import com.user.userservice.constants.ControllerConstants;
-import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
+import com.user.userservice.feignclient.RecipeServiceClient;
 import com.user.userservice.dto.ApiResponse;
 import com.user.userservice.dto.UserLoginDTO;
 import com.user.userservice.dto.UserRegistrationDTO;
