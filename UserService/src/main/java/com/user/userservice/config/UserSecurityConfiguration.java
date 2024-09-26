@@ -8,6 +8,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import com.user.userservice.exception.ApiAccessDeniedHandler;
 import com.user.userservice.exception.JwtAuthenticationEntryPoint;
 import com.user.userservice.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,6 @@ import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import java.util.Arrays;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,21 +34,11 @@ public class UserSecurityConfiguration{
     private final RsaConfigurationProperties rsaConfigurationProperties;
     private final CustomUserDetailsService customUserDetailsService;
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(Arrays.asList("http://localhost:8084"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowCredentials(true);
-        config.setAllowedHeaders(Arrays.asList("Content-Type","Authorization","X-Requested-With","accept","Origin","Access-Control-Request-Method","Access-Control-Request-Headers"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
-        return source;
-    }
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
                 .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers->headers.cacheControl(cache->cache.disable()))
                 .exceptionHandling(exceptions->{
                     exceptions.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
                     exceptions.accessDeniedHandler(new ApiAccessDeniedHandler());
@@ -64,12 +51,16 @@ public class UserSecurityConfiguration{
                     auth.anyRequest().authenticated();
 
                 })
-                .exceptionHandling(exceptions -> {
-                    exceptions.authenticationEntryPoint(new JwtAuthenticationEntryPoint());
-                    exceptions.accessDeniedHandler(new ApiAccessDeniedHandler());
-                })
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwtDecoder()))
+                .logout(logout -> logout
+                        .logoutUrl("/users/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().write("{\"message\":\"Logged out successfully \"}");
+                        })
+                        .permitAll()
+                )
                 .build();
     }
 

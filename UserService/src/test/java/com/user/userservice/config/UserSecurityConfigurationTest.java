@@ -23,7 +23,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -93,5 +96,13 @@ class UserSecurityConfigurationTest {
     void shouldAuthenticateAnySecuredRequest() throws Exception {
         mockMvc.perform(get("/users/update/1"))
                 .andExpect(status().isMethodNotAllowed());
+    }
+
+    @Test
+    @WithMockUser(username="user", roles={"USER"})
+    void shouldLogoutSuccessfully() throws Exception {
+        mockMvc.perform(post("/users/logout").with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"Logged out successfully \"}"));
     }
 }
