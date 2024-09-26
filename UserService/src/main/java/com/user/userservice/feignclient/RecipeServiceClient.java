@@ -1,4 +1,4 @@
-package com.user.userservice.cuisineserviceclient;
+package com.user.userservice.feignclient;
 
 import com.user.userservice.dto.CuisineDTO;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,9 +12,6 @@ public interface RecipeServiceClient {
 
     @PostMapping("/cuisines")
     CuisineDTO addCuisine(@RequestBody CuisineDTO cuisineDTO);
-
-    @GetMapping("/cuisines/enabled")
-    List<CuisineDTO> getEnabledCuisines();
 
     @PutMapping("/cuisines/disable/{id}")
     void disableCuisine(@PathVariable("id") Long id);
@@ -34,4 +31,7 @@ public interface RecipeServiceClient {
     public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id);
     @GetMapping("/cuisines/exist/by-name")
     public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name);
+    @GetMapping("/cuisines/{id}/is-enabled")
+    public Boolean isCuisineEnabled(@PathVariable Long id);
+
 }
