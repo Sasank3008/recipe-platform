@@ -34,31 +34,28 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ApiResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
-
-        ApiResponse response = ApiResponse.builder().response(ex.getMessage()).timestamp(LocalDateTime.now()).build();
+    public ResponseEntity<ErrorResponse> handleUsernameNotFoundException(UsernameNotFoundException ex) {
+        ErrorResponse response = ErrorResponse.builder().error(ex.getMessage()).timestamp(LocalDateTime.now()).statusMessage(HttpStatus.NOT_FOUND.toString()).build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
     @ExceptionHandler(IncorrectPasswordException.class)
-    public ResponseEntity<ApiResponse> handleInvalidPasswordException(IncorrectPasswordException ex) {
-        ApiResponse response = ApiResponse.builder().response(ex.getMessage()).timestamp(LocalDateTime.now()).build();
+    public ResponseEntity<ErrorResponse> handleInvalidPasswordException(IncorrectPasswordException ex) {
+        ErrorResponse response = ErrorResponse.builder().error(ex.getMessage()).timestamp(LocalDateTime.now()).statusMessage(HttpStatus.BAD_REQUEST.toString()).build();
 
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
-    @ExceptionHandler(value = {JwtException.class})
-    public ResponseEntity<ApiResponse> handleJwtException(JwtException e, HttpServletRequest request) {
-        ApiResponse response = ApiResponse.builder().response(e.getMessage()).timestamp(LocalDateTime.now()).build();
-
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorResponse> handleJwtException(JwtException e, HttpServletRequest request) {
+        ErrorResponse response = ErrorResponse.builder().error(e.getMessage()).timestamp(LocalDateTime.now()).statusMessage(HttpStatus.UNAUTHORIZED.toString()).build();
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ApiResponse> handleAccessDeniedException(AccessDeniedException e) {
-        ApiResponse response = ApiResponse.builder().response(e.getMessage()).timestamp(LocalDateTime.now()).build();
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException e) {
+        ErrorResponse response = ErrorResponse.builder().error(e.getMessage()).timestamp(LocalDateTime.now()).statusMessage(HttpStatus.FORBIDDEN.toString()).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(UserIdNotFoundException.class)
