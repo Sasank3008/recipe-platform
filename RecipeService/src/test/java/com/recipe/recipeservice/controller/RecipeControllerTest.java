@@ -1,7 +1,9 @@
-package com.recipe.recipeservice.controller;import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.mockito.Mockito.*;
+package com.recipe.recipeservice.controller;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.service.CuisineService;
 import com.recipe.recipeservice.service.RecipeService;
