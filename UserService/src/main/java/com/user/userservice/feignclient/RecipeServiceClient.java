@@ -1,4 +1,4 @@
-package com.user.userservice.cuisineserviceclient;
+package com.user.userservice.feignclient;
 
 import com.user.userservice.dto.CuisineDTO;
 import com.user.userservice.dto.UpdateRecipeDTO;
