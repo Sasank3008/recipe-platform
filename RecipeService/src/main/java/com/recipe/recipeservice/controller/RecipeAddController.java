@@ -27,7 +27,6 @@ import java.util.List;
 @RestController
 @RequestMapping("recipes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class RecipeAddController {
     private final RecipeService recipeService;
     private final CuisineRepository cuisineRepository;

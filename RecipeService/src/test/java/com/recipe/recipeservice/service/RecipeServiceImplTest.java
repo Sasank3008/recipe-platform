@@ -1,8 +1,10 @@
 package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
+import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
 import com.recipe.recipeservice.entity.*;
+import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import com.recipe.recipeservice.repository.RecipeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.modelmapper.ModelMapper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,60 +23,75 @@ import static org.mockito.Mockito.*;
 
 class RecipeServiceImplTest {
 
-        @Mock
-        private RecipeRepository recipeRepository;
+    @Mock
+    private RecipeRepository recipeRepository;
+    @Mock
+    private ModelMapper modelMapper;
+    @InjectMocks
+    private RecipeServiceImpl recipeService;
 
-        @InjectMocks
-        private RecipeServiceImpl recipeService;
-
-        @BeforeEach
-        void setUp() {
-            MockitoAnnotations.openMocks(this);
-        }
-
-        @Test
-        void getRecipe_Success() throws ResourceNotFoundException {
-            Long recipeId = 1L;
-            Recipe mockRecipe = new Recipe();
-            mockRecipe.setName("Spaghetti Carbonara");
-            mockRecipe.setIngredients("Spaghetti, Eggs, Pancetta");
-            mockRecipe.setDescription("Classic Italian pasta dish");
-            mockRecipe.setCookingTime(30);
-            mockRecipe.setImageUrl("http://example.com/carbonara.jpg");
-            Category mockCategory = new Category();
-            mockCategory.setName("Non-Veg");
-            mockRecipe.setCategory(mockCategory);
-            Cuisine mockCuisine = new Cuisine();
-            mockCuisine.setName("Italian");
-            mockRecipe.setCuisine(mockCuisine);
-            Tag tag1 = new Tag();
-            tag1.setName("Dinner");
-            Tag tag2 = new Tag();
-            tag2.setName("Easy");
-            mockRecipe.setTags(List.of(tag1, tag2));
-            mockRecipe.setDifficultyLevel(DifficultyLevel.EASY);
-            mockRecipe.setDietaryRestrictions("None");
-            when(recipeRepository.findById(recipeId)).thenReturn(Optional.of(mockRecipe));
-            ViewRecipeDTO result = recipeService.getRecipe(recipeId);
-            assertNotNull(result);
-            assertEquals("Spaghetti Carbonara", result.getName());
-            assertEquals("Spaghetti, Eggs, Pancetta", result.getIngredients());
-            assertEquals("Classic Italian pasta dish", result.getDescription());
-            assertEquals(30, result.getCookingTime());
-            assertEquals("Italian", result.getCuisine());
-            assertEquals("Non-Veg", result.getCategory());
-            assertEquals(List.of("Dinner", "Easy"), result.getTags());
-            assertEquals("EASY", result.getDifficultyLevel());
-            verify(recipeRepository, times(1)).findById(recipeId);
-        }
-
-        @Test
-        void getRecipe_ThrowsResourceNotFoundException() {
-            Long invalidRecipeId = 999L;
-            when(recipeRepository.findById(invalidRecipeId)).thenReturn(Optional.empty());
-            ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
-                    () -> recipeService.getRecipe(invalidRecipeId));
-            assertEquals(ErrorConstants.RECIPE_ID_NOT_FOUND + " " + invalidRecipeId, exception.getMessage());
-            verify(recipeRepository, times(1)).findById(invalidRecipeId);
-        }
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
     }
+
+    @Test
+    void getRecipe_Success() throws ResourceNotFoundException {
+        Long recipeId = 1L;
+        Recipe mockRecipe = new Recipe();
+        mockRecipe.setName("Spaghetti Carbonara");
+        mockRecipe.setIngredients("Spaghetti, Eggs, Pancetta");
+        mockRecipe.setDescription("Classic Italian pasta dish");
+        mockRecipe.setCookingTime(30);
+        mockRecipe.setImageUrl("http://example.com/carbonara.jpg");
+        Category mockCategory = new Category();
+        mockCategory.setName("Non-Veg");
+        mockRecipe.setCategory(mockCategory);
+        Cuisine mockCuisine = new Cuisine();
+        mockCuisine.setName("Italian");
+        mockRecipe.setCuisine(mockCuisine);
+        Tag tag1 = new Tag();
+        tag1.setName("Dinner");
+        Tag tag2 = new Tag();
+        tag2.setName("Easy");
+        mockRecipe.setTags(List.of(tag1, tag2));
+        mockRecipe.setDifficultyLevel(DifficultyLevel.EASY);
+        mockRecipe.setDietaryRestrictions("None");
+        when(recipeRepository.findById(recipeId)).thenReturn(Optional.of(mockRecipe));
+        ViewRecipeDTO result = recipeService.getRecipe(recipeId);
+        assertNotNull(result);
+        assertEquals("Spaghetti Carbonara", result.getName());
+        assertEquals("Spaghetti, Eggs, Pancetta", result.getIngredients());
+        assertEquals("Classic Italian pasta dish", result.getDescription());
+        assertEquals(30, result.getCookingTime());
+        assertEquals("Italian", result.getCuisine());
+        assertEquals("Non-Veg", result.getCategory());
+        assertEquals(List.of("Dinner", "Easy"), result.getTags());
+        assertEquals("EASY", result.getDifficultyLevel());
+        verify(recipeRepository, times(1)).findById(recipeId);
+    }
+
+    @Test
+    void getRecipe_ThrowsResourceNotFoundException() {
+        Long invalidRecipeId = 999L;
+        when(recipeRepository.findById(invalidRecipeId)).thenReturn(Optional.empty());
+        ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class,
+                () -> recipeService.getRecipe(invalidRecipeId));
+        assertEquals(ErrorConstants.RECIPE_ID_NOT_FOUND + " " + invalidRecipeId, exception.getMessage());
+        verify(recipeRepository, times(1)).findById(invalidRecipeId);
+    }
+
+    @Test
+    void testFetchRecipesByFilters_ValidInputs_ReturnsRecipes() throws InvalidInputException {
+        Long cuisineId = 1L;
+        Long categoryId = 2L;
+        Integer cookingTime = 30;
+        String difficulty = "EASY";
+        List<Recipe> recipes = Collections.singletonList(new Recipe());
+        when(recipeRepository.findRecipesByFilters(anyLong(), anyLong(), any(), any())).thenReturn(recipes);
+        when(modelMapper.map(any(), any())).thenReturn(new RecipeDTO());
+        List<RecipeDTO> result = recipeService.fetchRecipesByFilters(cuisineId, categoryId, cookingTime, difficulty);
+        assertEquals(1, result.size());
+        verify(recipeRepository).findRecipesByFilters(cuisineId, categoryId, cookingTime, DifficultyLevel.fromString(difficulty));
+    }
+}

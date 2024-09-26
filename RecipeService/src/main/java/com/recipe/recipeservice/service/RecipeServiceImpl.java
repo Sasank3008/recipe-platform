@@ -2,6 +2,7 @@ package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.AddRecipeDTO;
+import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
 import com.recipe.recipeservice.entity.Recipe;
 import com.recipe.recipeservice.entity.Tag;
@@ -124,5 +125,13 @@ public class RecipeServiceImpl implements RecipeService {
                 recipe.getDifficultyLevel().name(),
                 recipe.getDietaryRestrictions()
         );
+    }
+
+    public List<RecipeDTO> fetchRecipesByFilters(Long cuisineId, Long categoryId, Integer cookingTime, String difficulty) throws InvalidInputException {
+        List<Recipe> recipes = recipeRepository.findRecipesByFilters(cuisineId, categoryId, cookingTime, DifficultyLevel.fromString(difficulty));
+        return recipes.stream()
+                .map(recipe -> modelMapper.map(recipe, RecipeDTO.class))
+                .toList();
+
     }
 }
