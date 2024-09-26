@@ -147,6 +147,7 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+
     @ExceptionHandler(InvalidInputException.class)
     public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
         ErrorResponse errorResponse = ErrorResponse.builder()
@@ -157,5 +158,4 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
-
 }

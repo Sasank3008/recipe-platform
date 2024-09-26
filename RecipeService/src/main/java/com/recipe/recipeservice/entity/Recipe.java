@@ -46,4 +46,6 @@ public class Recipe {
     @Enumerated(EnumType.STRING)
     private  Status status;
     private String dietaryRestrictions;
+
+
 }

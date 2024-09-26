@@ -1,5 +1,4 @@
 package com.user.userservice.exception;
-
 import com.user.userservice.dto.ApiResponse;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,6 +58,7 @@ class GlobalExceptionHandlerTest {
     void shouldHandleAccessDeniedException() {
         AccessDeniedException exception = new AccessDeniedException("Access denied");
         ResponseEntity<ApiResponse> response = globalExceptionHandler.handleAccessDeniedException(exception);
+
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
         assertEquals("Access denied", response.getBody().getResponse());
