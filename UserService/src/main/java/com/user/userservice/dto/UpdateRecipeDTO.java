@@ -17,7 +17,7 @@ public class UpdateRecipeDTO {
     private String name;
     private String ingredients;
     private String description;
-    private int cookingTime;
+    private String cookingTime;
     private String cuisine;
     private String category;
     private List<String> tags;

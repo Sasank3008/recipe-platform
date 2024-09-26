@@ -140,7 +140,7 @@ public class RecipeServiceImpl implements RecipeService {
         recipe.setCategory(categoryRepository.findById(Long.parseLong(recipeDTO.getCategory())).orElseThrow(()->new IdNotFoundException("Category not found")));
         recipe.setCuisine(cuisineRepository.findById(Long.parseLong(recipeDTO.getCuisine())).orElseThrow(()->new IdNotFoundException("Cuisine not  found")));
         List<Tag> tags = tagRepository.findAllById(recipeDTO.getTags().stream().map(Long::parseLong).collect(Collectors.toList()));
-        recipe.setCookingTime(recipeDTO.getCookingTime());
+        recipe.setCookingTime(Integer.parseInt(recipeDTO.getCookingTime()));
         recipe.setTags(tags);
         recipe.setImageUrl(updateRecipeImage(path, recipeDTO.getFile()));
         recipe.setDifficultyLevel(DifficultyLevel.valueOf(Integer.parseInt(recipeDTO.getDifficultyLevel())));

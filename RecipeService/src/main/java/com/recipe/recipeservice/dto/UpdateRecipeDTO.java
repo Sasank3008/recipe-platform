@@ -15,11 +15,10 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateRecipeDTO {
     private Long id;
-    @NotBlank(message = "Recipe Name is Mandatory")
     private String name;
     private String ingredients;
     private String description;
-    private int cookingTime;
+    private String cookingTime;
     private String cuisine;
     private String category;
     private List<String> tags;
