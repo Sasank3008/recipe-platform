@@ -1,48 +1,16 @@
 package com.recipe.recipeservice.service;
+import com.recipe.recipeservice.dto.CuisineDTO;
+import java.util.List;
 
-import com.recipe.recipeservice.entity.Cuisine;
-import com.recipe.recipeservice.repository.CuisineRepository;
-import org.springframework.stereotype.Service;
-
-@Service
-public class CuisineService {
-
-    private CuisineRepository cuisineRepository;
-    public CuisineService(CuisineRepository cuisineRepository) {
-        this.cuisineRepository = cuisineRepository;
-    }
-
-    public void disableCuisineById(Long id) {
-        cuisineRepository.findById(id).ifPresent(cuisine -> {
-            cuisine.setEnabled(false);
-            cuisineRepository.save(cuisine);
-        });
-    }
-
-    public void deleteCuisineById(Long id) {
-        cuisineRepository.deleteById(id);
-    }
-
-    public void enableCuisineById(Long id) {
-        cuisineRepository.findById(id).ifPresent(cuisine -> {
-            cuisine.setEnabled(true);
-            cuisineRepository.save(cuisine);
-        });
-    }
-
-    public Cuisine updateCuisineById(Long id, Cuisine updatedDetails) {
-        return cuisineRepository.findById(id).map(cuisine -> {
-            cuisine.setName(updatedDetails.getName());
-            cuisine.setEnabled(updatedDetails.isEnabled());
-            return cuisineRepository.save(cuisine);
-        }).orElse(null); // Return null or handle it in another way if the cuisine is not found
-    }
-
-    public boolean doesCuisineExistByName(String name) {
-        return cuisineRepository.findByName(name).isPresent();
-    }
-
-    public boolean doesCuisineExistById(Long id) {
-        return cuisineRepository.findById(id).isPresent();
-    }
+public interface CuisineService {
+        CuisineDTO addCuisine(CuisineDTO cuisineDTO);
+        boolean disableCuisineById(Long id);
+        boolean enableCuisineById(Long id);
+        boolean deleteCuisineById(Long id);
+        CuisineDTO updateCuisineById(Long id, CuisineDTO cuisineDTO);
+        List<CuisineDTO> getEnabledCuisines();
+        List<CuisineDTO> getAllCuisines();
+        boolean doesCuisineExistByName(String name);
+        boolean doesCuisineExistById(Long id);
+        boolean isCuisineEnabled(Long id);
 }

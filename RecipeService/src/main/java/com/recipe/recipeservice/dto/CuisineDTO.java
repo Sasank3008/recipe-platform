@@ -1,28 +1,19 @@
 package com.recipe.recipeservice.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+
 
 @Data
+@Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class CuisineDTO {
     private Long id;
     private String name;
-    private boolean isEnabled=true;
+    private boolean isEnabled;
+    private String imageUrl;
 
-    // Constructors
-    public CuisineDTO() {}
-
-    public CuisineDTO(Long id, String name, boolean isEnabled) {
-        this.id = id;
-        this.name = name;
-        this.isEnabled = isEnabled;
-    }
-
-
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
 }

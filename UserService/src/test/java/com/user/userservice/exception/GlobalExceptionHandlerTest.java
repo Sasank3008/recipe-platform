@@ -1,6 +1,7 @@
 package com.user.userservice.exception;
 
 import com.user.userservice.constants.ErrorConstants;
+import com.user.userservice.dto.ApiResponse;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
