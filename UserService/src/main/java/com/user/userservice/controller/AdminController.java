@@ -1,5 +1,11 @@
 package com.user.userservice.controller;
-import com.user.userservice.dto.*;
+import com.user.userservice.dto.AdminDTO;
+import com.user.userservice.dto.AdminUserDTO;
+import com.user.userservice.dto.CountryDTO;
+import com.user.userservice.dto.ApiResponse;
+import com.user.userservice.dto.CuisineResponse;
+import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.dto.UsersResponse;
 import com.user.userservice.exception.CountryAlreadyExistsException;
 import com.user.userservice.exception.CountryIdNotFoundException;
 import com.user.userservice.exception.UserIdNotFoundException;
