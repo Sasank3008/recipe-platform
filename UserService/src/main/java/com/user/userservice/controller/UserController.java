@@ -131,10 +131,7 @@ public class UserController {
                     .timestamp(LocalDateTime.now())
                     .build());
         } catch (FeignException.FeignClientException e) {
-            // Extract the error message from the Feign exception or fallback to the default message
             String errorMessage = Optional.ofNullable(e.contentUTF8()).orElse("An error occurred");
-
-            // Return the error response
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     ApiResponse.builder()
                             .response(errorMessage)
