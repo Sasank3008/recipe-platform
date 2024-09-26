@@ -2,6 +2,7 @@ package com.recipe.recipeservice.service;
 
 
 import com.recipe.recipeservice.dto.AddRecipeDTO;
+import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
 import com.recipe.recipeservice.entity.*;
 import com.recipe.recipeservice.exception.InvalidInputException;
@@ -23,5 +24,5 @@ public interface RecipeService {
     public String uploadImage(String path, MultipartFile file) throws IOException, NullPointerException, InvalidInputException;
     ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException;
     public byte[] getRecipeProfileImage(Long userId) throws IOException, ResourceNotFoundException;
-
+    public List<RecipeDTO> searchRecipes(String keyword);
 }
