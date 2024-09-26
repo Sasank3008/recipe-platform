@@ -45,6 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("users")
@@ -123,31 +124,24 @@ public class UserController {
     }
     @PutMapping(value="/recipe/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException {
-        System.out.println(recipeDTO);
         try {
             recipeServiceClient.updateRecipe(recipeDTO);
-            return ResponseEntity.ok(
-                    ApiResponse.builder()
-                            .response("Recipe updated successfully")
-                            .timestamp(LocalDateTime.now())
-                            .build()
-            );
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.builder()
+                    .response("Recipe updated successfully")
+                    .timestamp(LocalDateTime.now())
+                    .build());
         } catch (FeignException.FeignClientException e) {
-            String errorMessage = "An error occurred";
-            try {
-                String errorResponse = e.contentUTF8();
-                errorMessage = errorResponse;
-            } catch (Exception ex) {
-                errorMessage = e.getMessage();
-            }
+            // Extract the error message from the Feign exception or fallback to the default message
+            String errorMessage = Optional.ofNullable(e.contentUTF8()).orElse("An error occurred");
 
+            // Return the error response
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     ApiResponse.builder()
                             .response(errorMessage)
                             .timestamp(LocalDateTime.now())
                             .build()
             );
-        }
 
+        }
     }
 }
