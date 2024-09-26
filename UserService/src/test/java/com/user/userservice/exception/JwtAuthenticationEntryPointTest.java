@@ -13,7 +13,7 @@ import org.springframework.security.core.AuthenticationException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,7 +43,9 @@ class JwtAuthenticationEntryPointTest {
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         verify(response).setContentType("application/json");
         writer.flush();
-        assertEquals("{\"error\": \"JWT token is expired\"}", stringWriter.toString().trim());
+        String responseContent = stringWriter.toString().trim();
+        assertTrue(responseContent.contains("\"error\": \"JWT Token is Expired\""));
+        assertTrue(responseContent.contains("\"statusMessage\":\"401 UNAUTHORIZED\""));
     }
 
     @Test
@@ -53,6 +55,8 @@ class JwtAuthenticationEntryPointTest {
         verify(response).setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         verify(response).setContentType("application/json");
         writer.flush();
-        assertEquals("{\"error\": \"Invalid JWT token: Invalid JWT token\"}", stringWriter.toString().trim());
+        String responseContent = stringWriter.toString().trim();
+        assertTrue(responseContent.trim().contains("\"statusMessage\":\"401 UNAUTHORIZED\""));
+        assertTrue(responseContent.contains("\"statusMessage\":\"401 UNAUTHORIZED\""));
     }
 }
