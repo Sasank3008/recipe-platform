@@ -82,6 +82,19 @@ public class GlobalExceptionHandler {
                         HttpStatus.IM_USED
                 );
     }
+    @ExceptionHandler(CountryIdNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleCountryIdNotExistsException(CountryIdNotFoundException exception)
+    {
+        return new ResponseEntity<>
+                (
+                        ApiResponse.builder()
+                                .response(exception.getMessage())
+                                .timestamp(LocalDateTime.now())
+                                .build()
+                        ,
+                        HttpStatus.NOT_FOUND
+                );
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         StringBuilder errorMessage = new StringBuilder();

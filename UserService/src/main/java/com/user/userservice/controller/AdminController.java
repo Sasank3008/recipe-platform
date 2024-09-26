@@ -1,6 +1,13 @@
 package com.user.userservice.controller;
-import com.user.userservice.dto.*;
+import com.user.userservice.dto.AdminDTO;
+import com.user.userservice.dto.AdminUserDTO;
+import com.user.userservice.dto.CountryDTO;
+import com.user.userservice.dto.ApiResponse;
+import com.user.userservice.dto.CuisineResponse;
+import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.dto.UsersResponse;
 import com.user.userservice.exception.CountryAlreadyExistsException;
+import com.user.userservice.exception.CountryIdNotFoundException;
 import com.user.userservice.exception.UserIdNotFoundException;
 import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
@@ -38,8 +45,9 @@ public class AdminController {
         List<CountryDTO> countries = countryService.fetchCountries();
         return ResponseEntity.ok().body(countries);
     }
+
     @PutMapping("editUser/{id}")
-    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws  UserIdNotFoundException {
+    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws UserIdNotFoundException {
         AdminUserDTO updatedUserDTO = adminService.updateUser(id, userDTO);
         if (updatedUserDTO != null) {
             return ResponseEntity.ok(updatedUserDTO);
@@ -48,6 +56,7 @@ public class AdminController {
 
         }
     }
+
     @GetMapping("/users")
     public ResponseEntity<UsersResponse> fetchAllUsers() {
         List<AdminDTO> users = adminService.fetchAllUsers();
@@ -57,8 +66,8 @@ public class AdminController {
 
     @PutMapping("/{id}/toggle-user-status")
     public ResponseEntity<ApiResponse> toggleUser(@PathVariable Long id) throws UserIdNotFoundException {
-        boolean status=adminService.toggleUserStatus(id);
-        String message=status?"User Enabled successfully":"User disabled successfully";
+        boolean status = adminService.toggleUserStatus(id);
+        String message = status ? "User Enabled successfully" : "User disabled successfully";
         ApiResponse response = ApiResponse.builder()
                 .response(message)
                 .timestamp(LocalDateTime.now())
@@ -74,7 +83,6 @@ public class AdminController {
         CuisineDTO addedCuisine = cuisineService.addCuisine(name, isEnabled, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
     }
-
 
 
     @DeleteMapping("/cuisines/{id}")
@@ -105,6 +113,7 @@ public class AdminController {
                 .build();
         return ResponseEntity.status(status).body(response);
     }
+
     @GetMapping("/cuisines")
     public ResponseEntity<CuisineResponse> getAllCuisines() {
         List<CuisineDTO> cuisines = cuisineService.getAllCuisines();
@@ -119,5 +128,21 @@ public class AdminController {
                 .build();
         return ResponseEntity.ok(response);
     }
+    @PostMapping("countries/edit")
+    public ResponseEntity<CountryDTO> editCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
 
-}
+        CountryDTO savedCountry = countryService.editCountry(countryDTO);
+        return ResponseEntity.ok().body(savedCountry);
+    }
+    @PostMapping("countries/toggle-status")
+    public ResponseEntity<ApiResponse> toggleCountry(@RequestBody CountryDTO countryDTO) throws CountryIdNotFoundException {
+        boolean status = countryService.toggleCountryStatus(countryDTO.getId());
+        String message = status ? "Country Enabled successfully" : "Country disabled successfully";
+        ApiResponse response = ApiResponse.builder()
+                .response(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    }
+

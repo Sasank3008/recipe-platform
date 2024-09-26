@@ -64,7 +64,10 @@ import java.util.Optional;
         newuser.setCountry(new Country(1L,"USA"));
         user.setCountry(country);
         userDTO = new AdminUserDTO();
-        userDTO.setCountry(new CountryDTO(1L, "USA"));
+        CountryDTO countryDTO=new CountryDTO();
+        countryDTO.setId(1L);
+        countryDTO.setName("USA");
+        userDTO.setCountry(countryDTO);
     }
 
     @Test
