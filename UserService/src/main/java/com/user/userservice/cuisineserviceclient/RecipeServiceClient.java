@@ -38,6 +38,8 @@ public interface RecipeServiceClient {
     public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id);
     @GetMapping("/cuisines/exist/by-name")
     public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name);
+    @GetMapping("/cuisines/{id}/is-enabled")
+    public Boolean isCuisineEnabled(@PathVariable Long id);
     @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException;
 }
