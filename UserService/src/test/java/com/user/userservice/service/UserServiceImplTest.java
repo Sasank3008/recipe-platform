@@ -123,7 +123,7 @@ class UserServiceImplTest {
     @Test
     void testNoUsernameFound() {
         when(userDetailsService.loadUserByUsername(anyString())).thenThrow(new UsernameNotFoundException("User Not found"));
-        Exception exception = assertThrows(UsernameNotFoundException.class, () -> userService.login(userLoginDTO));
+           Exception exception = assertThrows(UsernameNotFoundException.class, () -> userService.login(userLoginDTO));
         assertEquals("User Not found", exception.getMessage());
     }
 

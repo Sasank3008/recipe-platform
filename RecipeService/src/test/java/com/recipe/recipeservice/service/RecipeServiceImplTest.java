@@ -17,13 +17,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 
 class RecipeServiceImplTest {
 
@@ -83,6 +89,18 @@ class RecipeServiceImplTest {
                 () -> recipeService.getRecipe(invalidRecipeId));
         assertEquals(ErrorConstants.RECIPE_ID_NOT_FOUND + " " + invalidRecipeId, exception.getMessage());
         verify(recipeRepository, times(1)).findById(invalidRecipeId);
+    }
+
+    @Test
+    void testSearchRecipes_ReturnsRecipeDTOs() {
+        String keyword = "chicken";
+        List<Recipe> recipes = List.of(new Recipe());
+        when(recipeRepository.findByKeyword(keyword)).thenReturn(recipes);
+        when(modelMapper.map(any(Recipe.class), eq(RecipeDTO.class))).thenReturn(new RecipeDTO());
+        List<RecipeDTO> result = recipeService.searchRecipes(keyword);
+        assertFalse(result.isEmpty());
+        verify(recipeRepository).findByKeyword(keyword);
+        verify(modelMapper, times(recipes.size())).map(any(Recipe.class), eq(RecipeDTO.class));
     }
 
     @Test

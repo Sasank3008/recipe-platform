@@ -4,6 +4,8 @@ import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.CuisineDTO;
 import com.recipe.recipeservice.dto.CuisineResponse;
 import com.recipe.recipeservice.dto.RecipeListDTO;
+import com.recipe.recipeservice.dto.RecipeDTO;
+import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.service.CuisineService;
 import com.recipe.recipeservice.service.RecipeService;
@@ -20,7 +22,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/recipes")
+@RequestMapping("recipes")
 public class RecipeController {
     private final RecipeService recipeService;
     private final CuisineService cuisineService;
@@ -29,6 +31,23 @@ public class RecipeController {
         List<CuisineDTO> cuisineDTOs = cuisineService.getEnabledCuisines();
         CuisineResponse response = CuisineResponse.builder()
                 .cuisines(cuisineDTOs)
+                .build();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("categories")
+    public ResponseEntity<List<Category>> getAllCategories() {
+        return ResponseEntity.ok(recipeService.getAllCategories());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<RecipeListDTO> searchRecipes(@RequestParam String keyword) {
+        keyword = keyword.trim().replaceAll("\\s+", " ");
+        List<RecipeDTO> recipes = recipeService.searchRecipes(keyword);
+        RecipeListDTO response = RecipeListDTO.builder()
+                .recipeList(recipes)
+                .status(HttpStatus.OK.toString())
+                .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.ok(response);
     }

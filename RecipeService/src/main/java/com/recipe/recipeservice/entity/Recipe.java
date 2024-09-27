@@ -14,6 +14,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Column;
 
 @Entity
 @Data
@@ -46,6 +47,6 @@ public class Recipe {
     @Enumerated(EnumType.STRING)
     private  Status status;
     private String dietaryRestrictions;
-
-
+    @Column(name="userId")
+    private String user;
 }

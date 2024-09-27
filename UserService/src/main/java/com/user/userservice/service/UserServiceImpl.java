@@ -24,6 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -36,6 +37,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 import com.user.userservice.dto.FileResponse;
 import com.user.userservice.dto.UserDisplayDTO;
 import com.user.userservice.dto.PasswordDTO;
@@ -55,12 +57,13 @@ public class UserServiceImpl implements UserService {
     private final UserEmailRepository userEmailRepository;
     @Value("${project.image}")
     String path;
+
     @Override
     public Pair<String, User> login(UserLoginDTO userLoginDTO) throws IncorrectPasswordException {
         Authentication authentication;
         User user = userDetailsService.loadUserByUsername(userLoginDTO.getEmail());
         if (!passwordEncoder.matches(userLoginDTO.getPassword(), user.getPassword()))
-            throw new IncorrectPasswordException("Provided password is incorrect");
+            throw new IncorrectPasswordException(ErrorConstants.INVALID_PASSWORD);
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(
                 userLoginDTO.getEmail(),
                 userLoginDTO.getPassword()
@@ -76,7 +79,6 @@ public class UserServiceImpl implements UserService {
         }
 
         userRepository.save(mapUserRegistrationDTOtoUser(userRegistrationDTO));
-
         ApiResponse response = ApiResponse.builder()
                 .response("Registration Successful")
                 .timestamp(LocalDateTime.now())

@@ -19,5 +19,4 @@ public class Tag {
     @ManyToMany(mappedBy = "tags")
     @JsonIgnore
     private List<Recipe> recipes;
-
 }
