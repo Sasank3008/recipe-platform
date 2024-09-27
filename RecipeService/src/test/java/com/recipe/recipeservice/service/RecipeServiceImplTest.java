@@ -2,7 +2,11 @@ package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
-import com.recipe.recipeservice.entity.*;
+import com.recipe.recipeservice.entity.Category;
+import com.recipe.recipeservice.entity.Recipe;
+import com.recipe.recipeservice.entity.Cuisine;
+import com.recipe.recipeservice.entity.Tag;
+import com.recipe.recipeservice.entity.DifficultyLevel;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import com.recipe.recipeservice.repository.RecipeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,13 +14,14 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
 import java.util.List;
 import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.when;
 class RecipeServiceImplTest {
 
         @Mock
@@ -75,4 +80,5 @@ class RecipeServiceImplTest {
             assertEquals(ErrorConstants.RECIPE_ID_NOT_FOUND + " " + invalidRecipeId, exception.getMessage());
             verify(recipeRepository, times(1)).findById(invalidRecipeId);
         }
+
     }

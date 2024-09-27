@@ -98,18 +98,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         StringBuilder errorMessage = new StringBuilder();
-
-        // Extract and format validation errors
         ex.getBindingResult().getAllErrors().forEach(error -> {
             String message = error.getDefaultMessage();
             errorMessage.append(" ").append(message).append(". ");
         });
-        // Build ApiResponse with the formatted error messages
         ApiResponse response = ApiResponse.builder()
                 .response(errorMessage.toString().trim())
                 .timestamp(LocalDateTime.now())
                 .build();
-        // Return the response with BAD_REQUEST status
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
 
@@ -152,7 +148,6 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .statusMessage(HttpStatus.BAD_REQUEST.toString())
                 .build();
-
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 }
