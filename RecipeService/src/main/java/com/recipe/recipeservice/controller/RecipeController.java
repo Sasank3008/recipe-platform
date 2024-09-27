@@ -1,8 +1,11 @@
 package com.recipe.recipeservice.controller;
 
+import com.recipe.recipeservice.dto.AllCommentsDTO;
 import com.recipe.recipeservice.dto.CuisineDTO;
 import com.recipe.recipeservice.entity.Cuisine;
+import com.recipe.recipeservice.entity.ReviewRating;
 import com.recipe.recipeservice.repository.CuisineRepository;
+import com.recipe.recipeservice.service.ReviewRatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +23,8 @@ public class RecipeController {
 
     @Autowired
     private CuisineRepository cuisineRepository;
+    @Autowired
+    private ReviewRatingService reviewRatingService;
 
     @Autowired
     public RecipeController(CuisineRepository cuisineRepository) {
@@ -121,5 +126,13 @@ public class RecipeController {
     public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id) {
         boolean exists = cuisineRepository.doesCuisineExistById(id);
         return ResponseEntity.ok(exists);
+    }
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId) {
+        List<ReviewRating> comments = reviewRatingService.getAllReviews(recipeId);
+        AllCommentsDTO allCommentsDTO = AllCommentsDTO.builder()
+                .reviews(comments)
+                .build();
+        return new ResponseEntity<>(allCommentsDTO, HttpStatus.OK);
     }
 }

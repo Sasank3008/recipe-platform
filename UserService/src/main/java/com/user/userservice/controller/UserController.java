@@ -2,15 +2,8 @@ package com.user.userservice.controller;
 
 import com.nimbusds.jose.util.Pair;
 import com.user.userservice.constants.ControllerConstants;
-import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.CountryListDTO;
-import com.user.userservice.dto.FileResponse;
-import com.user.userservice.dto.PasswordDTO;
-import com.user.userservice.dto.UserEmailDTO;
-import com.user.userservice.dto.UserLoginDTO;
-import com.user.userservice.dto.UserRegistrationDTO;
-import com.user.userservice.dto.UserResponseDTO;
-import com.user.userservice.dto.UserUpdateDTO;
+import com.user.userservice.cuisineserviceclient.RecipeServiceClient;
+import com.user.userservice.dto.*;
 import com.user.userservice.entity.User;
 import com.user.userservice.exception.IncorrectPasswordException;
 import com.user.userservice.exception.InvalidInputException;
@@ -50,6 +43,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final RecipeServiceClient recipeServiceClient;
     @Value("${project.image}")
     private String path;
 
@@ -116,5 +110,13 @@ public class UserController {
                     .body("Failed to fetch user emails");
         }
     }
-
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId) throws UserNotFoundException {
+        List<ReviewRating> comments = recipeServiceClient.getAllComments(recipeId).getBody().getReviews();
+        comments = userService.mapEmailAndImage(comments);
+        AllCommentsDTO allCommentsDTO = AllCommentsDTO.builder()
+                .reviews(comments)
+                .build();
+        return new ResponseEntity<>(allCommentsDTO, HttpStatus.OK);
+    }
 }

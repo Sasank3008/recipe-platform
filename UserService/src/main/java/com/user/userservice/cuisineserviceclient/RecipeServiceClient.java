@@ -1,5 +1,6 @@
 package com.user.userservice.cuisineserviceclient;
 
+import com.user.userservice.dto.AllCommentsDTO;
 import com.user.userservice.dto.CuisineDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -34,4 +35,6 @@ public interface RecipeServiceClient {
     public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id);
     @GetMapping("/cuisines/exist/by-name")
     public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name);
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId);
 }

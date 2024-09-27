@@ -1,6 +1,7 @@
 package com.recipe.recipeservice.exception;
 
 import com.recipe.recipeservice.dto.ApiResponse;
+import com.recipe.recipeservice.dto.ReviewResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -55,6 +56,14 @@ public class GlobalExceptionHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+
+    @ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<ReviewResponseDTO> handleCuisineNotFoundException(ReviewNotFoundException e) {
+        ReviewResponseDTO reviewResponseDTO = ReviewResponseDTO.builder()
+                .isReviewed(false)
+                .build();
+        return ResponseEntity.ok(reviewResponseDTO);
     }
 }
 

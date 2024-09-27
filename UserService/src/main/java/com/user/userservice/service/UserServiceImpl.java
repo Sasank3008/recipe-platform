@@ -276,4 +276,15 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("Failed to fetch user emails", e);
         }
     }
+
+    @Override
+    public List<ReviewRating> mapEmailAndImage(List<ReviewRating> comments)throws UserNotFoundException {
+        for (int i = 0; i < comments.size(); i++) {
+            User user = userRepository.findById(comments.get(i).getUserId())
+                    .orElseThrow(()->new UserNotFoundException("No user find with that email and image"));
+            comments.get(i).setEmail(user.getEmail());
+            comments.get(i).setImage(user.getImage());
+        }
+        return comments;
+    }
 }
