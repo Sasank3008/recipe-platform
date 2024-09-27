@@ -4,6 +4,7 @@ package com.recipe.recipeservice.service;
 import com.recipe.recipeservice.dto.AddRecipeDTO;
 import com.recipe.recipeservice.dto.UpdateRecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
+import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.Recipe;
@@ -30,6 +31,5 @@ public interface RecipeService {
     public byte[] getRecipeProfileImage(Long userId) throws IOException, ResourceNotFoundException;
     void updateRecipe(UpdateRecipeDTO updateRecipeDTO, Long id) throws IdNotFoundException,IOException;
     String updateRecipeImage(String path, MultipartFile file) throws IdNotFoundException, IOException;
-
-
+    public List<RecipeDTO> searchRecipes(String keyword);
 }

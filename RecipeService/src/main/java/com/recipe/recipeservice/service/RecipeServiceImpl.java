@@ -2,6 +2,7 @@ package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.AddRecipeDTO;
+import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.dto.UpdateRecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
 import com.recipe.recipeservice.entity.Recipe;
@@ -168,5 +169,12 @@ public class RecipeServiceImpl implements RecipeService {
         }
         Files.copy(file.getInputStream(), Paths.get(filePath));
         return newFilename;
+    }
+
+    public List<RecipeDTO> searchRecipes(String keyword) {
+        List<Recipe> recipes = recipeRepository.findByKeyword(keyword);
+        return recipes.stream()
+                .map(recipe -> modelMapper.map(recipe, RecipeDTO.class))
+                .collect(Collectors.toList());
     }
 }

@@ -14,7 +14,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CuisineServiceImpl implements CuisineService {
-
     private final CuisineRepository cuisineRepository;
     private final ModelMapper modelMapper;
 
