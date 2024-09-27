@@ -1,10 +1,7 @@
 package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
-import com.recipe.recipeservice.dto.AddRecipeDTO;
-import com.recipe.recipeservice.dto.RecipeDTO;
-import com.recipe.recipeservice.dto.UpdateRecipeDTO;
-import com.recipe.recipeservice.dto.ViewRecipeDTO;
+import com.recipe.recipeservice.dto.*;
 import com.recipe.recipeservice.entity.Recipe;
 import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
@@ -21,6 +18,8 @@ import com.recipe.recipeservice.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +29,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -184,5 +184,75 @@ public class RecipeServiceImpl implements RecipeService {
                 .map(recipe -> modelMapper.map(recipe, RecipeDTO.class))
                 .toList();
 
+    }
+
+    public ResponseEntity<SuccessResponse> editRecipeStatus(String id, String status) throws InvalidInputException {
+        try {
+            Long recipeId = Long.parseLong(id);
+            Status recipeStatus = Status.valueOf(status.toUpperCase());
+
+            Recipe recipe = recipeRepository.findById(Long.parseLong(id))
+                    .orElseThrow(() -> new InvalidInputException(ErrorConstants.RECIPE_ID_NOT_FOUND + id));
+            recipe.setStatus(recipeStatus);
+            recipeRepository.save(recipe);
+
+            SuccessResponse successResponse = SuccessResponse.builder()
+                    .timestamp(LocalDateTime.now())
+                    .status(HttpStatus.OK.name())
+                    .message(ErrorConstants.RECIPE_STATUS_UPDATED)
+                    .build();
+
+            return ResponseEntity.ok(successResponse);
+        } catch (NumberFormatException ex) {
+            throw new InvalidInputException(ErrorConstants.INVALID_RECIPE_ID_FORMAT + id);
+        } catch (IllegalArgumentException ex) {
+            throw new InvalidInputException(ErrorConstants.INVALID_RECIPE_STATUS + status);
+        }
+    }
+
+    @Override
+    public RecipeFilterListDTO fetchAllRecipesByTwoFilters(Long cuisineId, Long categoryId) throws InvalidInputException {
+        List<Recipe> recipes = recipeRepository.findRecipesByTwoFilters(cuisineId, categoryId);
+        List<RecipeStatusChangeDTO> list = createAdminRecipeListDTO(recipes);
+
+        RecipeFilterListDTO recipeFilterListDTO = RecipeFilterListDTO.builder()
+                .recipeList(list)
+                .timestamp(LocalDateTime.now())
+                .status(HttpStatus.OK.name())
+                .build();
+
+        return recipeFilterListDTO;
+    }
+
+    public List<RecipeStatusChangeDTO> createAdminRecipeListDTO(List<Recipe> recipeList) throws InvalidInputException {
+        List<RecipeStatusChangeDTO> recipeList1 = recipeList.stream()
+                .map(r -> modelMapper.map(r, RecipeStatusChangeDTO.class))
+                .toList();
+
+        return recipeList1;
+    }
+
+    @Override
+    public CuisineFilterListDTO fetchAllCuisines() {
+        List<Cuisine> cuisineList = cuisineRepository.findAll();
+        CuisineFilterListDTO cuisineFilterListDTO = CuisineFilterListDTO.builder()
+                .cuisineList(cuisineList)
+                .status(HttpStatus.OK.name())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return cuisineFilterListDTO;
+    }
+
+    @Override
+    public CategoryFilterListDTO fetchAllCategory() {
+        List<Category> categoryList = categoryRepository.findAll();
+        CategoryFilterListDTO categoryFilterListDTO = CategoryFilterListDTO.builder()
+                .categoryList(categoryList)
+                .status(HttpStatus.OK.name())
+                .timestamp(LocalDateTime.now())
+                .build();
+
+        return categoryFilterListDTO;
     }
 }

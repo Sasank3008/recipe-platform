@@ -28,7 +28,7 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
             "LEFT JOIN r.cuisine cu " +
             "LEFT JOIN r.tags t " +
             "WHERE r.status = 'PUBLISHED' AND (" +
-            "WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.ingredients) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.description) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.dietaryRestrictions) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
@@ -38,4 +38,9 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
             "OR LOWER(r.difficultyLevel) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.dietaryRestrictions) LIKE LOWER(CONCAT('%', :keyword, '%')))")
     List<Recipe> findByKeyword(@Param("keyword") String keyword);
+
+    @Query("SELECT r FROM Recipe r WHERE " +
+            "(:cuisineId IS NULL OR r.cuisine.id = :cuisineId) AND " +
+            "(:categoryId IS NULL OR r.category.id = :categoryId) ")
+    List<Recipe> findRecipesByTwoFilters(@Param("cuisineId") Long cuisineId, @Param("categoryId") Long categoryId);
 }

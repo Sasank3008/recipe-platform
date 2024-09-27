@@ -1,8 +1,8 @@
 package com.user.userservice.feignclient;
 
-import com.user.userservice.dto.CuisineDTO;
-import com.user.userservice.dto.UpdateRecipeDTO;
+import com.user.userservice.dto.*;
 import com.user.userservice.exception.IdNotFoundException;
+import com.user.userservice.exception.InvalidInputException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,4 +45,19 @@ public interface RecipeServiceClient {
     public Boolean isCuisineEnabled(@PathVariable Long id);
     @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException;
+
+    @GetMapping("admins/filter")
+    public ResponseEntity<RecipeListDTO> fetchAllRecipesByFilters(
+            @RequestParam(required = false) Long cuisineId,
+            @RequestParam(required = false) Long categoryId
+    ) throws InvalidInputException;
+
+    @GetMapping("recipes/categories")
+    public ResponseEntity<CategoryListDTO> fetchAllCategory();
+
+    @GetMapping("recipes/cuisines")
+    public ResponseEntity<CuisineListDTO> fetchAllCuisines();
+
+    @PutMapping("{id}/status/{status}")
+    public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException;
 }

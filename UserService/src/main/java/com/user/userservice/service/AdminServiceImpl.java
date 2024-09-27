@@ -1,14 +1,20 @@
 package com.user.userservice.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.user.userservice.constants.ErrorConstants;
 import com.user.userservice.dto.AdminDTO;
 import com.user.userservice.dto.AdminUserDTO;
+import com.user.userservice.dto.RecipeListDTO;
+import com.user.userservice.dto.RecipeStatusChangeDTO;
 import com.user.userservice.entity.User;
+import com.user.userservice.exception.InvalidInputException;
 import com.user.userservice.exception.UserIdNotFoundException;
+import com.user.userservice.feignclient.RecipeServiceClient;
 import com.user.userservice.repository.CountryRepository;
 import com.user.userservice.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.user.userservice.entity.Country;
 import java.util.List;
@@ -21,6 +27,7 @@ public class AdminServiceImpl implements AdminService {
     private final CountryRepository countryRepository;
     private final ModelMapper modelMapper;
     private final ObjectMapper objectMapper;
+    private final RecipeServiceClient recipeFeign;
     @Transactional
     public AdminUserDTO updateUser(Long id, AdminUserDTO userDTO) throws UserIdNotFoundException{
         return userRepository.findById(id).map(existingUser -> {
@@ -62,5 +69,21 @@ public class AdminServiceImpl implements AdminService {
         user.setEnabled(!user.getEnabled());
         userRepository.save(user);
         return user.getEnabled();
+    }
+
+    @Override
+    public ResponseEntity<RecipeListDTO> fetchAllRecipesByFilters(Long cuisineId, Long categoryId) throws InvalidInputException {
+        RecipeListDTO recipeListDTO = recipeFeign.fetchAllRecipesByFilters(cuisineId, categoryId).getBody();
+
+        List<RecipeStatusChangeDTO> recipeList = recipeListDTO.getRecipeList();
+        for (int i = 0; i < recipeList.size(); i++) {
+            User user = userRepository.findById(recipeList.get(i).getUserId())
+                    .orElseThrow(() -> new InvalidInputException(ErrorConstants.USER_NOT_FOUND_WITH_ID));
+
+            recipeList.get(i).setEmail(user.getEmail());
+        }
+        recipeListDTO.setRecipeList(recipeList);
+
+        return ResponseEntity.ok(recipeListDTO);
     }
 }

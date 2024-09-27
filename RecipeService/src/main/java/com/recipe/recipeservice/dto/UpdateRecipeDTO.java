@@ -1,5 +1,8 @@
 package com.recipe.recipeservice.dto;
 
+import com.recipe.recipeservice.entity.DifficultyLevel;
+import com.recipe.recipeservice.entity.Status;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
