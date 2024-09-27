@@ -10,9 +10,6 @@ import java.time.LocalDateTime;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-
-
-
         @ExceptionHandler(Exception.class)
         public ResponseEntity<String> handleGeneralException(Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
@@ -39,13 +36,22 @@ public class GlobalExceptionHandler {
                 .build();
               return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public  ResponseEntity<ApiResponse> resourceNotFoundException(ResourceNotFoundException ex){
-            ApiResponse response = ApiResponse.builder()
-                    .response(ex.getMessage())
-                    .timestamp(LocalDateTime.now())
-                    .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);}
-
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    @ExceptionHandler(IdNotFoundException.class)
+    public ResponseEntity<String> idNotFoundException(IdNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
 }
 

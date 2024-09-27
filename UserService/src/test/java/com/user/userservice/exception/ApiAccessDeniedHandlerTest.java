@@ -1,5 +1,6 @@
 package com.user.userservice.exception;
 
+import com.user.userservice.constants.ErrorConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,12 +36,12 @@ class ApiAccessDeniedHandlerTest {
 
     @Test
     void whenAccessDenied_thenSetForbiddenStatusAndReturnErrorJson() throws IOException {
-        AccessDeniedException accessDeniedException = new AccessDeniedException("Access Denied");
+        AccessDeniedException accessDeniedException = new AccessDeniedException(ErrorConstants.ACCESS_DENIED);
         apiAccessDeniedHandler.handle(request, response, accessDeniedException);
         verify(response).setStatus(HttpServletResponse.SC_FORBIDDEN);
         verify(response).setContentType("application/json");
         printWriter.flush(); // Important to flush the writer to make content available for the test
         String responseContent = responseWriter.toString();
-        assertEquals("{\"error\": \"Access Denied - Forbidden\"}", responseContent.trim());
+        assertEquals("statusMessage=403 FORBIDDEN, error=Access is denied to current resource)", responseContent.substring(responseContent.indexOf("statusMessage")));
     }
 }

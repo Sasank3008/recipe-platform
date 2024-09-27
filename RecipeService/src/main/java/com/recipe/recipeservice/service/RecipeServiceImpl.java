@@ -3,6 +3,7 @@ package com.recipe.recipeservice.service;
 import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.AddRecipeDTO;
 import com.recipe.recipeservice.dto.RecipeDTO;
+import com.recipe.recipeservice.dto.UpdateRecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
 import com.recipe.recipeservice.entity.Recipe;
 import com.recipe.recipeservice.entity.Tag;
@@ -10,6 +11,7 @@ import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.DifficultyLevel;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.Status;
+import com.recipe.recipeservice.exception.IdNotFoundException;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import com.recipe.recipeservice.repository.RecipeRepository;
@@ -123,8 +125,50 @@ public class RecipeServiceImpl implements RecipeService {
                         .map(Tag::getName)
                         .collect(Collectors.toList()),
                 recipe.getDifficultyLevel().name(),
-                recipe.getDietaryRestrictions()
+                recipe.getDietaryRestrictions(),
+                recipe.getUser()
         );
+    }
+    @Override
+    public void updateRecipe(UpdateRecipeDTO recipeDTO, Long id) throws IdNotFoundException, IOException {
+        Recipe recipe = recipeRepository.findById(id).orElseThrow(()->new IdNotFoundException("Recipe not found with id: " + id));
+        if (!recipe.getUser().equals(recipeDTO.getUserId())) {
+            throw new IdNotFoundException("User with id: " + recipeDTO.getUserId() + " is not authorized to update this recipe.");
+        }
+        recipe.setName(recipeDTO.getName());
+        recipe.setIngredients(recipeDTO.getIngredients());
+        recipe.setDescription(recipeDTO.getDescription());
+        recipe.setCategory(categoryRepository.findById(Long.parseLong(recipeDTO.getCategory())).orElseThrow(()->new IdNotFoundException("Category not found")));
+        recipe.setCuisine(cuisineRepository.findById(Long.parseLong(recipeDTO.getCuisine())).orElseThrow(()->new IdNotFoundException("Cuisine not  found")));
+        List<Tag> tags = tagRepository.findAllById(recipeDTO.getTags().stream().map(Long::parseLong).collect(Collectors.toList()));
+        recipe.setCookingTime(Integer.parseInt(recipeDTO.getCookingTime()));
+        recipe.setTags(tags);
+        recipe.setImageUrl(updateRecipeImage(path, recipeDTO.getFile()));
+        recipe.setDifficultyLevel(DifficultyLevel.valueOf(Integer.parseInt(recipeDTO.getDifficultyLevel())));
+        recipeRepository.save(recipe);
+    }
+    @Override
+    public String updateRecipeImage(String path, MultipartFile file) throws  IOException {
+        if (file.isEmpty()) {
+            throw new IllegalArgumentException(ErrorConstants.FILE_MUST_NOT_BE_EMPTY);
+        }
+        String originalFilename = file.getOriginalFilename();
+        if (originalFilename == null) {
+            throw new IllegalArgumentException(ErrorConstants.FILE_NAME_MUST_NOT_BE_NULL);
+        }
+        String fileExtension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        if (!fileExtension.equals(".png") && !fileExtension.equals(".jpg") &&            !fileExtension.equals(".jpeg") && !fileExtension.equals(".svg")) {
+            throw new IllegalArgumentException(ErrorConstants.INVALID_FILE_TYPE);
+        }
+        String randomID = UUID.randomUUID().toString();
+        String newFilename = randomID.concat(fileExtension);
+        String filePath = path + File.separator + newFilename;
+        File dir = new File(path);
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        Files.copy(file.getInputStream(), Paths.get(filePath));
+        return newFilename;
     }
 
     public List<RecipeDTO> searchRecipes(String keyword) {

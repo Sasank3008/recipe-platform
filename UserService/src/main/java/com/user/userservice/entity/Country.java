@@ -25,6 +25,7 @@ public class Country {
     @JsonIgnore
     @OneToMany(mappedBy = "country")
      private List<User> users;
+    private boolean isEnabled;
 
 
     public Country(long l, String name) {

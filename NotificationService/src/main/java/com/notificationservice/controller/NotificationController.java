@@ -92,10 +92,6 @@ public class NotificationController {
         runnable.run();
         return ResponseEntity.ok().build();
     }
-//    @GetMapping("/count/unread/{userId}")
-//    public long getUnreadNotificationCount(@PathVariable String userId) {
-//        return notificationService.getUnreadNotificationCount(userId); // Return the unread count for the user
-//    }
 @GetMapping("/count/unread/{userId}")
 public UnreadNotificationCountResponse getUnreadNotificationCount(@PathVariable String userId) {
     long unreadCount = notificationService.getUnreadNotificationCount(userId);
