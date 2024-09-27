@@ -15,7 +15,7 @@ public interface RecipeRepository extends JpaRepository<Recipe,Long> {
             "LEFT JOIN r.cuisine cu " +
             "LEFT JOIN r.tags t " +
             "WHERE r.status = 'PUBLISHED' AND (" +
-            "WHERE LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "LOWER(r.name) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.ingredients) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.description) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(r.dietaryRestrictions) LIKE LOWER(CONCAT('%', :keyword, '%')) " +

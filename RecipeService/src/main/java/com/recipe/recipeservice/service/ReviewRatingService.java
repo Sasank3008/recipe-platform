@@ -27,7 +27,7 @@ public class ReviewRatingService {
         return reviewRatingRepository.save(review);
     }
 
-    public ReviewRating updateReview(UpdateReviewDTO updateReviewDTO) {
+    public ReviewRating updateReview(UpdateReviewDTO updateReviewDTO)throws ResourceNotFoundException {
         Optional<ReviewRating> reviewOpt = reviewRatingRepository.findByUserIdAndRecipeId(
                 updateReviewDTO.getUserId(), updateReviewDTO.getRecipeId());
 
@@ -56,7 +56,7 @@ public class ReviewRatingService {
     public void deleteReview(Long userId, Long recipeId) {
         reviewRatingRepository.deleteByUserIdAndRecipeId(userId, recipeId);
     }
-    public Double getAverageRating(Long recipeId) {
+    public Double getAverageRating(Long recipeId)throws ResourceNotFoundException {
         List<ReviewRating> reviews = reviewRatingRepository.findAllByRecipeId(recipeId);
         if (reviews.isEmpty()) {
             throw new ResourceNotFoundException("No reviews found for recipeId: " + recipeId);

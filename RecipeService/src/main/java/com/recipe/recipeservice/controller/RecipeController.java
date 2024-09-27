@@ -43,13 +43,6 @@ public class RecipeController {
                 .build();
         return ResponseEntity.ok(response);
     }
-    @GetMapping("/comments/{recipeId}")
-    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId) {
-        List<ReviewRating> comments = reviewRatingService.getAllReviews(recipeId);
-        AllCommentsDTO allCommentsDTO = AllCommentsDTO.builder()
-                .reviews(comments)
-                .build();
-        return new ResponseEntity<>(allCommentsDTO, HttpStatus.OK);
-    }
+
 
 }

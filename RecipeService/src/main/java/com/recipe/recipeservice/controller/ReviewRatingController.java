@@ -2,6 +2,7 @@ package com.recipe.recipeservice.controller;
 
 import com.recipe.recipeservice.dto.*;
 import com.recipe.recipeservice.entity.ReviewRating;
+import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import com.recipe.recipeservice.exception.ReviewNotFoundException;
 import com.recipe.recipeservice.service.ReviewRatingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class ReviewRatingController {
     }
 
     @PutMapping
-    public ResponseEntity<ReviewRating> editReview(@RequestBody UpdateReviewDTO updateReviewDTO) {
+    public ResponseEntity<ReviewRating> editReview(@RequestBody UpdateReviewDTO updateReviewDTO)throws ResourceNotFoundException {
         ReviewRating updatedReview = reviewRatingService.updateReview(updateReviewDTO);
         return new ResponseEntity<>(updatedReview, HttpStatus.OK);
     }
@@ -54,7 +55,7 @@ public class ReviewRatingController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
     @GetMapping("/{recipeId}/averageRating")
-    public ResponseEntity<AverageRatingDTO> getAverageRating(@PathVariable Long recipeId) {
+    public ResponseEntity<AverageRatingDTO> getAverageRating(@PathVariable Long recipeId)throws ResourceNotFoundException {
         Double averageRating = reviewRatingService.getAverageRating(recipeId);
         AverageRatingDTO averageRatingDTO = new AverageRatingDTO(averageRating);
         return new ResponseEntity<>(averageRatingDTO, HttpStatus.OK);

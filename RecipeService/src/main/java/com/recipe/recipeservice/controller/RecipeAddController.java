@@ -59,15 +59,15 @@ public class RecipeAddController {
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
         return ResponseEntity.ok(recipeService.createCategory(category));
     }
-    @GetMapping("/cuisines")
-    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
-        List<CuisineDTO>list=cuisineRepository.findAll().stream()
-                .map(country -> modelMapper.map(country, CuisineDTO.class))
-                .toList();
-        return ResponseEntity.ok().body(list);
-    }
-    @PostMapping("/cuisines")
-    public ResponseEntity<Cuisine> createCuisine(@RequestBody Cuisine cuisine) {
-        return ResponseEntity.ok(recipeService.createCuisine(cuisine));
-    }
+//    @GetMapping("/cuisines")
+//    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
+//        List<CuisineDTO>list=cuisineRepository.findAll().stream()
+//                .map(country -> modelMapper.map(country, CuisineDTO.class))
+//                .toList();
+//        return ResponseEntity.ok().body(list);
+//    }
+//    @PostMapping("/cuisines")
+//    public ResponseEntity<Cuisine> createCuisine(@RequestBody Cuisine cuisine) {
+//        return ResponseEntity.ok(recipeService.createCuisine(cuisine));
+//    }
 }
