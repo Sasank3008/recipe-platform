@@ -2,17 +2,8 @@ package com.user.userservice.controller;
 
 import com.nimbusds.jose.util.Pair;
 import com.user.userservice.constants.ControllerConstants;
+import com.user.userservice.dto.*;
 import com.user.userservice.feignclient.RecipeServiceClient;
-import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.UserLoginDTO;
-import com.user.userservice.dto.UserRegistrationDTO;
-import com.user.userservice.dto.UserResponseDTO;
-import com.user.userservice.dto.CountryListDTO;
-import com.user.userservice.dto.FileResponse;
-import com.user.userservice.dto.PasswordDTO;
-import com.user.userservice.dto.UserUpdateDTO;
-import com.user.userservice.dto.UpdateRecipeDTO;
-import com.user.userservice.dto.UserEmailDTO;
 import com.user.userservice.entity.User;
 import com.user.userservice.exception.IncorrectPasswordException;
 import com.user.userservice.exception.InvalidInputException;
@@ -41,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -72,12 +64,10 @@ public class UserController {
 
         return ResponseEntity.ok(userResponseDTO);
     }
-
     @PostMapping(value = "register", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse> register(@ModelAttribute @Valid UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException {
         return userService.register(userRegistrationDTO);
     }
-
     @GetMapping("/countries")
     public ResponseEntity<CountryListDTO> fetchAllCountries() {
         return userService.fetchAllCountries();
@@ -122,7 +112,7 @@ public class UserController {
                     .body("Failed to fetch user emails");
         }
     }
-    @PutMapping(value="/recipe/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value="recipe/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse> updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException {
         try {
             recipeServiceClient.updateRecipe(recipeDTO);
@@ -138,6 +128,40 @@ public class UserController {
                             .timestamp(LocalDateTime.now())
                             .build()
             );
+        }
+    }
+    @PostMapping(value="recipes/save", consumes =  MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createRecipe(AddRecipeDTO addRecipeDto) throws FeignException, UserNotFoundException {
+        userService.getUser(Long.valueOf(addRecipeDto.getUser()));
+        try{
+            return recipeServiceClient.addRecipe(addRecipeDto);
+        }
+        catch (FeignException.FeignClientException ex) {
+            String errorMessage = Optional.ofNullable(ex.contentUTF8()).orElse("An error occurred");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    ApiResponse.builder()
+                            .response(errorMessage)
+                            .timestamp(LocalDateTime.now())
+                            .build()
+            );
+        }
+        catch (Exception ex) {
+            throw new ResponseStatusException(
+                    HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error: " + ex.getMessage(), ex);
+        }
+    }
+    @PutMapping("recipes/delete/{id}")
+    public ResponseEntity<ApiResponse> deleteRecipe(@PathVariable("id") Long id,@RequestParam("userid")Long userId) throws InvalidInputException, UserNotFoundException {
+        UserDisplayDTO user=userService.getUser(id);
+        String s= recipeServiceClient.getRecipeOwnerId(id).getBody();
+        if(s.compareTo(String.valueOf(userId))==0){
+            recipeServiceClient.deleteRecipe(id);
+            ApiResponse response = ApiResponse.builder()
+                    .timestamp(LocalDateTime.now()).response("Recipe deleted successfully")
+                    .build();
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } else {
+            throw new InvalidInputException("You are not authorized to delete this recipe.");
         }
     }
 }

@@ -37,6 +37,7 @@ public interface RecipeService {
     public RecipeFilterListDTO fetchAllRecipesByTwoFilters(Long cuisineId, Long categoryId) throws InvalidInputException;
 
     public CuisineFilterListDTO fetchAllCuisines();
-
     public CategoryFilterListDTO fetchAllCategory();
+    public ApiResponse deleteRecipe(Long id) throws InvalidInputException;
+    public String getRecipeOwnerId(Long recipeId) throws InvalidInputException;
 }

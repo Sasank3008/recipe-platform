@@ -3,6 +3,9 @@ package com.user.userservice.feignclient;
 import com.user.userservice.dto.*;
 import com.user.userservice.exception.IdNotFoundException;
 import com.user.userservice.exception.InvalidInputException;
+import com.user.userservice.exception.UserIdNotFoundException;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -60,4 +63,10 @@ public interface RecipeServiceClient {
 
     @PutMapping("{id}/status/{status}")
     public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException;
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> deleteRecipe(@PathVariable("id") Long id) throws InvalidInputException;
+    @GetMapping("getUserIdByRecipeId/{id}")
+    public ResponseEntity<String> getRecipeOwnerId(@PathVariable("id") Long recipeId) throws InvalidInputException;
+    @PostMapping(value="/save", consumes = "multipart/form-data")
+    public ResponseEntity<?> addRecipe(@ModelAttribute @Valid AddRecipeDTO addRecipeDto) throws UserIdNotFoundException, NotFoundException;
 }

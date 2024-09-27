@@ -1,8 +1,10 @@
 package com.recipe.recipeservice.controller;
 
 import com.recipe.recipeservice.dto.*;
+import com.recipe.recipeservice.dto.UpdateRecipeDTO;
 import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
+import com.recipe.recipeservice.exception.IdNotFoundException;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import com.recipe.recipeservice.service.RecipeService;
@@ -11,35 +13,37 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("api/recipes")
 @RequiredArgsConstructor
-public class RecipeAddController {
+public class RecipeAuthController {
     private final RecipeService recipeService;
     private final CuisineRepository cuisineRepository;
     private final ModelMapper modelMapper;
     @Value("${project.image}")
     String path;
-    @PostMapping("/save")
-    public ResponseEntity<ApiResponse> addRecipe(@ModelAttribute @Valid AddRecipeDTO addRecipeDto) throws InvalidInputException, IOException, MethodArgumentNotValidException {
+    @PostMapping(value ="/save", consumes = "multipart/form-data")
+    public ResponseEntity<RecipeApiResponse> addRecipe(@ModelAttribute @Valid AddRecipeDTO addRecipeDto) throws InvalidInputException, IOException, MethodArgumentNotValidException {
         recipeService.createRecipe(addRecipeDto);
-        ApiResponse response = ApiResponse.builder()
+        RecipeApiResponse response = RecipeApiResponse.builder()
                 .response("Successfully Added the Recipe")
-                .timestamp(LocalDateTime.now())
+                .UserId(addRecipeDto.getUser())
                 .build();
+        System.out.println(response);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
-    @GetMapping("/tags")
-    public ResponseEntity<List<Tag>> getAllTags() {
-        return ResponseEntity.ok(recipeService.getAllTags());
-    }
+
     @PostMapping("/tags")
     public ResponseEntity<Tag> createTag(@RequestBody Tag tag) {
         return ResponseEntity.ok(recipeService.createTag(tag));
@@ -78,6 +82,12 @@ public class RecipeAddController {
         RecipeFilterListDTO recipeFilterListDTO = recipeService.fetchAllRecipesByTwoFilters(cuisineId, categoryId);
 
         return ResponseEntity.ok(recipeFilterListDTO);
+    }
+    @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public String updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException{
+        Long id= recipeDTO.getId();
+        recipeService.updateRecipe(recipeDTO,id);
+        return "Recipe updated successfully";
     }
 
 }
