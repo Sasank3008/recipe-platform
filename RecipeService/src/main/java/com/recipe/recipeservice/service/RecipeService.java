@@ -2,8 +2,14 @@ package com.recipe.recipeservice.service;
 
 
 import com.recipe.recipeservice.dto.AddRecipeDTO;
+import com.recipe.recipeservice.dto.UpdateRecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
-import com.recipe.recipeservice.entity.*;
+import com.recipe.recipeservice.dto.RecipeDTO;
+import com.recipe.recipeservice.entity.Category;
+import com.recipe.recipeservice.entity.Cuisine;
+import com.recipe.recipeservice.entity.Recipe;
+import com.recipe.recipeservice.entity.Tag;
+import com.recipe.recipeservice.exception.IdNotFoundException;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -23,5 +29,7 @@ public interface RecipeService {
     public String uploadImage(String path, MultipartFile file) throws IOException, NullPointerException, InvalidInputException;
     ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException;
     public byte[] getRecipeProfileImage(Long userId) throws IOException, ResourceNotFoundException;
-
+    void updateRecipe(UpdateRecipeDTO updateRecipeDTO, Long id) throws IdNotFoundException,IOException;
+    String updateRecipeImage(String path, MultipartFile file) throws IdNotFoundException, IOException;
+    public List<RecipeDTO> searchRecipes(String keyword);
 }

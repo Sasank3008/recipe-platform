@@ -1,5 +1,6 @@
 package com.user.userservice.exception;
 
+import com.user.userservice.constants.ErrorConstants;
 import com.user.userservice.dto.ApiResponse;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,7 @@ class GlobalExceptionHandlerTest {
     @InjectMocks
     private GlobalExceptionHandler globalExceptionHandler;
     @Mock
-    private HttpServletRequest request;  // Mocked request for JwtException
+    private HttpServletRequest request;
     @BeforeEach
     void setUp() {
         globalExceptionHandler = new GlobalExceptionHandler();
@@ -30,37 +31,37 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void shouldHandleUsernameNotFoundException() {
-        UsernameNotFoundException exception = new UsernameNotFoundException("User not found");
-        ResponseEntity<ApiResponse> response = globalExceptionHandler.handleUsernameNotFoundException(exception);
+        UsernameNotFoundException exception = new UsernameNotFoundException(ErrorConstants.USER_NOT_FOUND);
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleUsernameNotFoundException(exception);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("User not found", response.getBody().getResponse());
+        assertEquals("User not found", response.getBody().getError());
     }
 
     @Test
     void shouldHandleIncorrectPasswordException() {
-        IncorrectPasswordException exception = new IncorrectPasswordException("Incorrect password");
-        ResponseEntity<ApiResponse> response = globalExceptionHandler.handleInvalidPasswordException(exception);
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
+        IncorrectPasswordException exception = new IncorrectPasswordException(ErrorConstants.INVALID_PASSWORD);
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleInvalidPasswordException(exception);
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Incorrect password", response.getBody().getResponse());
+        assertEquals("Invalid Password", response.getBody().getError());
     }
 
     @Test
     void shouldHandleJwtException() {
         JwtException exception = new JwtException("Invalid JWT");
-        ResponseEntity<ApiResponse> response = globalExceptionHandler.handleJwtException(exception, request);
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleJwtException(exception, request);
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Invalid JWT", response.getBody().getResponse());
+        assertEquals("Invalid JWT", response.getBody().getError());
     }
 
     @Test
     void shouldHandleAccessDeniedException() {
         AccessDeniedException exception = new AccessDeniedException("Access denied");
-        ResponseEntity<ApiResponse> response = globalExceptionHandler.handleAccessDeniedException(exception);
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Access denied", response.getBody().getResponse());
+        ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleAccessDeniedException(exception);
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertNotNull(response.getBody().getError());
+        assertEquals("Access denied", response.getBody().getError());
     }
 }

@@ -1,131 +1,47 @@
 package com.recipe.recipeservice.controller;
 
-import com.recipe.recipeservice.dto.AllCommentsDTO;
-import com.recipe.recipeservice.dto.CuisineDTO;
-import com.recipe.recipeservice.entity.Cuisine;
+import com.recipe.recipeservice.dto.*;
 import com.recipe.recipeservice.entity.ReviewRating;
-import com.recipe.recipeservice.repository.CuisineRepository;
+import com.recipe.recipeservice.service.CuisineService;
+import com.recipe.recipeservice.service.RecipeService;
 import com.recipe.recipeservice.service.ReviewRatingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/recipes")
+@RequestMapping("/recipes")
 public class RecipeController {
-
-    @Autowired
-    private CuisineRepository cuisineRepository;
+    private final RecipeService recipeService;
+    private final CuisineService cuisineService;
     @Autowired
     private ReviewRatingService reviewRatingService;
 
-    @Autowired
-    public RecipeController(CuisineRepository cuisineRepository) {
-        this.cuisineRepository = cuisineRepository;
-    }
-
-    private List<CuisineDTO> convertToDtoList(List<Cuisine> cuisines) {
-        return cuisines.stream()
-                .map(cuisine -> new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled()))
-                .toList();
-    }
-
-    private ResponseEntity<Void> responseEntityOk() {
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    private ResponseEntity<Void> responseEntityNotFound() {
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
-
-    @PostMapping("/cuisines")
-    public ResponseEntity<CuisineDTO> addCuisine(@RequestBody CuisineDTO cuisineDTO) {
-        Optional<Cuisine> existingCuisine = cuisineRepository.findByName(cuisineDTO.getName());
-        if (existingCuisine.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
-        }
-
-        Cuisine newCuisine = new Cuisine();
-        newCuisine.setName(cuisineDTO.getName());
-        newCuisine.setEnabled(true);
-
-        Cuisine addedCuisine = cuisineRepository.save(newCuisine);
-        CuisineDTO responseDTO = new CuisineDTO(addedCuisine.getId(), addedCuisine.getName(), addedCuisine.isEnabled());
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
-    }
-
     @GetMapping("/cuisines/enabled")
-    public ResponseEntity<List<CuisineDTO>> getEnabledCuisines() {
-        List<Cuisine> cuisines = cuisineRepository.findByIsEnabled(true);
-        List<CuisineDTO> cuisineDTOs = convertToDtoList(cuisines);
-        return ResponseEntity.ok(cuisineDTOs);
+    public ResponseEntity<CuisineResponse> getEnabledCuisines() {
+        List<CuisineDTO> cuisineDTOs = cuisineService.getEnabledCuisines();
+        CuisineResponse response = CuisineResponse.builder()
+                .cuisines(cuisineDTOs)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/cuisines/disable/{id}")
-    public ResponseEntity<Void> disableCuisine(@PathVariable Long id) {
-        return cuisineRepository.findById(id)
-                .map(cuisine -> {
-                    cuisine.setEnabled(false);
-                    cuisineRepository.save(cuisine);
-                    return responseEntityOk();  // Use a helper method
-                }).orElseGet(this::responseEntityNotFound);
-    }
-
-    @DeleteMapping("/cuisines/{id}")
-    public ResponseEntity<Void> deleteCuisine(@PathVariable Long id) {
-        return cuisineRepository.findById(id)
-                .map(cuisine -> {
-                    cuisineRepository.deleteById(id);
-                    return responseEntityOk();  // Use a helper method
-                }).orElseGet(this::responseEntityNotFound);
-    }
-
-    @PutMapping("/cuisines/enable/{id}")
-    public ResponseEntity<Void> enableCuisine(@PathVariable Long id) {
-        return cuisineRepository.findById(id)
-                .map(cuisine -> {
-                    cuisine.setEnabled(true);
-                    cuisineRepository.save(cuisine);
-                    return responseEntityOk();  // Use a helper method
-                }).orElseGet(this::responseEntityNotFound);
-    }
-
-    @PutMapping("/cuisines/{id}")
-    public ResponseEntity<CuisineDTO> updateCuisine(@PathVariable Long id, @RequestBody CuisineDTO cuisineDTO) {
-        return cuisineRepository.findById(id)
-                .map(cuisine -> {
-                    cuisine.setName(cuisineDTO.getName());
-                    cuisine.setEnabled(cuisineDTO.isEnabled());
-                    cuisineRepository.save(cuisine);
-                    CuisineDTO responseDTO = new CuisineDTO(cuisine.getId(), cuisine.getName(), cuisine.isEnabled());
-                    return ResponseEntity.ok(responseDTO);
-                }).orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/cuisines")
-    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
-        List<Cuisine> cuisines = cuisineRepository.getAllCuisines();
-        List<CuisineDTO> cuisineDTOs = convertToDtoList(cuisines);
-        return ResponseEntity.ok(cuisineDTOs);
-    }
-
-    @GetMapping("/cuisines/exist/by-name")
-    public ResponseEntity<Boolean> doesCuisineExistByName(@RequestParam String name) {
-        boolean exists = cuisineRepository.doesCuisineExistByName(name);
-        return ResponseEntity.ok(exists);
-    }
-
-    @GetMapping("/cuisines/exist/by-id")
-    public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id) {
-        boolean exists = cuisineRepository.doesCuisineExistById(id);
-        return ResponseEntity.ok(exists);
+    @GetMapping("/search")
+    public ResponseEntity<RecipeListDTO> searchRecipes(@RequestParam String keyword) {
+        keyword = keyword.trim().replaceAll("\\s+", " ");
+        List<RecipeDTO> recipes = recipeService.searchRecipes(keyword);
+        RecipeListDTO response = RecipeListDTO.builder()
+                .recipeList(recipes)
+                .status(HttpStatus.OK.toString())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.ok(response);
     }
     @GetMapping("/comments/{recipeId}")
     public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId) {
@@ -135,4 +51,5 @@ public class RecipeController {
                 .build();
         return new ResponseEntity<>(allCommentsDTO, HttpStatus.OK);
     }
+
 }

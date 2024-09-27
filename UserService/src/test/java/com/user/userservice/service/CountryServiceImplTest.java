@@ -40,9 +40,12 @@ public class CountryServiceImplTest {
     void testFetchCountries() {
         // Arrange
         Country country = new Country(1L, "USA");
+        CountryDTO countryDTO=new CountryDTO();
+        countryDTO.setId(1L);
+        countryDTO.setName("Usa");
         List<Country> countryList = List.of(country);
         when(countryRepository.findAll()).thenReturn(countryList);
-        when(modelMapper.map(any(Country.class), eq(CountryDTO.class))).thenReturn(new CountryDTO(1L, "Usa"));
+        when(modelMapper.map(any(Country.class), eq(CountryDTO.class))).thenReturn(countryDTO);
 
         // Act
         List<CountryDTO> result = countryService.fetchCountries();
