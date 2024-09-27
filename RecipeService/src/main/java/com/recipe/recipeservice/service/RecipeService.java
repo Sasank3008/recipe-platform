@@ -6,6 +6,7 @@ import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.Recipe;
 import com.recipe.recipeservice.entity.Tag;
+import com.recipe.recipeservice.exception.DuplicateResourceException;
 import com.recipe.recipeservice.exception.IdNotFoundException;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
@@ -39,4 +40,7 @@ public interface RecipeService {
     public CuisineFilterListDTO fetchAllCuisines();
 
     public CategoryFilterListDTO fetchAllCategory();
+    ApiResponse addFavoriteRecipe(String userId, Long recipeId) throws ResourceNotFoundException, DuplicateResourceException;
+    ApiResponse deleteFavoriteRecipe(String userId, Long recipeId) throws ResourceNotFoundException;
+    FavouritesRecipeResponse getFavoriteRecipes(String userId) throws ResourceNotFoundException;
 }

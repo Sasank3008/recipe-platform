@@ -31,7 +31,7 @@ class FavouritesServiceImplTest {
     private RecipeRepository recipeRepository;
 
     @InjectMocks
-    private FavouritesServiceImpl favouritesService;
+    private RecipeServiceImpl recipeService;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +46,7 @@ class FavouritesServiceImplTest {
         Recipe recipe = new Recipe();
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.of(favourites));
         when(recipeRepository.findById(recipeId)).thenReturn(Optional.of(recipe));
-        ApiResponse response = favouritesService.addFavoriteRecipe(userId, recipeId);
+        ApiResponse response = recipeService.addFavoriteRecipe(userId, recipeId);
         assertEquals("Recipe added to favorites successfully.", response.getResponse());
         verify(favoritesRepository, times(1)).save(favourites);
     }
@@ -60,7 +60,7 @@ class FavouritesServiceImplTest {
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.of(favourites));
         when(recipeRepository.findById(recipeId)).thenReturn(Optional.of(recipe));
         DuplicateResourceException exception = assertThrows(DuplicateResourceException.class, () -> {
-            favouritesService.addFavoriteRecipe(userId, recipeId);
+            recipeService.addFavoriteRecipe(userId, recipeId);
         });
         assertEquals("Recipe is already in favorites", exception.getMessage());
         verify(favoritesRepository, never()).save(favourites);
@@ -73,7 +73,7 @@ class FavouritesServiceImplTest {
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.of(new Favourites()));
         when(recipeRepository.findById(recipeId)).thenReturn(Optional.empty());
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            favouritesService.addFavoriteRecipe(userId, recipeId);
+            recipeService.addFavoriteRecipe(userId, recipeId);
         });
         assertEquals("Recipe not found", exception.getMessage());
     }
@@ -86,7 +86,7 @@ class FavouritesServiceImplTest {
         Favourites favourites = new Favourites(null, userId, new ArrayList<>(Collections.singletonList(recipe)));
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.of(favourites));
         when(recipeRepository.findById(recipeId)).thenReturn(Optional.of(recipe));
-        ApiResponse response = favouritesService.deleteFavoriteRecipe(userId, recipeId);
+        ApiResponse response = recipeService.deleteFavoriteRecipe(userId, recipeId);
         assertEquals("Recipe removed from favorites successfully.", response.getResponse());
         verify(favoritesRepository, times(1)).save(favourites);
     }
@@ -100,7 +100,7 @@ class FavouritesServiceImplTest {
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.of(favourites));
         when(recipeRepository.findById(recipeId)).thenReturn(Optional.of(recipe));
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            favouritesService.deleteFavoriteRecipe(userId, recipeId);
+            recipeService.deleteFavoriteRecipe(userId, recipeId);
         });
         assertEquals("Recipe not found in user's favorites", exception.getMessage());
         verify(favoritesRepository, never()).save(favourites);
@@ -113,7 +113,7 @@ class FavouritesServiceImplTest {
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.of(new Favourites()));
         when(recipeRepository.findById(recipeId)).thenReturn(Optional.empty());
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            favouritesService.deleteFavoriteRecipe(userId, recipeId);
+            recipeService.deleteFavoriteRecipe(userId, recipeId);
         });
         assertEquals("Recipe not found", exception.getMessage());
     }
@@ -123,7 +123,7 @@ class FavouritesServiceImplTest {
         String userId = "1";
         Favourites favourites = new Favourites(null, userId, new ArrayList<>());
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.of(favourites));
-        FavouritesRecipeResponse response = favouritesService.getFavoriteRecipes(userId);
+        FavouritesRecipeResponse response = recipeService.getFavoriteRecipes(userId);
         assertEquals(0, response.getRecipes().size());
         verify(favoritesRepository, times(1)).findByUserId(userId);
     }
@@ -133,7 +133,7 @@ class FavouritesServiceImplTest {
         String userId = "1";
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.empty());
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            favouritesService.getFavoriteRecipes(userId);
+            recipeService.getFavoriteRecipes(userId);
         });
         assertEquals("Favorites not found for user", exception.getMessage());
     }
@@ -142,7 +142,7 @@ class FavouritesServiceImplTest {
     void getOrCreateFavourites_NewFavourites() {
         String userId = "1";
         when(favoritesRepository.findByUserId(userId)).thenReturn(Optional.empty());
-        Favourites favourites = favouritesService.getOrCreateFavourites(userId);
+        Favourites favourites = recipeService.getOrCreateFavourites(userId);
         assertNotNull(favourites);
         assertEquals(userId, favourites.getUserId());
         assertTrue(favourites.getFavoriteRecipes().isEmpty());

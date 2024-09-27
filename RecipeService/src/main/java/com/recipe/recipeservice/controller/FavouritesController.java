@@ -4,7 +4,7 @@ import com.recipe.recipeservice.dto.ApiResponse;
 import com.recipe.recipeservice.dto.FavouritesRecipeResponse;
 import com.recipe.recipeservice.exception.DuplicateResourceException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
-import com.recipe.recipeservice.service.FavouritesService;
+import com.recipe.recipeservice.service.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,21 +18,21 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin(origins = "*")
 public class FavouritesController {
 
-    private final FavouritesService favouritesService;
+    private final RecipeService recipeService;
 
-    @PostMapping("/Favourites/{userId}/add")
+    @PostMapping("/favourites/{userId}/add")
     public ResponseEntity<ApiResponse> addFavoriteRecipe(@PathVariable String userId, @RequestBody Long recipeId) throws ResourceNotFoundException, DuplicateResourceException {
-        return ResponseEntity.ok(favouritesService.addFavoriteRecipe(userId, recipeId));
+        return ResponseEntity.ok(recipeService.addFavoriteRecipe(userId, recipeId));
     }
 
-    @DeleteMapping("/Favourites/{userId}/delete")
+    @DeleteMapping("/favourites/{userId}/delete")
     public ResponseEntity<ApiResponse> deleteFavoriteRecipe(@PathVariable String userId, @RequestBody Long recipeId) throws ResourceNotFoundException {
-        return ResponseEntity.ok(favouritesService.deleteFavoriteRecipe(userId, recipeId));
+        return ResponseEntity.ok(recipeService.deleteFavoriteRecipe(userId, recipeId));
     }
 
-    @GetMapping("/Favourites/{userId}")
+    @GetMapping("/favourites/{userId}")
     public ResponseEntity<FavouritesRecipeResponse> getFavoriteRecipes(@PathVariable String userId) throws ResourceNotFoundException {
-        FavouritesRecipeResponse favouritesResponse = favouritesService.getFavoriteRecipes(userId);
+        FavouritesRecipeResponse favouritesResponse = recipeService.getFavoriteRecipes(userId);
         return ResponseEntity.ok(favouritesResponse);
     }
 

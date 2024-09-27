@@ -3,7 +3,7 @@ import com.recipe.recipeservice.dto.ApiResponse;
 import com.recipe.recipeservice.dto.FavouritesRecipeResponse;
 import com.recipe.recipeservice.exception.DuplicateResourceException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
-import com.recipe.recipeservice.service.FavouritesService;
+import com.recipe.recipeservice.service.RecipeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.verify;
 class FavouritesControllerTest {
 
     @Mock
-    private FavouritesService favouritesService;
+    private RecipeService recipeService;
 
     @InjectMocks
     private FavouritesController favouritesController;
@@ -39,18 +39,18 @@ class FavouritesControllerTest {
         ApiResponse apiResponse = ApiResponse.builder()
                 .response("Recipe added to favorites successfully.")
                 .build();
-        when(favouritesService.addFavoriteRecipe(anyString(), anyLong())).thenReturn(apiResponse);
+        when(recipeService.addFavoriteRecipe(anyString(), anyLong())).thenReturn(apiResponse);
         ResponseEntity<ApiResponse> response = favouritesController.addFavoriteRecipe(userId, recipeId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Recipe added to favorites successfully.", response.getBody().getResponse());
-        verify(favouritesService, times(1)).addFavoriteRecipe(userId, recipeId);
+        verify(recipeService, times(1)).addFavoriteRecipe(userId, recipeId);
     }
 
     @Test
     void addFavoriteRecipe_DuplicateResourceException() throws ResourceNotFoundException, DuplicateResourceException {
         String userId = "1";
         Long recipeId = 123L;
-        when(favouritesService.addFavoriteRecipe(anyString(), anyLong()))
+        when(recipeService.addFavoriteRecipe(anyString(), anyLong()))
                 .thenThrow(new DuplicateResourceException("Recipe is already in favorites"));
         DuplicateResourceException exception = null;
         try {
@@ -59,7 +59,7 @@ class FavouritesControllerTest {
             exception = ex;
         }
         assertEquals("Recipe is already in favorites", exception.getMessage());
-        verify(favouritesService, times(1)).addFavoriteRecipe(userId, recipeId);
+        verify(recipeService, times(1)).addFavoriteRecipe(userId, recipeId);
     }
 
     @Test
@@ -69,18 +69,18 @@ class FavouritesControllerTest {
         ApiResponse apiResponse = ApiResponse.builder()
                 .response("Recipe removed from favorites successfully.")
                 .build();
-        when(favouritesService.deleteFavoriteRecipe(anyString(), anyLong())).thenReturn(apiResponse);
+        when(recipeService.deleteFavoriteRecipe(anyString(), anyLong())).thenReturn(apiResponse);
         ResponseEntity<ApiResponse> response = favouritesController.deleteFavoriteRecipe(userId, recipeId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Recipe removed from favorites successfully.", response.getBody().getResponse());
-        verify(favouritesService, times(1)).deleteFavoriteRecipe(userId, recipeId);
+        verify(recipeService, times(1)).deleteFavoriteRecipe(userId, recipeId);
     }
 
     @Test
     void deleteFavoriteRecipe_ResourceNotFoundException() throws ResourceNotFoundException {
         String userId = "1";
         Long recipeId = 123L;
-        when(favouritesService.deleteFavoriteRecipe(anyString(), anyLong()))
+        when(recipeService.deleteFavoriteRecipe(anyString(), anyLong()))
                 .thenThrow(new ResourceNotFoundException("Recipe not found in user's favorites"));
         ResourceNotFoundException exception = null;
         try {
@@ -89,7 +89,7 @@ class FavouritesControllerTest {
             exception = ex;
         }
         assertEquals("Recipe not found in user's favorites", exception.getMessage());
-        verify(favouritesService, times(1)).deleteFavoriteRecipe(userId, recipeId);
+        verify(recipeService, times(1)).deleteFavoriteRecipe(userId, recipeId);
     }
 
     @Test
@@ -98,17 +98,17 @@ class FavouritesControllerTest {
         FavouritesRecipeResponse responseDTO = FavouritesRecipeResponse.builder()
                 .recipes(Collections.emptyList())
                 .build();
-        when(favouritesService.getFavoriteRecipes(anyString())).thenReturn(responseDTO);
+        when(recipeService.getFavoriteRecipes(anyString())).thenReturn(responseDTO);
         ResponseEntity<FavouritesRecipeResponse> response = favouritesController.getFavoriteRecipes(userId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(0, response.getBody().getRecipes().size());
-        verify(favouritesService, times(1)).getFavoriteRecipes(userId);
+        verify(recipeService, times(1)).getFavoriteRecipes(userId);
     }
 
     @Test
     void getFavoriteRecipes_ResourceNotFoundException() throws ResourceNotFoundException {
         String userId = "1";
-        when(favouritesService.getFavoriteRecipes(anyString()))
+        when(recipeService.getFavoriteRecipes(anyString()))
                 .thenThrow(new ResourceNotFoundException("Favorites not found for user"));
         ResourceNotFoundException exception = null;
         try {
@@ -117,6 +117,6 @@ class FavouritesControllerTest {
             exception = ex;
         }
         assertEquals("Favorites not found for user", exception.getMessage());
-        verify(favouritesService, times(1)).getFavoriteRecipes(userId);
+        verify(recipeService, times(1)).getFavoriteRecipes(userId);
     }
 }
