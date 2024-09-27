@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/recipes")
+@RequestMapping("/recipe")
 public class RecipeController {
     private final CuisineService cuisineService;
     @GetMapping("/cuisines/enabled")

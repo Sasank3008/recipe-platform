@@ -13,10 +13,7 @@ public class GlobalExceptionHandler {
 
 
 
-        @ExceptionHandler(Exception.class)
-        public ResponseEntity<String> handleGeneralException(Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         StringBuilder errorMessage = new StringBuilder();
@@ -46,6 +43,25 @@ public class GlobalExceptionHandler {
                     .timestamp(LocalDateTime.now())
                     .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);}
+
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleGenericException(Exception ex) {
+        ApiResponse response = ApiResponse.builder()
+                .response("An unexpected error occurred: " + ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse> handleDuplicateResourceException(DuplicateResourceException ex) {
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
 
 }
 
