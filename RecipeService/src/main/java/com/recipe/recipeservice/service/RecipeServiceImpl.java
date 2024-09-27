@@ -114,6 +114,9 @@ public class RecipeServiceImpl implements RecipeService {
     public ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.RECIPE_ID_NOT_FOUND+" "+id));
+        if (recipe.getStatus().name().compareTo("PUBLISHED")!=0) {
+            throw new ResourceNotFoundException(ErrorConstants.RECIPE_ID_NOT_FOUND+" "+id);
+        }
         return new ViewRecipeDTO(
                 recipe.getName(),
                 recipe.getIngredients(),
@@ -143,7 +146,9 @@ public class RecipeServiceImpl implements RecipeService {
         List<Tag> tags = tagRepository.findAllById(recipeDTO.getTags().stream().map(Long::parseLong).collect(Collectors.toList()));
         recipe.setCookingTime(Integer.parseInt(recipeDTO.getCookingTime()));
         recipe.setTags(tags);
-        recipe.setImageUrl(updateRecipeImage(path, recipeDTO.getFile()));
+        if (recipeDTO.getFile() != null && !recipeDTO.getFile().isEmpty()) {
+            recipe.setImageUrl(updateRecipeImage(path, recipeDTO.getFile()));
+        }
         recipe.setDifficultyLevel(DifficultyLevel.valueOf(Integer.parseInt(recipeDTO.getDifficultyLevel())));
         recipeRepository.save(recipe);
     }
