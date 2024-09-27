@@ -20,17 +20,17 @@ public class FavouritesController {
 
     private final FavouritesService favouritesService;
 
-    @PostMapping("/{userId}/add")
+    @PostMapping("/Favourites/{userId}/add")
     public ResponseEntity<ApiResponse> addFavoriteRecipe(@PathVariable String userId, @RequestBody Long recipeId) throws ResourceNotFoundException, DuplicateResourceException {
         return ResponseEntity.ok(favouritesService.addFavoriteRecipe(userId, recipeId));
     }
 
-    @DeleteMapping("/{userId}/delete")
+    @DeleteMapping("/Favourites/{userId}/delete")
     public ResponseEntity<ApiResponse> deleteFavoriteRecipe(@PathVariable String userId, @RequestBody Long recipeId) throws ResourceNotFoundException {
         return ResponseEntity.ok(favouritesService.deleteFavoriteRecipe(userId, recipeId));
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/Favourites/{userId}")
     public ResponseEntity<FavouritesRecipeResponse> getFavoriteRecipes(@PathVariable String userId) throws ResourceNotFoundException {
         FavouritesRecipeResponse favouritesResponse = favouritesService.getFavoriteRecipes(userId);
         return ResponseEntity.ok(favouritesResponse);
