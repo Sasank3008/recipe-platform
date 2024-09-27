@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
                 .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
     }
-    @ExceptionHandler(InvalidInputException.class)
+    @ExceptionHandler({InvalidInputException.class, MethodArgumentTypeMismatchException.class})
     public ResponseEntity<ErrorResponse> handleInvalidInputException(InvalidInputException ex) {
               ErrorResponse errorResponse = ErrorResponse.builder()
                 .error(ex.getMessage())
