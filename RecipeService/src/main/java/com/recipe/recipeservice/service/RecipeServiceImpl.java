@@ -177,4 +177,12 @@ public class RecipeServiceImpl implements RecipeService {
                 .map(recipe -> modelMapper.map(recipe, RecipeDTO.class))
                 .collect(Collectors.toList());
     }
+
+    public List<RecipeDTO> fetchRecipesByFilters(Long cuisineId, Long categoryId, Integer cookingTime, String difficulty) throws InvalidInputException {
+        List<Recipe> recipes = recipeRepository.findRecipesByFilters(cuisineId, categoryId, cookingTime, DifficultyLevel.fromString(difficulty));
+        return recipes.stream()
+                .map(recipe -> modelMapper.map(recipe, RecipeDTO.class))
+                .toList();
+
+    }
 }

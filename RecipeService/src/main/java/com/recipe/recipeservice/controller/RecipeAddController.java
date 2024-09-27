@@ -9,25 +9,21 @@ import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import com.recipe.recipeservice.service.RecipeService;
-import com.recipe.recipeservice.service.RecipeServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("recipes")
+@RequestMapping("api/recipes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class RecipeAddController {
     private final RecipeService recipeService;
     private final CuisineRepository cuisineRepository;

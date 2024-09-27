@@ -7,6 +7,7 @@ public class ErrorConstants {
     public static final String RECIPE_ID_NOT_FOUND="No Recipe found with ID";
     public static final String FILE_MUST_NOT_BE_EMPTY = "File must not be empty";
     public static final String FILE_NAME_MUST_NOT_BE_NULL = "File name must not be null";
+    public static final String INVALID_INPUTS = "Provided inputs are not valid";
 
     private ErrorConstants() {
         // Prevent instantiation

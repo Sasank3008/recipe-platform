@@ -8,6 +8,7 @@ import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.DifficultyLevel;
 import com.recipe.recipeservice.entity.Tag;
+import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
 import com.recipe.recipeservice.repository.RecipeRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,13 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
-
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
@@ -99,5 +101,19 @@ class RecipeServiceImplTest {
         assertFalse(result.isEmpty());
         verify(recipeRepository).findByKeyword(keyword);
         verify(modelMapper, times(recipes.size())).map(any(Recipe.class), eq(RecipeDTO.class));
+    }
+
+    @Test
+    void testFetchRecipesByFilters_ValidInputs_ReturnsRecipes() throws InvalidInputException {
+        Long cuisineId = 1L;
+        Long categoryId = 2L;
+        Integer cookingTime = 30;
+        String difficulty = "EASY";
+        List<Recipe> recipes = Collections.singletonList(new Recipe());
+        when(recipeRepository.findRecipesByFilters(anyLong(), anyLong(), any(), any())).thenReturn(recipes);
+        when(modelMapper.map(any(), any())).thenReturn(new RecipeDTO());
+        List<RecipeDTO> result = recipeService.fetchRecipesByFilters(cuisineId, categoryId, cookingTime, difficulty);
+        assertEquals(1, result.size());
+        verify(recipeRepository).findRecipesByFilters(cuisineId, categoryId, cookingTime, DifficultyLevel.fromString(difficulty));
     }
 }

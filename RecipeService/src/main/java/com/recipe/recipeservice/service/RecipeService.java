@@ -2,9 +2,9 @@ package com.recipe.recipeservice.service;
 
 
 import com.recipe.recipeservice.dto.AddRecipeDTO;
+import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.dto.UpdateRecipeDTO;
 import com.recipe.recipeservice.dto.ViewRecipeDTO;
-import com.recipe.recipeservice.dto.RecipeDTO;
 import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.Recipe;
@@ -29,6 +29,7 @@ public interface RecipeService {
     public String uploadImage(String path, MultipartFile file) throws IOException, NullPointerException, InvalidInputException;
     ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException;
     public byte[] getRecipeProfileImage(Long userId) throws IOException, ResourceNotFoundException;
+    public List<RecipeDTO> fetchRecipesByFilters(Long cuisineId, Long categoryId, Integer cookingTime, String difficulty) throws InvalidInputException;
     void updateRecipe(UpdateRecipeDTO updateRecipeDTO, Long id) throws IdNotFoundException,IOException;
     String updateRecipeImage(String path, MultipartFile file) throws IdNotFoundException, IOException;
     public List<RecipeDTO> searchRecipes(String keyword);
