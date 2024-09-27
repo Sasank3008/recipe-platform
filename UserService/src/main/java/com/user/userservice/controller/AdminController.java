@@ -1,14 +1,11 @@
 package com.user.userservice.controller;
-import com.user.userservice.dto.AdminDTO;
-import com.user.userservice.dto.AdminUserDTO;
-import com.user.userservice.dto.CountryDTO;
-import com.user.userservice.dto.ApiResponse;
-import com.user.userservice.dto.CuisineResponse;
-import com.user.userservice.dto.CuisineDTO;
-import com.user.userservice.dto.UsersResponse;
+
+import com.user.userservice.dto.*;
 import com.user.userservice.exception.CountryAlreadyExistsException;
 import com.user.userservice.exception.CountryIdNotFoundException;
+import com.user.userservice.exception.InvalidInputException;
 import com.user.userservice.exception.UserIdNotFoundException;
+import com.user.userservice.feignclient.RecipeServiceClient;
 import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
 import com.user.userservice.service.CuisineService;
@@ -31,6 +28,7 @@ public class AdminController {
     private static final String CUISINE_NOT_FOUND_MESSAGE = "Cuisine not found with id: ";
     private final CountryService countryService;
     private final AdminService adminService;
+    private final RecipeServiceClient recipeServiceClient;
 
 
     @PostMapping("/countries")
@@ -144,5 +142,31 @@ public class AdminController {
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+
+    @GetMapping("/recipes/filter")
+    public ResponseEntity<RecipeListDTO> fetchAllRecipesByFilters(
+            @RequestParam(required = false) Long cuisineId,
+            @RequestParam(required = false) Long categoryId
+    ) throws InvalidInputException {
+        return adminService.fetchAllRecipesByFilters(cuisineId, categoryId);
     }
+
+    @GetMapping("recipes/cuisines")
+    public ResponseEntity<CuisineListDTO> fetchAllCuisines() {
+        CuisineListDTO cuisineListDTO = recipeServiceClient.fetchAllCuisines().getBody();
+        return ResponseEntity.ok(cuisineListDTO);
+    }
+
+    @GetMapping("recipes/categories")
+    public ResponseEntity<CategoryListDTO> fetchAllCategory() {
+        CategoryListDTO categoryListDTO = recipeServiceClient.fetchAllCategory().getBody();
+        return ResponseEntity.ok(categoryListDTO);
+    }
+
+    @PutMapping("recipes/{id}/status/{status}")
+    public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException {
+        return recipeServiceClient.editRecipeStatus(id, status);
+    }
+}
 

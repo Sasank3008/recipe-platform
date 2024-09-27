@@ -1,5 +1,8 @@
 package com.user.userservice.constants;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class ErrorConstants {
 
     public static final String USER_NOT_FOUND = "User not found";
