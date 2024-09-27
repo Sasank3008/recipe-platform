@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/recipe")
+@RequestMapping("/recipes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class FavouritesController {
 
     private final RecipeService recipeService;
