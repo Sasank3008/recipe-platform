@@ -1,7 +1,11 @@
 package com.user.userservice.controller;
+
 import com.user.userservice.dto.*;
 import com.user.userservice.exception.CountryAlreadyExistsException;
+import com.user.userservice.exception.CountryIdNotFoundException;
+import com.user.userservice.exception.InvalidInputException;
 import com.user.userservice.exception.UserIdNotFoundException;
+import com.user.userservice.feignclient.RecipeServiceClient;
 import com.user.userservice.service.AdminService;
 import com.user.userservice.service.CountryService;
 import com.user.userservice.service.CuisineService;
@@ -24,6 +28,7 @@ public class AdminController {
     private static final String CUISINE_NOT_FOUND_MESSAGE = "Cuisine not found with id: ";
     private final CountryService countryService;
     private final AdminService adminService;
+    private final RecipeServiceClient recipeServiceClient;
 
 
     @PostMapping("/countries")
@@ -38,8 +43,9 @@ public class AdminController {
         List<CountryDTO> countries = countryService.fetchCountries();
         return ResponseEntity.ok().body(countries);
     }
+
     @PutMapping("editUser/{id}")
-    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws  UserIdNotFoundException {
+    public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws UserIdNotFoundException {
         AdminUserDTO updatedUserDTO = adminService.updateUser(id, userDTO);
         if (updatedUserDTO != null) {
             return ResponseEntity.ok(updatedUserDTO);
@@ -48,6 +54,7 @@ public class AdminController {
 
         }
     }
+
     @GetMapping("/users")
     public ResponseEntity<UsersResponse> fetchAllUsers() {
         List<AdminDTO> users = adminService.fetchAllUsers();
@@ -57,8 +64,8 @@ public class AdminController {
 
     @PutMapping("/{id}/toggle-user-status")
     public ResponseEntity<ApiResponse> toggleUser(@PathVariable Long id) throws UserIdNotFoundException {
-        boolean status=adminService.toggleUserStatus(id);
-        String message=status?"User Enabled successfully":"User disabled successfully";
+        boolean status = adminService.toggleUserStatus(id);
+        String message = status ? "User Enabled successfully" : "User disabled successfully";
         ApiResponse response = ApiResponse.builder()
                 .response(message)
                 .timestamp(LocalDateTime.now())
@@ -74,7 +81,6 @@ public class AdminController {
         CuisineDTO addedCuisine = cuisineService.addCuisine(name, isEnabled, file);
         return ResponseEntity.status(HttpStatus.CREATED).body(addedCuisine);
     }
-
 
 
     @DeleteMapping("/cuisines/{id}")
@@ -105,6 +111,7 @@ public class AdminController {
                 .build();
         return ResponseEntity.status(status).body(response);
     }
+
     @GetMapping("/cuisines")
     public ResponseEntity<CuisineResponse> getAllCuisines() {
         List<CuisineDTO> cuisines = cuisineService.getAllCuisines();
@@ -119,5 +126,47 @@ public class AdminController {
                 .build();
         return ResponseEntity.ok(response);
     }
+    @PostMapping("countries/edit")
+    public ResponseEntity<CountryDTO> editCountry(@RequestBody @Valid CountryDTO countryDTO) throws MethodArgumentNotValidException, CountryAlreadyExistsException {
 
+        CountryDTO savedCountry = countryService.editCountry(countryDTO);
+        return ResponseEntity.ok().body(savedCountry);
+    }
+    @PostMapping("countries/toggle-status")
+    public ResponseEntity<ApiResponse> toggleCountry(@RequestBody CountryDTO countryDTO) throws CountryIdNotFoundException {
+        boolean status = countryService.toggleCountryStatus(countryDTO.getId());
+        String message = status ? "Country Enabled successfully" : "Country disabled successfully";
+        ApiResponse response = ApiResponse.builder()
+                .response(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+
+    @GetMapping("/recipes/filter")
+    public ResponseEntity<RecipeListDTO> fetchAllRecipesByFilters(
+            @RequestParam(required = false) Long cuisineId,
+            @RequestParam(required = false) Long categoryId
+    ) throws InvalidInputException {
+        return adminService.fetchAllRecipesByFilters(cuisineId, categoryId);
+    }
+
+    @GetMapping("recipes/cuisines")
+    public ResponseEntity<CuisineListDTO> fetchAllCuisines() {
+        CuisineListDTO cuisineListDTO = recipeServiceClient.fetchAllCuisines().getBody();
+        return ResponseEntity.ok(cuisineListDTO);
+    }
+
+    @GetMapping("recipes/categories")
+    public ResponseEntity<CategoryListDTO> fetchAllCategory() {
+        CategoryListDTO categoryListDTO = recipeServiceClient.fetchAllCategory().getBody();
+        return ResponseEntity.ok(categoryListDTO);
+    }
+
+    @PutMapping("recipes/{id}/status/{status}")
+    public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException {
+        return recipeServiceClient.editRecipeStatus(id, status);
+    }
 }
+

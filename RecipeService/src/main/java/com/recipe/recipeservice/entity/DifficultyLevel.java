@@ -22,4 +22,15 @@ public enum DifficultyLevel {
         }
         return UNKNOWN;
     }
+
+    public static DifficultyLevel fromString(String value) {
+        if (value != null) {
+            for (DifficultyLevel level : values()) {
+                if (level.toString().equals(value.toUpperCase())) {
+                    return level;
+                }
+            }
+        }
+        return null;
+    }
 }

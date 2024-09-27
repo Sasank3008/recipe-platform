@@ -1,5 +1,8 @@
 package com.user.userservice.constants;
 
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
 public class ErrorConstants {
 
     public static final String USER_NOT_FOUND = "User not found";
@@ -16,8 +19,8 @@ public class ErrorConstants {
     public static final String CUISINE_NOT_FOUND = "Cuisine not found with id: ";
     public static final String DUPLICATE_CUISINE = "A cuisine with the name '%s' already exists.";
     public static final String CUISINE_STATUS_UNDEFINED = "Cuisine enabled status is undefined for id: ";
+    public static final String INVALID_TOKEN="Token is invalid";
+    public static final String EXPIRED_TOKEN="JWT Token is Expired";
+    public static final String ACCESS_DENIED="Access is denied to current resource";
 
-    private ErrorConstants() {
-        // Prevent instantiation
-    }
 }

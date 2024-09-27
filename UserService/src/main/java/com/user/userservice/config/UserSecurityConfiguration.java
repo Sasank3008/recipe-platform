@@ -29,7 +29,7 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @RequiredArgsConstructor
 @EnableMethodSecurity
-public class UserSecurityConfiguration {
+public class UserSecurityConfiguration{
 
     private final RsaConfigurationProperties rsaConfigurationProperties;
     private final CustomUserDetailsService customUserDetailsService;
@@ -44,7 +44,8 @@ public class UserSecurityConfiguration {
                     exceptions.accessDeniedHandler(new ApiAccessDeniedHandler());
                 })
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("users/register", "users/login", "users/validate-email", "users/reset-password", "admins/countries", "users/countries").permitAll();
+                    auth.requestMatchers("/swagger-ui/**", "/v3/api-docs/**","/swagger-ui.html", "/favicon.ico", "/swagger-resources/**", "/webjars/**").permitAll();
+                    auth.requestMatchers("users/register", "users/login", "users/validate-email", "users/reset-password", "admins/countries", "users/countries", "admins/recipes/categories", "admins/recipes/cuisines").permitAll();
                     auth.requestMatchers("/admins/**").hasRole("ADMIN");
                     auth.requestMatchers("/users/**").hasAnyRole("ADMIN","USER");
                     auth.anyRequest().authenticated();

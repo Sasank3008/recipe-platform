@@ -1,33 +1,26 @@
 package com.recipe.recipeservice.controller;
 
-import com.recipe.recipeservice.dto.ApiResponse;
-import com.recipe.recipeservice.dto.AddRecipeDTO;
-import com.recipe.recipeservice.dto.CuisineDTO;
+import com.recipe.recipeservice.dto.*;
 import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
-import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import com.recipe.recipeservice.service.RecipeService;
-import com.recipe.recipeservice.service.RecipeServiceImpl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("recipes")
+@RequestMapping("api/recipes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class RecipeAddController {
     private final RecipeService recipeService;
     private final CuisineRepository cuisineRepository;
@@ -59,15 +52,32 @@ public class RecipeAddController {
     public ResponseEntity<Category> createCategory(@RequestBody Category category) {
         return ResponseEntity.ok(recipeService.createCategory(category));
     }
-    @GetMapping("/cuisines")
-    public ResponseEntity<List<CuisineDTO>> getAllCuisines() {
-        List<CuisineDTO>list=cuisineRepository.findAll().stream()
-                .map(country -> modelMapper.map(country, CuisineDTO.class))
-                .toList();
-        return ResponseEntity.ok().body(list);
+
+    @PutMapping("{id}/status/{status}")
+    public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException {
+        return recipeService.editRecipeStatus(id, status);
     }
-    @PostMapping("/cuisines")
-    public ResponseEntity<Cuisine> createCuisine(@RequestBody Cuisine cuisine) {
-        return ResponseEntity.ok(recipeService.createCuisine(cuisine));
+
+    @GetMapping("recipes/cuisines")
+    public ResponseEntity<CuisineFilterListDTO> fetchAllCuisines() {
+        CuisineFilterListDTO cuisineFilterListDTO = recipeService.fetchAllCuisines();
+        return ResponseEntity.ok(cuisineFilterListDTO);
     }
+
+    @GetMapping("recipes/categories")
+    public ResponseEntity<CategoryFilterListDTO> fetchAllCategory() {
+        CategoryFilterListDTO categoryFilterListDTO = recipeService.fetchAllCategory();
+        return ResponseEntity.ok(categoryFilterListDTO);
+    }
+
+    @GetMapping("admins/filter")
+    public ResponseEntity<RecipeFilterListDTO> fetchAllRecipesByFilters(
+            @RequestParam(required = false) Long cuisineId,
+            @RequestParam(required = false) Long categoryId
+    ) throws InvalidInputException {
+        RecipeFilterListDTO recipeFilterListDTO = recipeService.fetchAllRecipesByTwoFilters(cuisineId, categoryId);
+
+        return ResponseEntity.ok(recipeFilterListDTO);
+    }
+
 }

@@ -40,6 +40,4 @@ public class Recipe {
     @Column(name="userId")
     private String user;
 
-
-
 }

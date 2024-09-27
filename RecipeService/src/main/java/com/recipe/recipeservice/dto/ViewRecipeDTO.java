@@ -19,4 +19,5 @@ public class ViewRecipeDTO {
     private List<String> tags;
     private String difficultyLevel;
     private String dietaryRestrictions;
+    private String userId;
 }
