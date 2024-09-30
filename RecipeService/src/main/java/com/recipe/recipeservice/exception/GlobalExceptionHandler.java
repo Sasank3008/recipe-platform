@@ -1,6 +1,7 @@
 package com.recipe.recipeservice.exception;
 
 import com.recipe.recipeservice.dto.ApiResponse;
+import com.recipe.recipeservice.dto.ReviewResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -58,6 +59,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+
+
+    @ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<ReviewResponseDTO> handleCuisineNotFoundException(ReviewNotFoundException e) {
+        ReviewResponseDTO reviewResponseDTO = ReviewResponseDTO.builder()
+                .isReviewed(false)
+                .build();
+        return ResponseEntity.ok(reviewResponseDTO);
     }
 }
 

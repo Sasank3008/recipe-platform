@@ -32,4 +32,6 @@ public interface UserService {
 
     User mapUserRegistrationDTOtoUser(UserRegistrationDTO userRegistrationDTO) throws InvalidInputException, IOException;
     List<UserEmailDTO> getAllUserEmails();
+
+    List<ReviewRating> mapEmailAndImage(List<ReviewRating> comments)throws UserNotFoundException;
 }
