@@ -8,6 +8,7 @@ import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.entity.DifficultyLevel;
 import com.recipe.recipeservice.entity.Cuisine;
 import com.recipe.recipeservice.entity.Status;
+import com.recipe.recipeservice.entity.Favourites;
 import com.recipe.recipeservice.exception.IdNotFoundException;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
@@ -15,6 +16,7 @@ import com.recipe.recipeservice.repository.RecipeRepository;
 import com.recipe.recipeservice.repository.CategoryRepository;
 import com.recipe.recipeservice.repository.CuisineRepository;
 import com.recipe.recipeservice.repository.TagRepository;
+import com.recipe.recipeservice.repository.FavoritesRepository;
 import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -48,6 +50,7 @@ public class RecipeServiceImpl implements RecipeService {
     private final CuisineRepository cuisineRepository;
     private final TagRepository tagRepository;
     private final ModelMapper modelMapper;
+    private final FavoritesRepository favoritesRepository;
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }
