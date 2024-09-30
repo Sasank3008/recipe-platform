@@ -179,4 +179,14 @@ public class UserController {
             throw new InvalidInputException("You are not authorized to delete this recipe.");
         }
     }
+
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId) throws UserNotFoundException {
+        List<ReviewRating> comments = recipeServiceClient.getAllComments(recipeId).getBody().getReviews();
+        comments = userService.mapEmailAndImage(comments);
+        AllCommentsDTO allCommentsDTO = AllCommentsDTO.builder()
+                .reviews(comments)
+                .build();
+        return new ResponseEntity<>(allCommentsDTO, HttpStatus.OK);
+    }
 }

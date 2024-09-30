@@ -1,6 +1,7 @@
 package com.recipe.recipeservice.exception;
 
 import com.recipe.recipeservice.dto.ApiResponse;
+import com.recipe.recipeservice.dto.ReviewResponseDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -12,10 +13,7 @@ import java.time.LocalDateTime;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-    }
+
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
@@ -58,6 +56,32 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<String> illegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+
+
+    @ExceptionHandler(ReviewNotFoundException.class)
+    public ResponseEntity<ReviewResponseDTO> handleCuisineNotFoundException(ReviewNotFoundException e) {
+        ReviewResponseDTO reviewResponseDTO = ReviewResponseDTO.builder()
+                .isReviewed(false)
+                .build();
+        return ResponseEntity.ok(reviewResponseDTO);
+    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleGenericException(Exception ex) {
+        ApiResponse response = ApiResponse.builder()
+                .response("An unexpected error occurred: " + ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+    @ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse> handleDuplicateResourceException(DuplicateResourceException ex) {
+        ApiResponse response = ApiResponse.builder()
+                .response(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
     }
 }
 

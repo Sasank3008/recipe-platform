@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
+import com.recipe.recipeservice.exception.DuplicateResourceException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,6 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -62,8 +64,8 @@ public class RecipeServiceImpl implements RecipeService {
         return cuisineRepository.save(cuisine);
     }
     public Recipe createRecipe(AddRecipeDTO addRecipeDTO) throws InvalidInputException, IOException, MethodArgumentNotValidException, NotFoundException {
-    return recipeRepository.save(mapRecipeDTOtoRecipe(addRecipeDTO));
-}
+        return recipeRepository.save(mapRecipeDTOtoRecipe(addRecipeDTO));
+    }
     public Recipe mapRecipeDTOtoRecipe(AddRecipeDTO addRecipeDTO) throws IOException, InvalidInputException, NotFoundException,IllegalArgumentException {
         Recipe recipe = modelMapper.map(addRecipeDTO, Recipe.class);
         System.out.println(recipe);
@@ -273,4 +275,77 @@ public class RecipeServiceImpl implements RecipeService {
 
         return recipe.getUser();
     }
+    @Override
+    public ApiResponse addFavoriteRecipe(String userId, Long recipeId) throws ResourceNotFoundException, DuplicateResourceException {
+        Favourites favourites = getOrCreateFavourites(userId);
+        Recipe recipe = getRecipeById(recipeId);
+        if (favourites.getFavoriteRecipes().contains(recipe)) {
+            throw new DuplicateResourceException("Recipe is already in favorites");
+        }
+        favourites.getFavoriteRecipes().add(recipe);
+        favoritesRepository.save(favourites);
+        return buildApiResponse("Recipe added to favorites successfully.");
+    }
+
+    @Override
+    public ApiResponse deleteFavoriteRecipe(String userId, Long recipeId) throws ResourceNotFoundException {
+        Favourites favourites = getFavoritesByUserId(userId);
+        Recipe recipe = getRecipeById(recipeId);
+        if (!favourites.getFavoriteRecipes().remove(recipe)) {
+            throw new ResourceNotFoundException("Recipe not found in user's favorites");
+        }
+        favoritesRepository.save(favourites);
+        return buildApiResponse("Recipe removed from favorites successfully.");
+    }
+
+    @Override
+    public FavouritesRecipeResponse getFavoriteRecipes(String userId) throws ResourceNotFoundException {
+        Favourites favourites = getFavoritesByUserId(userId);
+        List<RecipeResponseDTO> recipeResponsDTOS = favourites.getFavoriteRecipes().stream()
+                .map(this::mapToRecipeResponse)
+                .collect(Collectors.toList());
+        return FavouritesRecipeResponse.builder()
+                .recipes(recipeResponsDTOS)
+                .build();
+    }
+
+    public Favourites getOrCreateFavourites(String userId) {
+        return favoritesRepository.findByUserId(userId)
+                .orElse(new Favourites(null, userId, new ArrayList<>()));
+    }
+
+    public Favourites getFavoritesByUserId(String userId) throws ResourceNotFoundException {
+        return favoritesRepository.findByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Favorites not found for user"));
+    }
+
+    public Recipe getRecipeById(Long recipeId) throws ResourceNotFoundException {
+        return recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new ResourceNotFoundException("Recipe not found"));
+    }
+
+    private ApiResponse buildApiResponse(String message) {
+        return ApiResponse.builder()
+                .response(message)
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
+    public  RecipeResponseDTO mapToRecipeResponse(Recipe recipe) {
+        return RecipeResponseDTO.builder()
+                .id(recipe.getId())
+                .name(recipe.getName())
+                .ingredients(recipe.getIngredients())
+                .description(recipe.getDescription())
+                .category(recipe.getCategory().getName())
+                .cuisine(recipe.getCuisine().getName())
+                .cookingTime(recipe.getCookingTime())
+                .imageUrl(recipe.getImageUrl())
+                .tags(recipe.getTags().stream().map(Tag::getName).collect(Collectors.toList()))
+                .difficultyLevel(recipe.getDifficultyLevel().name())
+                .status(recipe.getStatus().name())
+                .dietaryRestrictions(recipe.getDietaryRestrictions())
+                .build();
+    }
 }
+

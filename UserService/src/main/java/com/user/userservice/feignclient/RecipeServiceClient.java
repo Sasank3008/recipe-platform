@@ -7,6 +7,7 @@ import com.user.userservice.dto.RecipeListDTO;
 import com.user.userservice.dto.CategoryListDTO;
 import com.user.userservice.dto.CuisineListDTO;
 import com.user.userservice.dto.SuccessResponse;
+import com.user.userservice.dto.AllCommentsDTO;
 import com.user.userservice.exception.IdNotFoundException;
 import com.user.userservice.exception.InvalidInputException;
 import com.user.userservice.exception.UserIdNotFoundException;
@@ -66,4 +67,6 @@ public interface RecipeServiceClient {
     public ResponseEntity<String> getRecipeOwnerId(@PathVariable("id") Long recipeId) throws InvalidInputException;
     @PostMapping(value="/save", consumes = "multipart/form-data")
     public ResponseEntity<?> addRecipe(@ModelAttribute @Valid AddRecipeDTO addRecipeDto) throws UserIdNotFoundException, NotFoundException;
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId);
 }
