@@ -1,5 +1,7 @@
 package com.user.userservice.feignclient;
-
+import com.user.userservice.dto.AllCommentsDTO;
+import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.dto.UpdateRecipeDTO;
 import com.user.userservice.dto.*;
 import com.user.userservice.exception.IdNotFoundException;
 import com.user.userservice.exception.InvalidInputException;
@@ -60,4 +62,6 @@ public interface RecipeServiceClient {
 
     @PutMapping("{id}/status/{status}")
     public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException;
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId);
 }

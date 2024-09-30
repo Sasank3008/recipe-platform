@@ -1,7 +1,10 @@
 package com.recipe.recipeservice.controller;
 
+import com.recipe.recipeservice.dto.AllCommentsDTO;
 import com.recipe.recipeservice.dto.CuisineDTO;
+import com.recipe.recipeservice.entity.ReviewRating;
 import com.recipe.recipeservice.service.CuisineService;
+import com.recipe.recipeservice.service.ReviewRatingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +19,7 @@ import java.util.List;
 public class RecipeCuisineController {
 
     private final CuisineService cuisineService;
+    private final ReviewRatingService reviewRatingService;
 
     @PostMapping("/cuisines")
     public ResponseEntity<CuisineDTO> addCuisine(@RequestBody CuisineDTO cuisineDTO) {
@@ -81,5 +85,14 @@ public class RecipeCuisineController {
     @GetMapping("/cuisines/{id}/is-enabled")
     public ResponseEntity<Boolean> isCuisineEnabled(@PathVariable Long id) {
         return ResponseEntity.ok(cuisineService.isCuisineEnabled(id));
+    }
+
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId) {
+        List<ReviewRating> comments = reviewRatingService.getAllReviews(recipeId);
+        AllCommentsDTO allCommentsDTO = AllCommentsDTO.builder()
+                .reviews(comments)
+                .build();
+        return new ResponseEntity<>(allCommentsDTO, HttpStatus.OK);
     }
 }

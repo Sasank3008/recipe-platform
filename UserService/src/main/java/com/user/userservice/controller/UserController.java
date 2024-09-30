@@ -1,5 +1,5 @@
 package com.user.userservice.controller;
-
+import com.user.userservice.dto.*;
 import com.nimbusds.jose.util.Pair;
 import com.user.userservice.constants.ControllerConstants;
 import com.user.userservice.feignclient.RecipeServiceClient;
@@ -139,5 +139,15 @@ public class UserController {
                             .build()
             );
         }
+    }
+
+    @GetMapping("/comments/{recipeId}")
+    public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId) throws UserNotFoundException {
+        List<ReviewRating> comments = recipeServiceClient.getAllComments(recipeId).getBody().getReviews();
+        comments = userService.mapEmailAndImage(comments);
+        AllCommentsDTO allCommentsDTO = AllCommentsDTO.builder()
+                .reviews(comments)
+                .build();
+        return new ResponseEntity<>(allCommentsDTO, HttpStatus.OK);
     }
 }
