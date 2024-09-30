@@ -1,7 +1,6 @@
 package com.recipe.recipeservice.controller;
 
 import com.recipe.recipeservice.dto.*;
-import com.recipe.recipeservice.dto.UpdateRecipeDTO;
 import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.entity.Category;
 import com.recipe.recipeservice.exception.IdNotFoundException;
@@ -16,13 +15,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("api/recipes")
@@ -40,7 +44,6 @@ public class RecipeAuthController {
                 .response("Successfully Added the Recipe")
                 .UserId(addRecipeDto.getUser())
                 .build();
-        System.out.println(response);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -88,6 +91,16 @@ public class RecipeAuthController {
         Long id= recipeDTO.getId();
         recipeService.updateRecipe(recipeDTO,id);
         return "Recipe updated successfully";
+    }
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<ApiResponse> deleteRecipe(@PathVariable("id") Long id) throws InvalidInputException {
+        ApiResponse response = recipeService.deleteRecipe(id);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+    @GetMapping("getUserIdByRecipeId/{id}")
+    public ResponseEntity<String> getRecipeOwnerId(@PathVariable("id") Long recipeId) throws InvalidInputException {
+        String ownerId = recipeService.getRecipeOwnerId(recipeId);
+        return new ResponseEntity<>(ownerId, HttpStatus.OK);
     }
 
 }
