@@ -1,10 +1,18 @@
 package com.user.userservice.feignclient;
-import com.user.userservice.dto.AllCommentsDTO;
-import com.user.userservice.dto.CuisineDTO;
+
 import com.user.userservice.dto.UpdateRecipeDTO;
-import com.user.userservice.dto.*;
+import com.user.userservice.dto.CuisineDTO;
+import com.user.userservice.dto.AddRecipeDTO;
+import com.user.userservice.dto.RecipeListDTO;
+import com.user.userservice.dto.CategoryListDTO;
+import com.user.userservice.dto.CuisineListDTO;
+import com.user.userservice.dto.SuccessResponse;
+import com.user.userservice.dto.AllCommentsDTO;
 import com.user.userservice.exception.IdNotFoundException;
 import com.user.userservice.exception.InvalidInputException;
+import com.user.userservice.exception.UserIdNotFoundException;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.NotFoundException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,21 +32,16 @@ public interface RecipeServiceClient {
 
     @PostMapping("/cuisines")
     CuisineDTO addCuisine(@RequestBody CuisineDTO cuisineDTO);
-
     @PutMapping("/cuisines/disable/{id}")
     void disableCuisine(@PathVariable("id") Long id);
-
     @DeleteMapping("/cuisines/{id}")
     void deleteCuisine(@PathVariable("id") Long id);
-
     @PutMapping("/cuisines/enable/{id}")
     void enableCuisine(@PathVariable("id") Long id);
-
     @PutMapping("/cuisines/{id}")
     CuisineDTO updateCuisine(@PathVariable("id") Long id, @RequestBody CuisineDTO cuisineDTO);
     @GetMapping("/cuisines")
     List<CuisineDTO> getAllCuisines();
-
     @GetMapping("/cuisines/exist/by-id")
     public ResponseEntity<Boolean> doesCuisineExistById(@RequestParam Long id);
     @GetMapping("/cuisines/exist/by-name")
@@ -47,21 +50,23 @@ public interface RecipeServiceClient {
     public Boolean isCuisineEnabled(@PathVariable Long id);
     @PutMapping(value="/update",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public String updateRecipe(@ModelAttribute UpdateRecipeDTO recipeDTO) throws IdNotFoundException, IOException;
-
     @GetMapping("admins/filter")
     public ResponseEntity<RecipeListDTO> fetchAllRecipesByFilters(
             @RequestParam(required = false) Long cuisineId,
             @RequestParam(required = false) Long categoryId
     ) throws InvalidInputException;
-
     @GetMapping("recipes/categories")
     public ResponseEntity<CategoryListDTO> fetchAllCategory();
-
     @GetMapping("recipes/cuisines")
     public ResponseEntity<CuisineListDTO> fetchAllCuisines();
-
     @PutMapping("{id}/status/{status}")
     public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException;
+    @PutMapping("/delete/{id}")
+    public ResponseEntity<?> deleteRecipe(@PathVariable("id") Long id) throws InvalidInputException;
+    @GetMapping("getUserIdByRecipeId/{id}")
+    public ResponseEntity<String> getRecipeOwnerId(@PathVariable("id") Long recipeId) throws InvalidInputException;
+    @PostMapping(value="/save", consumes = "multipart/form-data")
+    public ResponseEntity<?> addRecipe(@ModelAttribute @Valid AddRecipeDTO addRecipeDto) throws UserIdNotFoundException, NotFoundException;
     @GetMapping("/comments/{recipeId}")
     public ResponseEntity<AllCommentsDTO> getAllComments(@PathVariable Long recipeId);
 }

@@ -22,7 +22,7 @@ class ViewRecipeControllerTest {
     private RecipeService recipeService;
 
     @InjectMocks
-    private ViewRecipeController viewRecipeController;
+    private RecipeController recipeController;
 
     @BeforeEach
     void setUp() {
@@ -46,7 +46,7 @@ class ViewRecipeControllerTest {
         );
 
         when(recipeService.getRecipe(recipeId)).thenReturn(mockRecipe);
-        ResponseEntity<ViewRecipeDTO> response = viewRecipeController.getRecipe(recipeId);
+        ResponseEntity<ViewRecipeDTO> response = recipeController.getRecipe(recipeId);
         assertNotNull(response);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals(mockRecipe, response.getBody());
@@ -58,7 +58,7 @@ class ViewRecipeControllerTest {
         Long invalidRecipeId = 999L;
         when(recipeService.getRecipe(invalidRecipeId)).thenThrow(new ResourceNotFoundException("Recipe not found"));
         ResourceNotFoundException exception = assertThrows(ResourceNotFoundException.class, () -> {
-            viewRecipeController.getRecipe(invalidRecipeId);
+            recipeController.getRecipe(invalidRecipeId);
         });
         assertEquals("Recipe not found", exception.getMessage());
         verify(recipeService, times(1)).getRecipe(invalidRecipeId);

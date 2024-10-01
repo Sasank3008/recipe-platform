@@ -2,12 +2,22 @@ package com.recipe.recipeservice.service;
 
 import com.recipe.recipeservice.constants.ErrorConstants;
 import com.recipe.recipeservice.dto.*;
-import com.recipe.recipeservice.entity.*;
-import com.recipe.recipeservice.exception.DuplicateResourceException;
+import com.recipe.recipeservice.entity.Recipe;
+import com.recipe.recipeservice.entity.Tag;
+import com.recipe.recipeservice.entity.Category;
+import com.recipe.recipeservice.entity.DifficultyLevel;
+import com.recipe.recipeservice.entity.Cuisine;
+import com.recipe.recipeservice.entity.Status;
+import com.recipe.recipeservice.entity.Favourites;
 import com.recipe.recipeservice.exception.IdNotFoundException;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
-import com.recipe.recipeservice.repository.*;
+import com.recipe.recipeservice.repository.RecipeRepository;
+import com.recipe.recipeservice.repository.CategoryRepository;
+import com.recipe.recipeservice.repository.CuisineRepository;
+import com.recipe.recipeservice.repository.TagRepository;
+import com.recipe.recipeservice.repository.FavoritesRepository;
+import jakarta.ws.rs.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.multipart.MultipartFile;
+import com.recipe.recipeservice.exception.DuplicateResourceException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,8 +49,8 @@ public class RecipeServiceImpl implements RecipeService {
     private final CategoryRepository categoryRepository;
     private final CuisineRepository cuisineRepository;
     private final TagRepository tagRepository;
-    private final FavoritesRepository favoritesRepository;
     private final ModelMapper modelMapper;
+    private final FavoritesRepository favoritesRepository;
     public List<Tag> getAllTags() {
         return tagRepository.findAll();
     }
@@ -55,15 +66,16 @@ public class RecipeServiceImpl implements RecipeService {
     public Cuisine createCuisine(Cuisine cuisine) {
         return cuisineRepository.save(cuisine);
     }
-    public Recipe createRecipe(AddRecipeDTO addRecipeDTO) throws InvalidInputException, IOException , MethodArgumentNotValidException {
-           modelMapper.map(addRecipeDTO, Recipe.class);
-          return recipeRepository.save(mapRecipeDTOtoRecipe(addRecipeDTO));
+    public Recipe createRecipe(AddRecipeDTO addRecipeDTO) throws InvalidInputException, IOException, MethodArgumentNotValidException, NotFoundException {
+        return recipeRepository.save(mapRecipeDTOtoRecipe(addRecipeDTO));
     }
-    public Recipe mapRecipeDTOtoRecipe(AddRecipeDTO addRecipeDTO) throws IOException, InvalidInputException {
+    public Recipe mapRecipeDTOtoRecipe(AddRecipeDTO addRecipeDTO) throws IOException, InvalidInputException, NotFoundException,IllegalArgumentException {
         Recipe recipe = modelMapper.map(addRecipeDTO, Recipe.class);
+        System.out.println(recipe);
+        System.out.println(addRecipeDTO);
         recipe.setStatus(Status.PENDING);
-        recipe.setCategory(categoryRepository.findById(Long.parseLong(addRecipeDTO.getCategoryId())).orElse(null));
-        recipe.setCuisine(cuisineRepository.findById(Long.parseLong(addRecipeDTO.getCuisineId())).orElse(null));
+        recipe.setCategory(categoryRepository.findById(Long.parseLong(addRecipeDTO.getCategory())).orElseThrow(()->new IllegalArgumentException("Category not found with given id "+addRecipeDTO.getCategory())));
+        recipe.setCuisine(cuisineRepository.findById(Long.parseLong(addRecipeDTO.getCuisine())).orElseThrow(()->new IllegalArgumentException("cuisine not found with id "+addRecipeDTO.getCuisine())));
         recipe.setDifficultyLevel(DifficultyLevel.valueOf(Integer.parseInt(addRecipeDTO.getDifficultyLevel())));
         List<Tag> tags = tagRepository.findAllById(addRecipeDTO.getTagIds().stream().map(Long::parseLong).collect(Collectors.toList()));
         recipe.setTags(tags);
@@ -72,16 +84,16 @@ public class RecipeServiceImpl implements RecipeService {
     }
     public String uploadImage(String path, MultipartFile file) throws IOException, NullPointerException, InvalidInputException {
         if (file == null || file.isEmpty()) {
-            throw new InvalidInputException("File must not be null or empty.");
+            throw new IllegalArgumentException("File must not be null or empty.");
         }
         String originalFilename = file.getOriginalFilename();
         if (originalFilename == null || originalFilename.isEmpty()) {
-            throw new InvalidInputException(ErrorConstants.INVALID_FILE_NAME);
+            throw new IllegalArgumentException(ErrorConstants.INVALID_FILE_NAME);
         }
         String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
         List<String> allowedExtensions = Arrays.asList(".jpg", ".jpeg", ".png", ".gif", ".bmp");
         if (!allowedExtensions.contains(fileExtension)) {
-            throw new InvalidInputException(ErrorConstants.INVALID_FILE_TYPE);
+            throw new IllegalArgumentException(ErrorConstants.INVALID_FILE_TYPE);
         }
         String uniqueIdentifier = UUID.randomUUID().toString();
         String newFileName = uniqueIdentifier + fileExtension;
@@ -109,9 +121,6 @@ public class RecipeServiceImpl implements RecipeService {
     public ViewRecipeDTO getRecipe(Long id) throws ResourceNotFoundException {
         Recipe recipe = recipeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorConstants.RECIPE_ID_NOT_FOUND+" "+id));
-        if (recipe.getStatus().name().compareTo("PUBLISHED")!=0) {
-            throw new ResourceNotFoundException(ErrorConstants.RECIPE_ID_NOT_FOUND+" "+id);
-        }
         return new ViewRecipeDTO(
                 recipe.getName(),
                 recipe.getIngredients(),
@@ -255,8 +264,20 @@ public class RecipeServiceImpl implements RecipeService {
 
         return categoryFilterListDTO;
     }
+    public ApiResponse deleteRecipe(Long id) throws InvalidInputException {
+        Recipe recipe = recipeRepository.findById(id)
+                .orElseThrow(() -> new InvalidInputException("Recipe not found with ID: " + id));
+        recipe.setStatus(Status.REJECTED);
+        recipeRepository.save(recipe);
+        return ApiResponse.builder()
+                .timestamp(LocalDateTime.now()).response("Recipe status updated to REJECTED").build();
+    }
+    public String getRecipeOwnerId(Long recipeId) throws InvalidInputException {
+        Recipe recipe = recipeRepository.findById(recipeId)
+                .orElseThrow(() -> new InvalidInputException("Recipe not found with ID: " + recipeId));
 
-
+        return recipe.getUser();
+    }
     @Override
     public ApiResponse addFavoriteRecipe(String userId, Long recipeId) throws ResourceNotFoundException, DuplicateResourceException {
         Favourites favourites = getOrCreateFavourites(userId);
@@ -330,3 +351,4 @@ public class RecipeServiceImpl implements RecipeService {
                 .build();
     }
 }
+

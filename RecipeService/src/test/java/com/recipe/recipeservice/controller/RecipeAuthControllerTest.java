@@ -16,10 +16,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doThrow;
 
 
-class EditRecipeControllerTest {
+class RecipeAuthControllerTest {
 
     @InjectMocks
-    private UpdateRecipeController editRecipeController;
+    private RecipeAuthController recipeAuthController;
 
     @Mock
     private RecipeService recipeService;
@@ -36,7 +36,7 @@ class EditRecipeControllerTest {
     @Test
     void updateRecipe_Success() throws IdNotFoundException, IOException {
         doNothing().when(recipeService).updateRecipe(recipeDTO, recipeDTO.getId());
-        String response = editRecipeController.updateRecipe(recipeDTO);
+        String response = recipeAuthController.updateRecipe(recipeDTO);
         assertEquals("Recipe updated successfully", response);
         verify(recipeService, times(1)).updateRecipe(recipeDTO, recipeDTO.getId());
     }
@@ -45,7 +45,7 @@ class EditRecipeControllerTest {
     void updateRecipe_IdNotFoundException() throws IdNotFoundException, IOException {
         doThrow(new IdNotFoundException("ID not found")).when(recipeService).updateRecipe(recipeDTO, recipeDTO.getId());
         try {
-            editRecipeController.updateRecipe(recipeDTO);
+            recipeAuthController.updateRecipe(recipeDTO);
         } catch (IdNotFoundException e) {
             assertEquals("ID not found", e.getMessage());
             verify(recipeService, times(1)).updateRecipe(recipeDTO, recipeDTO.getId());
@@ -56,7 +56,7 @@ class EditRecipeControllerTest {
     void updateRecipe_IOException() throws IdNotFoundException, IOException {
         doThrow(new IOException("IO error occurred")).when(recipeService).updateRecipe(recipeDTO, recipeDTO.getId());
         try {
-            editRecipeController.updateRecipe(recipeDTO);
+            recipeAuthController.updateRecipe(recipeDTO);
         } catch (IOException e) {
             assertEquals("IO error occurred", e.getMessage());
             verify(recipeService, times(1)).updateRecipe(recipeDTO, recipeDTO.getId());

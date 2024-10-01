@@ -1,4 +1,4 @@
-package com.recipe.recipeservice.dto;
+package com.user.userservice.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

@@ -1,8 +1,15 @@
 package com.recipe.recipeservice.controller;
 
+import com.recipe.recipeservice.constants.ControllerConstants;
 import com.recipe.recipeservice.constants.ErrorConstants;
-import com.recipe.recipeservice.dto.*;
+import com.recipe.recipeservice.dto.CuisineDTO;
+import com.recipe.recipeservice.dto.CuisineResponse;
+import com.recipe.recipeservice.dto.RecipeListDTO;
+import com.recipe.recipeservice.dto.RecipeDTO;
+import com.recipe.recipeservice.dto.ApiResponse;
+import com.recipe.recipeservice.dto.FavouritesRecipeResponse;
 import com.recipe.recipeservice.entity.Category;
+import com.recipe.recipeservice.entity.Tag;
 import com.recipe.recipeservice.exception.DuplicateResourceException;
 import com.recipe.recipeservice.exception.InvalidInputException;
 import com.recipe.recipeservice.exception.ResourceNotFoundException;
@@ -10,9 +17,18 @@ import com.recipe.recipeservice.service.CuisineService;
 import com.recipe.recipeservice.service.RecipeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import com.recipe.recipeservice.dto.ViewRecipeDTO;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,6 +50,11 @@ public class RecipeController {
     @GetMapping("categories")
     public ResponseEntity<List<Category>> getAllCategories() {
         return ResponseEntity.ok(recipeService.getAllCategories());
+    }
+
+    @GetMapping("/tags")
+    public ResponseEntity<List<Tag>> getAllTags() {
+        return ResponseEntity.ok(recipeService.getAllTags());
     }
 
     @GetMapping("/search")
@@ -62,6 +83,17 @@ public class RecipeController {
                 .timestamp(LocalDateTime.now())
                 .build();
         return ResponseEntity.status(HttpStatus.OK).body(recipesFiltered);
+    }
+    @GetMapping("{id}"+ ControllerConstants.VIEW_RECIPE_PATH)
+    public ResponseEntity<ViewRecipeDTO> getRecipe(@PathVariable Long id) throws ResourceNotFoundException {
+        ViewRecipeDTO recipe= recipeService.getRecipe(id);
+        return ResponseEntity.ok(recipe);
+    }
+    @GetMapping("image/{id}")
+    public ResponseEntity<?> getProfileImage(@PathVariable Long id) throws IOException, ResourceNotFoundException {
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(recipeService.getRecipeProfileImage(id));
     }
     @PostMapping("/favourites/{userId}/add")
     public ResponseEntity<ApiResponse> addFavoriteRecipe(@PathVariable String userId, @RequestBody Long recipeId) throws ResourceNotFoundException, DuplicateResourceException {
