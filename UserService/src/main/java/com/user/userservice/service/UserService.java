@@ -22,15 +22,6 @@ public interface UserService {
     byte[] getUserProfileImage(Long userId) throws UserNotFoundException, IOException;
     String getUserProfileImageUrl(Long userId) throws UserNotFoundException, IOException;
 
-    ResponseEntity<ApiResponse> register(UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException;
-
-    String uploadImage(String path, MultipartFile file) throws IOException, InvalidInputException;
-
-    Country fetchCountryById(String country) throws InvalidInputException;
-
-    ResponseEntity<CountryListDTO> fetchAllCountries();
-
-    User mapUserRegistrationDTOtoUser(UserRegistrationDTO userRegistrationDTO) throws InvalidInputException, IOException;
     List<UserEmailDTO> getAllUserEmails();
 
     List<ReviewRating> mapEmailAndImage(List<ReviewRating> comments)throws UserNotFoundException;

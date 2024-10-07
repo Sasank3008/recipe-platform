@@ -38,12 +38,6 @@ public class AdminController {
         return ResponseEntity.ok().body(savedCountry);
     }
 
-    @GetMapping("/countries")
-    public ResponseEntity<List<CountryDTO>> fetchAllCountries() {
-        List<CountryDTO> countries = countryService.fetchCountries();
-        return ResponseEntity.ok().body(countries);
-    }
-
     @PutMapping("editUser/{id}")
     public ResponseEntity<AdminUserDTO> editUser(@PathVariable Long id, @RequestBody AdminUserDTO userDTO) throws UserIdNotFoundException {
         AdminUserDTO updatedUserDTO = adminService.updateUser(id, userDTO);
@@ -152,17 +146,6 @@ public class AdminController {
         return adminService.fetchAllRecipesByFilters(cuisineId, categoryId);
     }
 
-    @GetMapping("recipes/cuisines")
-    public ResponseEntity<CuisineListDTO> fetchAllCuisines() {
-        CuisineListDTO cuisineListDTO = recipeServiceClient.fetchAllCuisines().getBody();
-        return ResponseEntity.ok(cuisineListDTO);
-    }
-
-    @GetMapping("recipes/categories")
-    public ResponseEntity<CategoryListDTO> fetchAllCategory() {
-        CategoryListDTO categoryListDTO = recipeServiceClient.fetchAllCategory().getBody();
-        return ResponseEntity.ok(categoryListDTO);
-    }
 
     @PutMapping("recipes/{id}/status/{status}")
     public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException {

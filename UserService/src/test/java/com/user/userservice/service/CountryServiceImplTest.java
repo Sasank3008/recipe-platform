@@ -1,15 +1,23 @@
 package com.user.userservice.service;
 
 import com.user.userservice.dto.CountryDTO;
+import com.user.userservice.dto.CountryListDTO;
 import com.user.userservice.entity.Country;
 import com.user.userservice.exception.CountryAlreadyExistsException;
+import com.user.userservice.exception.InvalidInputException;
 import com.user.userservice.repository.CountryRepository;
+import com.user.userservice.service.implementation.CountryServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
@@ -36,27 +44,6 @@ class CountryServiceImplTest {
     @InjectMocks
     private CountryServiceImpl countryService;
 
-    @Test
-    void testFetchCountries() {
-        // Arrange
-        Country country = new Country(1L, "USA");
-        CountryDTO countryDTO=new CountryDTO();
-        countryDTO.setId(1L);
-        countryDTO.setName("Usa");
-        List<Country> countryList = List.of(country);
-        when(countryRepository.findAll()).thenReturn(countryList);
-        when(modelMapper.map(any(Country.class), eq(CountryDTO.class))).thenReturn(countryDTO);
-
-        // Act
-        List<CountryDTO> result = countryService.fetchCountries();
-
-        // Assert
-        assertNotNull(result);
-        assertFalse(result.isEmpty());
-        assertEquals("Usa", result.get(0).getName());
-        verify(countryRepository).findAll();
-        verify(modelMapper, times(1)).map(any(Country.class), eq(CountryDTO.class));
-    }
     @Test
     void testSaveNewCountry_Success() throws CountryAlreadyExistsException {
         // Arrange
@@ -99,4 +86,60 @@ class CountryServiceImplTest {
         verify(modelMapper, never()).map(any(), eq(Country.class));
         verify(countryRepository, never()).save(any(Country.class));
     }
+
+    @Test
+    void fetchCountryById() throws InvalidInputException {
+        Long countryId = 1L;
+        Country expectedCountry = dummyCountry();
+
+        when(countryRepository.findById(countryId)).thenReturn(Optional.of(expectedCountry));
+        Country result = countryService.fetchCountryById(String.valueOf(countryId));
+
+        assertNotNull(result, "The country should not be null");
+        assertEquals(expectedCountry.getId(), result.getId(), "The country IDs should match");
+        assertEquals(expectedCountry.getName(), result.getName(), "The country names should match");
+
+        verify(countryRepository).findById(countryId);
+    }
+
+    @Test
+    void testFetchCountryById() {
+        Country country1 = new Country(1, "India");
+        Country country2 = new Country(2, "Canada");
+        List<Country> mockCountries = Arrays.asList(country1, country2);
+        when(countryRepository.findAll()).thenReturn(mockCountries);
+
+        ResponseEntity<CountryListDTO> response = countryService.fetchAllCountries();
+
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCodeValue());
+        assertNotNull(response.getBody());
+        assertEquals(2, response.getBody().getCountryList().size());
+        assertEquals("India", response.getBody().getCountryList().get(0).getName());
+        assertEquals("Canada", response.getBody().getCountryList().get(1).getName());
+        assertEquals(HttpStatus.OK.name(), response.getBody().getStatus());
+
+        verify(countryRepository).findAll();
+    }
+
+    public Country dummyCountry() {
+        Country expectedCountry = new Country();
+
+        expectedCountry.setId(1L);
+        expectedCountry.setName("Test Country");
+
+        return expectedCountry;
+    }
+
+    @Test
+    void fetchAllCountries() {
+        when(countryRepository.findAll()).thenReturn(new ArrayList<>());
+
+        CountryListDTO countryListDTO = CountryListDTO.builder().countryList(countryRepository.findAll()).build();
+        ResponseEntity<CountryListDTO> response = ResponseEntity.ok(countryListDTO);
+
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
+    }
+
 }

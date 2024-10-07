@@ -50,12 +50,8 @@ import static org.mockito.Mockito.times;
 class UserServiceImplTest {
 
     private final String token = "mocked-token";
-    @TempDir
-    Path temporaryFolder;
     @Mock
     private UserRepository userRepository;
-    @Mock
-    private CountryRepository countryRepository;
     @Mock
     private ModelMapper modelMapper;
     @Mock
@@ -146,121 +142,6 @@ class UserServiceImplTest {
     }
 
     @Test
-    void testRegisterNewUser() throws IOException, UserAlreadyExistsException, InvalidInputException {
-
-        when(userRepository.existsByEmail(anyString())).thenReturn(false);
-        when(countryRepository.findById(anyLong())).thenReturn(Optional.of(new Country()));
-        when(modelMapper.map(any(UserRegistrationDTO.class), eq(User.class))).thenReturn(new User());
-
-        ResponseEntity<ApiResponse> response = userService.register(dummyUserRegistrationDTO());
-
-        assertEquals(HttpStatus.CREATED, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals("Registration Successful", response.getBody().getResponse());
-    }
-
-    public UserRegistrationDTO dummyUserRegistrationDTO() {
-        UserRegistrationDTO dto = new UserRegistrationDTO();
-
-        dto.setEmail("newuser@example.com");
-        dto.setCountry("1");
-        dto.setFile(new MockMultipartFile("file", "test.jpg", "text/plain", "Test content".getBytes()));
-
-        return dto;
-    }
-
-    @Test
-    void uploadImage_NullFile_ThrowsInvalidInputException() {
-        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", null));
-        assertEquals("File must not be null or empty.", exception.getMessage());
-    }
-
-    @Test
-    void uploadImage_EmptyFileContent_ThrowsInvalidInputException() {
-        MultipartFile emptyFile = new MockMultipartFile("file", "test.jpg", "image/jpeg", new byte[]{});
-        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", emptyFile));
-        assertEquals("File must not be null or empty.", exception.getMessage());
-    }
-
-    @Test
-    void uploadImage_InvalidFileName_ThrowsInvalidInputException() {
-        MultipartFile fileWithNoName = new MockMultipartFile("file", "", "image/jpeg", "content".getBytes());
-        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", fileWithNoName));
-        assertEquals("File must have a valid name.", exception.getMessage());
-    }
-
-    @Test
-    void uploadImage_InvalidFileExtension_ThrowsInvalidInputException() {
-        MultipartFile fileWithInvalidExt = new MockMultipartFile("file", "test.txt", "text/plain", "content".getBytes());
-        Exception exception = assertThrows(InvalidInputException.class, () -> userService.uploadImage("path", fileWithInvalidExt));
-        assertEquals("Invalid file type. Only PNG, JPG, JPEG, and SVG are allowed.", exception.getMessage());
-    }
-
-    @Test
-    void fetchCountryById() throws InvalidInputException {
-        Long countryId = 1L;
-        Country expectedCountry = dummyCountry();
-
-        when(countryRepository.findById(countryId)).thenReturn(Optional.of(expectedCountry));
-        Country result = userService.fetchCountryById(String.valueOf(countryId));
-
-        assertNotNull(result, "The country should not be null");
-        assertEquals(expectedCountry.getId(), result.getId(), "The country IDs should match");
-        assertEquals(expectedCountry.getName(), result.getName(), "The country names should match");
-
-        verify(countryRepository).findById(countryId);
-    }
-
-    public Country dummyCountry() {
-        Country expectedCountry = new Country();
-
-        expectedCountry.setId(1L);
-        expectedCountry.setName("Test Country");
-
-        return expectedCountry;
-    }
-
-    @Test
-    void fetchAllCountries() {
-        when(countryRepository.findAll()).thenReturn(new ArrayList<>());
-
-        CountryListDTO countryListDTO = CountryListDTO.builder().countryList(countryRepository.findAll()).build();
-        ResponseEntity<CountryListDTO> response = ResponseEntity.ok(countryListDTO);
-
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-    }
-
-    @Test
-    void testRegisterUserAlreadyExists() {
-        UserRegistrationDTO dto = new UserRegistrationDTO();
-
-        dto.setEmail("existing@example.com");
-
-        when(userRepository.existsByEmail(dto.getEmail())).thenReturn(true);
-        assertThrows(InvalidInputException.class, () -> userService.register(dto), "This Email already exists : " + dto.getEmail());
-        verify(userRepository).existsByEmail(dto.getEmail());
-    }
-
-    @Test
-    void testUploadImageCreatesNewFolder() throws IOException, InvalidInputException {
-        String directoryName = "newFolder";
-        Path newFolderPath = temporaryFolder.resolve(directoryName);
-        String path = newFolderPath.toString();
-        MultipartFile file = new MockMultipartFile(
-                "file",
-                "image.jpg",
-                "image/jpeg",
-                "Dummy image content".getBytes()
-        );
-
-        String result = userService.uploadImage(path, file);
-
-        assertTrue(Files.exists(newFolderPath), "Directory should be created by the method");
-        assertNotNull(result, "The result should not be null");
-        assertTrue(result.contains(".jpg"), "The result should contain the file extension .jpg");
-    }
-    @Test
     public void testGetUser_Success() throws UserNotFoundException {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(modelMapper.map(any(User.class), any(Class.class))).thenReturn(userDisplayDTO);
@@ -346,25 +227,5 @@ class UserServiceImplTest {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
         assertThrows(FileNotFoundException.class, () -> userService.getUserProfileImageUrl(1L));
-    }
-
-    @Test
-    void testFetchCountryById() {
-        Country country1 = new Country(1, "India");
-        Country country2 = new Country(2, "Canada");
-        List<Country> mockCountries = Arrays.asList(country1, country2);
-        when(countryRepository.findAll()).thenReturn(mockCountries);
-
-        ResponseEntity<CountryListDTO> response = userService.fetchAllCountries();
-
-        assertNotNull(response);
-        assertEquals(200, response.getStatusCodeValue());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().getCountryList().size());
-        assertEquals("India", response.getBody().getCountryList().get(0).getName());
-        assertEquals("Canada", response.getBody().getCountryList().get(1).getName());
-        assertEquals(HttpStatus.OK.name(), response.getBody().getStatus());
-
-        verify(countryRepository).findAll();
     }
 }

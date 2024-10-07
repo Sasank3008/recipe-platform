@@ -24,6 +24,8 @@ import com.user.userservice.exception.UserAlreadyExistsException;
 import com.user.userservice.exception.UserNotFoundException;
 import com.user.userservice.exception.IdNotFoundException;
 import com.user.userservice.exception.InvalidPasswordException;
+import com.user.userservice.service.CountryService;
+import com.user.userservice.service.RegistrationService;
 import com.user.userservice.service.TokenService;
 import com.user.userservice.service.UserService;
 import feign.FeignException;
@@ -61,6 +63,8 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final RecipeServiceClient recipeServiceClient;
+    private final RegistrationService registrationService;
+    private final CountryService countryService;
     @Value("${project.image}")
     private String path;
 
@@ -79,11 +83,11 @@ public class UserController {
     }
     @PostMapping(value = "register", consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse> register(@ModelAttribute @Valid UserRegistrationDTO userRegistrationDTO) throws IOException, UserAlreadyExistsException, InvalidInputException {
-        return userService.register(userRegistrationDTO);
+        return registrationService.register(userRegistrationDTO);
     }
     @GetMapping("/countries")
     public ResponseEntity<CountryListDTO> fetchAllCountries() {
-        return userService.fetchAllCountries();
+        return countryService.fetchAllCountries();
     }
 
     @GetMapping(ControllerConstants.USER_ID_PATH)

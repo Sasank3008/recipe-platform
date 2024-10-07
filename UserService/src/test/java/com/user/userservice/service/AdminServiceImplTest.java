@@ -1,8 +1,12 @@
 package com.user.userservice.service;
 import com.user.userservice.dto.AdminUserDTO;
 import com.user.userservice.dto.CountryDTO;
+import com.user.userservice.dto.RecipeListDTO;
+import com.user.userservice.dto.RecipeStatusChangeDTO;
 import com.user.userservice.entity.Country;
 import com.user.userservice.entity.User;
+import com.user.userservice.exception.InvalidInputException;
+import com.user.userservice.feignclient.RecipeServiceClient;
 import com.user.userservice.repository.CountryRepository;
 import com.user.userservice.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,17 +19,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.http.ResponseEntity;
+
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +50,7 @@ import java.util.Optional;
     @Mock
     private ModelMapper modelMapper;
     @Mock
-    private ObjectMapper objectMapper;
+    private RecipeServiceClient recipeFeign;
     @InjectMocks
     private AdminServiceImpl adminService;
     private AdminUserDTO userDTO;
@@ -171,5 +181,57 @@ import java.util.Optional;
         user.setCountry(country);
         user.setEnabled(enabled);
         return user;
+    }
+
+    @Test
+    void testFetchAllRecipesByFiltersReturnsRecipes() throws InvalidInputException {
+        Long cuisineId = 1L;
+        Long categoryId = 1L;
+
+        RecipeListDTO recipeListDTO = createFakeRecipeList();
+        User user = createFakeUserBuilder("test@example.com").build();
+
+        when(recipeFeign.fetchAllRecipesByFilters(cuisineId, categoryId)).thenReturn(ResponseEntity.ok(recipeListDTO));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+
+        ResponseEntity<RecipeListDTO> response = adminService.fetchAllRecipesByFilters(cuisineId, categoryId);
+
+        assertEquals("test@example.com", response.getBody().getRecipeList().get(0).getEmail());
+        verify(userRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void testFetchAllRecipesByFiltersUserNotFoundThrowsException() {
+        Long cuisineId = 1L;
+        Long categoryId = 1L;
+
+        RecipeListDTO recipeListDTO = createFakeRecipeList();
+
+        when(recipeFeign.fetchAllRecipesByFilters(cuisineId, categoryId)).thenReturn(ResponseEntity.ok(recipeListDTO));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(InvalidInputException.class, () -> {
+            adminService.fetchAllRecipesByFilters(cuisineId, categoryId);
+        });
+    }
+
+    private RecipeListDTO createFakeRecipeList() {
+        RecipeStatusChangeDTO recipeStatus = RecipeStatusChangeDTO.builder()
+                .id(1L)
+                .userId(1L)
+                .email("test@example.com")
+                .name("Recipe1")
+                .build();
+
+        return RecipeListDTO.builder()
+                .timestamp("2021-01-01T00:00:00Z")
+                .status("OK")
+                .recipeList(Collections.singletonList(recipeStatus))
+                .build();
+    }
+
+    private User.UserBuilder createFakeUserBuilder(String email) {
+        return User.builder()
+                .email(email);
     }
 }

@@ -141,33 +141,6 @@ class AdminControllerTest {
         verify(adminService).updateUser(userId, userDTO);
     }
 
-
-
-
-
-
-
-
-
-
-
-    @Test
-    void testGetCountries() throws Exception {
-        CountryDTO country1 = new CountryDTO();
-        country1.setId(1L);
-        country1.setName("Usa");
-        CountryDTO country2 = new CountryDTO();
-        country2.setId(2L);
-        country2.setName("Canada");
-        List<CountryDTO> countries = Arrays.asList(country1, country2);
-        when(countryService.fetchCountries()).thenReturn(countries);
-        mockMvc.perform(get("/admins/countries"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].name").value("Usa"))
-                .andExpect(jsonPath("$[1].name").value("Canada"));
-        verify(countryService).fetchCountries();
-    }
-
     @Test
     void testAddCountry() throws Exception {
         // Arrange

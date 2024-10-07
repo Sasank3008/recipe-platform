@@ -4,8 +4,6 @@ import com.user.userservice.dto.UpdateRecipeDTO;
 import com.user.userservice.dto.CuisineDTO;
 import com.user.userservice.dto.AddRecipeDTO;
 import com.user.userservice.dto.RecipeListDTO;
-import com.user.userservice.dto.CategoryListDTO;
-import com.user.userservice.dto.CuisineListDTO;
 import com.user.userservice.dto.SuccessResponse;
 import com.user.userservice.dto.AllCommentsDTO;
 import com.user.userservice.exception.IdNotFoundException;
@@ -55,10 +53,6 @@ public interface RecipeServiceClient {
             @RequestParam(required = false) Long cuisineId,
             @RequestParam(required = false) Long categoryId
     ) throws InvalidInputException;
-    @GetMapping("recipes/categories")
-    public ResponseEntity<CategoryListDTO> fetchAllCategory();
-    @GetMapping("recipes/cuisines")
-    public ResponseEntity<CuisineListDTO> fetchAllCuisines();
     @PutMapping("{id}/status/{status}")
     public ResponseEntity<SuccessResponse> editRecipeStatus(@PathVariable("id") String id, @PathVariable("status") String status) throws InvalidInputException;
     @PutMapping("/delete/{id}")
